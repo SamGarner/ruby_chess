@@ -12,9 +12,26 @@ class Board
   attr_accessor :board_array
 
   def initialize
-    @board_array = Array.new(8) { Array.new(8) { '-' } }
+    @board_array = Array.new(8) { Array.new(8) { '__' } }
   end
-end
+
+  def display_board
+    puts '   | A  | B  | C  | D  | E  | F  | G  | H  |'
+    puts display_rows
+    puts '   | A  | B  | C  | D  | E  | F  | G  | H  |'
+  end
+
+  def display_rows
+    text = ""
+    (0..7).each do |n|
+      text << "#{n + 1}  |"
+      board_array[n].each do |space|
+        text << " #{space} |"
+      end
+      text << " #{n + 1}\n"
+    end
+    text
+  end
 
 # class ChessPiece
 #   attr_accessor :current_location
@@ -240,4 +257,5 @@ game = Game.new(board)
 game.initialize_pieces
 game.place_starting_pieces
 binding.pry
+
 # king = King.new
