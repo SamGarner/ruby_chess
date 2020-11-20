@@ -22,15 +22,23 @@ class Board
   end
 
   def display_rows
-    text = ""
+    text = ''
     (0..7).each do |n|
       text << "#{n + 1}  |"
       board_array[n].each do |space|
-        text << " #{space} |"
+        text << display_piece(space)
       end
       text << " #{n + 1}\n"
     end
     text
+  end
+
+  def display_piece(space)
+    if space == '__'
+      " #{space} |"
+    else
+      " #{space.symbol} |"
+    end
   end
 end
 
@@ -45,13 +53,15 @@ end
 
 # King
 class King #s < Piece
-  attr_reader :symbol
+  attr_reader :symbol, :possible_moves
+  attr_accessor :current_location
 
   def initialize(color, location)
     @color = color
     @symbol = "#{color[0].upcase}K"
     @current_location = location
-    # @possible_moves
+    @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],\
+                       [-1, 0], [-1, 1]]
 
     # U+2654 White Chess King
     # U+265A Black Chess King
@@ -200,42 +210,94 @@ class Game
   end
 
   def starting_kings(board)
-    board[0][4] = black_king.symbol
-    board[7][4] = white_king.symbol
+    board[0][4] = black_king
+    board[7][4] = white_king
   end
 
   def starting_queens(board)
-    board[0][3] = black_queen.symbol
-    board[7][3] = white_queen.symbol
+    board[0][3] = black_queen
+    board[7][3] = white_queen
   end
 
   def starting_bishops(board)
-    board[0][2] = black_bishop_c.symbol
-    board[0][5] = black_bishop_f.symbol
-    board[7][2] = white_bishop_c.symbol
-    board[7][5] = white_bishop_f.symbol
+    board[0][2] = black_bishop_c
+    board[0][5] = black_bishop_f
+    board[7][2] = white_bishop_c
+    board[7][5] = white_bishop_f
   end
 
   def starting_knights(board)
-    board[0][1] = black_knight_b.symbol
-    board[0][6] = black_knight_g.symbol
-    board[7][1] = white_knight_b.symbol
-    board[7][6] = white_knight_g.symbol
+    board[0][1] = black_knight_b
+    board[0][6] = black_knight_g
+    board[7][1] = white_knight_b
+    board[7][6] = white_knight_g
   end
 
   def starting_rooks(board)
-    board[0][0] = black_rook_a.symbol
-    board[0][7] = black_rook_h.symbol
-    board[7][0] = white_rook_a.symbol
-    board[7][7] = white_rook_h.symbol
+    board[0][0] = black_rook_a
+    board[0][7] = black_rook_h
+    board[7][0] = white_rook_a
+    board[7][7] = white_rook_h
   end
 
   def starting_pawns_black(board)
-    (0..7).each { |space| board[1][space] = 'Bp' }
+    # (0..7).each { |space| board[1][space] = 'Bp' }
+    board[1][0] = black_pawn_a
+    board[1][1] = black_pawn_b
+    board[1][2] = black_pawn_c
+    board[1][3] = black_pawn_d
+    board[1][4] = black_pawn_e
+    board[1][5] = black_pawn_f
+    board[1][6] = black_pawn_g
+    board[1][7] = black_pawn_h
   end
 
   def starting_pawns_white(board)
-    (0..7).each { |space| board[6][space] = 'Wp' }
+    # (0..7).each { |space| board[6][space] = 'Wp' }
+    board[6][0] = white_pawn_a
+    board[6][1] = white_pawn_b
+    board[6][2] = white_pawn_c
+    board[6][3] = white_pawn_d
+    board[6][4] = white_pawn_e
+    board[6][5] = white_pawn_f
+    board[6][6] = white_pawn_g
+    board[6][7] = white_pawn_h
+  end
+
+  def move_piece(piece, desired_space) # move to ChessPiece SuperClass once 'working'
+    # desired space (non-converted) example: [6, 4] - white king move forward one
+    travel_path = []
+    travel_path[0] = piece.current_location[0] - desired_space[0]
+    travel_path[1] = piece.current_location[1] - desired_space[1]
+    if valid_move?(piece, travel_path)
+      destroy_enemy if desired_space_occupied? && attacking_opponent?
+      update_board(piece, desired_space)
+      piece.current_location = desired_space
+    end
+  end
+
+  def valid_move?(piece, travel_path)
+    piece.possible_moves.include?(travel_path)
+  end
+
+  def update_board(piece, desired_space, board = gameboard.board_array)
+    ds = desired_space
+    old_space = piece.current_location
+    board[ds[0]][ds[1]] = piece
+    board[old_space[0]][old_space[1]] = '__'
+  end
+
+  def desired_space_occupied?(desired_space)
+    board[desired_space[0]][desired_space[1]].class != String
+  end
+
+  def attacking_opponent?(piece, desired_space)
+    piece.color != board[desired_space[0]][desired_space[1]]
+  end
+
+  def destroy_enemy(desired_space)
+    attacked_piece = board[desired_space[0]][desired_space[1]]
+    attacked_piece.current_location = nil
   end
 end
 
@@ -243,6 +305,7 @@ board = Board.new
 game = Game.new(board)
 game.initialize_pieces
 game.place_starting_pieces
+game.gameboard.display_board
 binding.pry
 
 # king = King.new
