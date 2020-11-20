@@ -32,6 +32,7 @@ class Board
     end
     text
   end
+end
 
 # class ChessPiece
 #   attr_accessor :current_location
@@ -230,25 +231,11 @@ class Game
   end
 
   def starting_pawns_black(board)
-    board[1][0] = black_pawn_a.symbol
-    board[1][1] = black_pawn_b.symbol
-    board[1][2] = black_pawn_c.symbol
-    board[1][3] = black_pawn_d.symbol
-    board[1][4] = black_pawn_e.symbol
-    board[1][5] = black_pawn_f.symbol
-    board[1][6] = black_pawn_g.symbol
-    board[1][7] = black_pawn_h.symbol
+    (0..7).each { |space| board[1][space] = 'Bp' }
   end
 
   def starting_pawns_white(board)
-    board[6][0] = white_pawn_a.symbol
-    board[6][1] = white_pawn_b.symbol
-    board[6][2] = white_pawn_c.symbol
-    board[6][3] = white_pawn_d.symbol
-    board[6][4] = white_pawn_e.symbol
-    board[6][5] = white_pawn_f.symbol
-    board[6][6] = white_pawn_g.symbol
-    board[6][7] = white_pawn_h.symbol
+    (0..7).each { |space| board[6][space] = 'Wp' }
   end
 end
 
