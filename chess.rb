@@ -69,7 +69,8 @@ class King #s < Piece
 end
 
 class Queen # < ChessPiece
-  attr_reader :symbol
+  attr_reader :symbol, :possible_moves
+  attr_accessor :current_location
 
   def initialize(color, location)
     # super(location)
@@ -80,7 +81,8 @@ class Queen # < ChessPiece
 end
 
 class Bishop
-  attr_reader :symbol
+  attr_reader :symbol, :possible_moves
+  attr_accessor :current_location
 
   def initialize(color, location)
     @color = color
@@ -95,7 +97,8 @@ class Bishop
 end
 
 class Knight
-  attr_reader :symbol
+  attr_reader :symbol, :possible_moves
+  attr_accessor :current_location
 
   def initialize(color, location)
     @color = color
@@ -105,17 +108,23 @@ class Knight
 end
 
 class Rook
-  attr_reader :symbol
+  attr_reader :symbol, :possible_moves, :color
+  attr_accessor :current_location
 
   def initialize(color, location)
     @color = color
     @symbol = "#{color[0].upcase}R"
     @current_location = location
+    @possible_moves = [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
+                      [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+                      [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
+                      [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0]
   end
 end
 
 class Pawn
-  attr_reader :symbol
+  attr_reader :symbol, :possible_moves, :color
+  attr_accessor :current_location
 
   def initialize(color, location)
     @color = color
@@ -272,11 +281,12 @@ class Game
   def move_piece(piece, desired_space) # move to ChessPiece SuperClass once 'working'
     # desired space (non-converted) example: [6, 4] - white king move forward one
     travel_path = []
-    travel_path[0] = piece.current_location[0] - desired_space[0]
-    travel_path[1] = piece.current_location[1] - desired_space[1]
+    travel_path[0] = desired_space[1] - piece.current_location[1] # horizontal plane
+    travel_path[1] = piece.current_location[0] - desired_space[0] # vertical plane
+    # e.g rook travel path, 7,7 --> 5, 7 = [-2, 0]
     return unless valid_move?(piece, travel_path)
 
-    destroy_enemy if desired_space_occupied? && attacking_opponent?
+    destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
   end
@@ -286,11 +296,11 @@ class Game
   end
 
   def valid_move?(piece, travel_path)
-    possible_move?(piece, travel_path) && !impeding_piece?
+    possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path)
   end
 
-  def impeding_piece?
-    horizontal_impediment? #|| vertical_impediment? || diag_impediment?
+  def impeding_piece?(piece, travel_path)
+    horizontal_impediment?(piece, travel_path) #|| vertical_impediment? || diag_impediment?
   end
 
   def horizontal_impediment?(piece, travel_path, board = gameboard.board_array)
@@ -299,13 +309,13 @@ class Game
     if travel_path[0].positive?
       travel_path[0].times do
         space_check += 1
-        return true if board[space_check][vertical_coord].class != String
+        return true if board[vertical_coord][space_check].class != String
       end
     else
       # (travel_path[0].abs()).times
       (-1 * travel_path[0]).times do
         space_check -= 1
-        return true if board[space_check][vertical_coord].class != String
+        return true if board[vertical_coord][space_check].class != String
       end
     end
     false
@@ -318,25 +328,25 @@ class Game
     board[old_space[0]][old_space[1]] = '__'
   end
 
-  def desired_space_occupied?(desired_space)
+  def desired_space_occupied?(desired_space, board = gameboard.board_array)
     board[desired_space[0]][desired_space[1]].class != String
   end
 
-  def attacking_opponent?(piece, desired_space)
-    piece.color != board[desired_space[0]][desired_space[1]]
+  def attacking_opponent?(piece, desired_space) # update after test to include board default
+    piece.color != gameboard.board_array[desired_space[0]][desired_space[1]].color
   end
 
-  def destroy_enemy(desired_space)
+  def destroy_enemy(desired_space, board = gameboard.board_array)
     attacked_piece = board[desired_space[0]][desired_space[1]]
     attacked_piece.current_location = nil
   end
 end
 
-board = Board.new
-game = Game.new(board)
-game.initialize_pieces
-game.place_starting_pieces
-game.gameboard.display_board
-binding.pry
+# board = Board.new
+# game = Game.new(board)
+# game.initialize_pieces
+# game.place_starting_pieces
+# game.gameboard.display_board
+# binding.pry
 
 # king = King.new
