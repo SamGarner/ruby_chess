@@ -86,6 +86,11 @@ class Bishop
     @color = color
     @symbol = "#{color[0].upcase}B"
     @current_location = location
+    @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7]\
+                      [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7]\
+                      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]\
+                      [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7]
+    # share with Queen ?
   end
 end
 
@@ -269,15 +274,41 @@ class Game
     travel_path = []
     travel_path[0] = piece.current_location[0] - desired_space[0]
     travel_path[1] = piece.current_location[1] - desired_space[1]
-    if valid_move?(piece, travel_path)
-      destroy_enemy if desired_space_occupied? && attacking_opponent?
-      update_board(piece, desired_space)
-      piece.current_location = desired_space
-    end
+    return unless valid_move?(piece, travel_path)
+
+    destroy_enemy if desired_space_occupied? && attacking_opponent?
+    update_board(piece, desired_space)
+    piece.current_location = desired_space
+  end
+
+  def possible_move?(piece, travel_path) # direction possible for type of piece
+    piece.possible_moves.include?(travel_path)
   end
 
   def valid_move?(piece, travel_path)
-    piece.possible_moves.include?(travel_path)
+    possible_move?(piece, travel_path) && !impeding_piece?
+  end
+
+  def impeding_piece?
+    horizontal_impediment? #|| vertical_impediment? || diag_impediment?
+  end
+
+  def horizontal_impediment?(piece, travel_path, board = gameboard.board_array)
+    space_check = piece.current_location[0]
+    vertical_coord = piece.current_location[1]
+    if travel_path[0].positive?
+      travel_path[0].times do
+        space_check += 1
+        return true if board[space_check][vertical_coord].class != String
+      end
+    else
+      # (travel_path[0].abs()).times
+      (-1 * travel_path[0]).times do
+        space_check -= 1
+        return true if board[space_check][vertical_coord].class != String
+      end
+    end
+    false
   end
 
   def update_board(piece, desired_space, board = gameboard.board_array)
