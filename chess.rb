@@ -356,32 +356,44 @@ class Game
     @finish = board.mapping_hash.fetch_values(finish.to_sym)
   end
 
-  def identify_piece(current_location, desired_space)
-    # 
-  end
-
   def take_turn(player) # WIP
-    choose_move
-    identify_piece
-    move_piece
-    # loop if invalid input
+    loop
+      choose_move
+      display_to_array_map
+      # piece = identify_piece()
+      break if commit_move?(identify_piece(), finish)
+    end
+    move_piece(identify_piece(), finish)
+    switch_turn_to_opponent
+      # loop if invalid input
   end
 
   def switch_turn_to_opponent
     turn == 'white' ? turn = 'black' : turn = 'white'
   end
 
+  def identify_piece(starting_space = start)
+    board.board_array[starting_space[0]][starting_space[1]]
+  end
+
   def move_piece(piece, desired_space) # move to ChessPiece SuperClass once 'working'
-    # desired space (non-converted) example: [6, 4] - white king move forward one
+    # # desired space (non-converted) example: [6, 4] - white king move forward one
+    # travel_path = []
+    # travel_path[0] = desired_space[1] - piece.current_location[1] # horizontal plane
+    # travel_path[1] = piece.current_location[0] - desired_space[0] # vertical plane
+    # # e.g rook travel path, 7,7 --> 5, 7 = [-2, 0]
+    # return unless valid_move?(piece, travel_path)
+    destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+    update_board(piece, desired_space)
+    piece.current_location = desired_space
+  end
+
+  def commit_move?(piece, desired_space)
     travel_path = []
     travel_path[0] = desired_space[1] - piece.current_location[1] # horizontal plane
     travel_path[1] = piece.current_location[0] - desired_space[0] # vertical plane
     # e.g rook travel path, 7,7 --> 5, 7 = [-2, 0]
-    return unless valid_move?(piece, travel_path)
-
-    destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
-    update_board(piece, desired_space)
-    piece.current_location = desired_space
+    valid_move?(piece, travel_path)
   end
 
   def possible_move?(piece, travel_path) # direction possible for type of piece
