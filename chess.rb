@@ -151,7 +151,7 @@ class Game
               :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, \
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
               :start_input, :finish_input, :valid_input, :piece_type
-  attr_accessor :gameboard
+  attr_accessor :gameboard, :turn
 
   def initialize(board)
     @gameboard = board
@@ -365,6 +365,10 @@ class Game
     identify_piece
     move_piece
     # loop if invalid input
+  end
+
+  def switch_turn_to_opponent
+    turn == 'white' ? turn = 'black' : turn = 'white'
   end
 
   def move_piece(piece, desired_space) # move to ChessPiece SuperClass once 'working'
