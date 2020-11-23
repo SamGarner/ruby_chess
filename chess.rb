@@ -9,10 +9,16 @@ require 'pry'
 
 # Board
 class Board
+  attr_reader :mapping_hash
   attr_accessor :board_array
 
   def initialize
     @board_array = Array.new(8) { Array.new(8) { '__' } }
+    @mapping_hash = Hash[A1: [7, 0], A2: [6, 0], A3: [5, 0], A4: [4, 0],
+                         A5: [3, 0], A6: [2, 0], A7: [1, 0], A8: [0, 0],
+                         H1: [7, 7], H2: [6, 7], H3: [5, 7], H4: [4, 7],
+                         H5: [3, 7], H6: [2, 7], H7: [1, 7], H8: [0, 7]
+                       ]
   end
 
   def display_board
@@ -143,11 +149,13 @@ class Game
               :black_pawn_a, :black_pawn_b, :black_pawn_c, :black_pawn_d, \
               :black_pawn_e, :black_pawn_f, :black_pawn_g, :black_pawn_h, \
               :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, \
-              :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h
+              :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
+              :start_input, :finish_input, :valid_input, :piece_type
   attr_accessor :gameboard
 
   def initialize(board)
     @gameboard = board
+    @turn = 'white'
   end
 
   def initialize_pieces
@@ -276,6 +284,87 @@ class Game
     board[6][5] = white_pawn_f
     board[6][6] = white_pawn_g
     board[6][7] = white_pawn_h
+  end
+
+  def choose_move
+    #update to be player specific
+    choose_piece_to_move
+    # get the name type of the piece to output to the user (e.g. '..move your rook?')
+    which_piece_selected
+    choose_where_to_move
+  end
+
+  def choose_piece_to_move
+    puts 'Enter the space of the piece you want to move (e.g. a1):'
+    @start_input = gets.chomp.upcase
+    if !valid_start_input?(start_input)
+      puts 'Invalid piece. Please try again.'
+      choose_piece_to_move
+    end
+  end
+
+  def choose_where_to_move
+    puts "Where would you like to move your #{piece_type}?"
+    @finish_input = gets.chomp.upcase
+    if !valid_finish_input?(finish_input)
+      puts 'Invalid space. Please try again.'
+      choose_where_to_move
+    end
+  end
+
+  def valid_finish_input?(finish = finish_input)
+    valid_user_input?(finish) && valid_target_space?(finish)
+  end
+
+  def valid_start_input?(start = start_input)
+    valid_user_input?(start) && valid_piece_to_move?(start)
+  end
+
+  def valid_user_input?(space)
+    board.mapping_hash.key?(space)
+  end
+
+  def valid_piece_to_move?(starting_space, player_color)
+    board.board_array[starting_space[0]][starting_space[1]].color == player_color
+  end
+
+  def valid_target_space?(target_space, player_color)
+    space = board.board_array[starting_space[0]][starting_space[1]]
+    return true if space == '__'
+
+    space.color != player_color
+  end
+
+  def which_piece_selected(starting_space = self.start_input)
+    space = board.board_array[starting_space[0]][starting_space[1]]
+    @piece_type = space.class
+  end
+
+  # def populate_valid_input_array
+  #   @valid_input = []
+  #   ('A'..'H').each do |l|
+  #     (1..8).each do |n|
+  #       @valid_input << (l + n.to_s)
+  #     end
+  #   end
+  # end
+
+  def display_to_array_map(start = start_input, finish = finish_input)
+    # include in take_turn or in choose_move ?
+    @start = board.mapping_hash.fetch_values(start.to_sym)
+    # error handling here or outside ?
+    @finish = board.mapping_hash.fetch_values(finish.to_sym)
+  end
+
+  def identify_piece(current_location, desired_space)
+    # 
+  end
+
+  def take_turn(player) # WIP
+    choose_move
+    identify_piece
+    move_piece
+    # loop if invalid input
   end
 
   def move_piece(piece, desired_space) # move to ChessPiece SuperClass once 'working'
