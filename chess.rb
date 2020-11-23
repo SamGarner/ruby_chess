@@ -151,15 +151,24 @@ class Rook
 end
 
 class Pawn
-  attr_reader :symbol, :possible_moves, :color
-  attr_accessor :current_location
+  attr_reader :symbol, :color, :initial_turn
+  attr_accessor :current_location, :possible_moves
 
   def initialize(color, location)
     @color = color
     @symbol = "#{color[0].upcase}p"
     @current_location = location
     # possible_moves does not include en passant, 2 square start, or diagonal capture
-    @possible_moves = [0, 1]
+    @possible_moves = [0, 1], [0, 2]
+  end
+
+  def makes_first_move(move_number, starting_space, ending_space) #= game.total_turn_counter)
+    self.possible_moves = [0, 1]
+    @initial_turn = move_number if passant_vulnerable?(starting_space, ending_space)
+  end
+
+  def passant_vulnerable?(starting_space, ending_space)
+    (starting_space[1] - ending_space[1]).abs == 2
   end
 end
 
@@ -175,11 +184,12 @@ class Game
               :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, \
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
               :start_input, :finish_input, :valid_input, :piece_type
-  attr_accessor :gameboard, :turn
+  attr_accessor :gameboard, :turn, :total_turn_counter
 
   def initialize(board)
     @gameboard = board
     @turn = 'white'
+    @total_turn_counter = 0
   end
 
   def initialize_pieces
@@ -389,6 +399,8 @@ class Game
       break if commit_move?(identify_piece(), finish)
     end
     move_piece(identify_piece(), finish)
+    # pawn handling
+    total_turn_counter += 1
     switch_turn_to_opponent
       # loop if invalid input
   end
