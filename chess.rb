@@ -78,7 +78,7 @@ class King #s < Piece
     @color = color
     @symbol = "#{color[0].upcase}K"
     @current_location = location
-    @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],\
+    @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],
                        [-1, 0], [-1, 1]]
 
     # U+2654 White Chess King
@@ -95,6 +95,14 @@ class Queen # < ChessPiece
     @color = color
     @symbol = "#{color[0].upcase}Q"
     @current_location = location
+    @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
+                      [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
+                      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
+                      [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7],
+                      [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
+                      [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+                      [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
+                      [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0]
   end
 end
 
@@ -106,9 +114,9 @@ class Bishop
     @color = color
     @symbol = "#{color[0].upcase}B"
     @current_location = location
-    @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7]\
-                      [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7]\
-                      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7]\
+    @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
+                      [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
+                      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
                       [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7]
     # share with Queen ?
   end
@@ -122,6 +130,8 @@ class Knight
     @color = color
     @symbol = "#{color[0].upcase}k"
     @current_location = location
+    @possible_moves = [1, 2], [2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1],
+                      [-1, 2], [-2, 1]
   end
 end
 
@@ -148,6 +158,8 @@ class Pawn
     @color = color
     @symbol = "#{color[0].upcase}p"
     @current_location = location
+    # possible_moves does not include en passant, 2 square start, or diagonal capture
+    @possible_moves = [0, 1]
   end
 end
 
