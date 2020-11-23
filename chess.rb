@@ -397,6 +397,7 @@ class Game
       display_to_array_map
       # piece = identify_piece()
       break if commit_move?(identify_piece(), finish)
+      puts 'Illegal move. Please try again.'
     end
     move_piece(identify_piece(), finish)
     # pawn handling
@@ -439,6 +440,13 @@ class Game
 
   def valid_move?(piece, travel_path)
     possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path)
+  end
+
+  def valid_pawn_move?()
+  end
+
+  def valid_knight_move?(piece, travel_path)
+    possible_move?(piece, travel_path)
   end
 
   def impeding_piece?(piece, travel_path)
