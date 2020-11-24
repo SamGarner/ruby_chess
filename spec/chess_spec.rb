@@ -29,6 +29,26 @@ describe Game do
       end
     end
 
+    describe '#valid_start_input?' do
+      # xit 'returns false when player does not have a piece at that space' do
+      #   #redundant - #valid_target_space
+      # end
+
+      it 'returns false when not a space between A1 and H8' do
+        expect(@game.valid_start_input?('J8')).to be false
+      end
+
+      # xit "returns true when space with player's piece on it" do
+      #   # redundant - #valid_piece_to_move
+      # end
+    end
+
+    describe '#valid_finish_input' do
+    end
+
+    describe '#display_to_array_map' do
+    end
+
     context 'when attempting horizontal moves' do
       # it 'horizontal_impediment? will be true if a piece is in the way' do
       #   ba = @board.board_array
