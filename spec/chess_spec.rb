@@ -43,6 +43,16 @@ describe Game do
       # end
     end
 
+    describe '#valid_user_input?' do
+      it 'should be false when space not on gameboard' do
+        expect(@game.valid_user_input?('J8')).to be false
+      end
+
+      it 'should be true when space is on gameboard' do
+        expect(@game.valid_user_input?('a3')).to be true
+      end
+    end
+
     describe '#valid_piece_to_move?' do
       it "returns true when current player's piece" do
         expect(@game.valid_piece_to_move?([7, 7], 'white')).to be true
