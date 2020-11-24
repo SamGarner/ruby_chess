@@ -199,15 +199,16 @@ end
 # Game
 class Game
 
-  attr_reader :white_king, :black_king, :black_queen, :white_queen, \
-              :black_bishop_c, :black_bishop_f, :white_bishop_c, :white_bishop_f, \
-              :black_knight_b, :black_knight_g, :white_knight_b, :white_knight_g, \
-              :black_rook_a, :black_rook_h, :white_rook_a, :white_rook_h, \
-              :black_pawn_a, :black_pawn_b, :black_pawn_c, :black_pawn_d, \
-              :black_pawn_e, :black_pawn_f, :black_pawn_g, :black_pawn_h, \
-              :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, \
+  attr_reader :white_king, :black_king, :black_queen, :white_queen,
+              :black_bishop_c, :black_bishop_f, :white_bishop_c, :white_bishop_f,
+              :black_knight_b, :black_knight_g, :white_knight_b, :white_knight_g, 
+              :black_rook_a, :black_rook_h, :white_rook_a, :white_rook_h, 
+              :black_pawn_a, :black_pawn_b, :black_pawn_c, :black_pawn_d, 
+              :black_pawn_e, :black_pawn_f, :black_pawn_g, :black_pawn_h, 
+              :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, 
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
-              :start_input, :finish_input, :valid_input, :piece_type
+              :start_input, :finish_input, :valid_input, :piece_type, :start, 
+              :finish
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path #travel_path to reader?
 
   def initialize(board)
@@ -380,7 +381,7 @@ class Game
   end
 
   def valid_user_input?(space)
-    gameboard.mapping_hash.key?(space.upcase.to_sym)
+    gameboard.mapping_hash.key?(space.to_sym)
   end
 
   def valid_piece_to_move?(starting_space, player_color = turn)
@@ -411,9 +412,9 @@ class Game
 
   def display_to_array_map(start = start_input, finish = finish_input)
     # include in take_turn or in choose_move ?
-    @start = board.mapping_hash.fetch_values(start.to_sym)
+    @start = gameboard.mapping_hash.fetch(start.to_sym)
     # error handling here or outside ?
-    @finish = board.mapping_hash.fetch_values(finish.to_sym)
+    @finish = gameboard.mapping_hash.fetch(finish.to_sym)
   end
 
   def take_turn # WIP
