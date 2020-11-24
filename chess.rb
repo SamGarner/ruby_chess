@@ -384,7 +384,8 @@ class Game
   end
 
   def valid_piece_to_move?(starting_space, player_color = turn)
-    gameboard.board_array[starting_space[0]][starting_space[1]].color == player_color
+    space = gameboard.board_array[starting_space[0]][starting_space[1]]
+    space != '__' && space.color == player_color
   end
 
   def valid_target_space?(target_space, player_color = turn)
