@@ -384,11 +384,11 @@ class Game
   end
 
   def valid_piece_to_move?(starting_space, player_color = turn)
-    board.board_array[starting_space[0]][starting_space[1]].color == player_color
+    gameboard.board_array[starting_space[0]][starting_space[1]].color == player_color
   end
 
   def valid_target_space?(target_space, player_color = turn)
-    space = board.board_array[starting_space[0]][starting_space[1]]
+    space = gameboard.board_array[target_space[0]][target_space[1]]
     return true if space == '__'
 
     space.color != player_color
@@ -416,7 +416,7 @@ class Game
   end
 
   def take_turn # WIP
-    loop
+    while true
       choose_move
       display_to_array_map
       # piece = identify_piece()
@@ -447,14 +447,14 @@ class Game
     # return unless valid_move?(piece, travel_path)
 
     # destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
-    white_pawn_has_moved(piece, desired_space) if piece.class = WhitePawn
+    white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
   end
 
   def capture_opponent(piece, desired_space)
-    if piece.class = WhitePawn && piece.capture_moves.include?(travel_path)
+    if piece.class == WhitePawn && piece.capture_moves.include?(travel_path)
       white_pawn_captures(piece, desired_space)
     elsif desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
@@ -537,7 +537,7 @@ class Game
     # desired space is empty...redundant if can only happen on next turn
     # travel_path in capture_moves...redundant from valid_white_pawn_move?
     piece_attacked = board.board_array[desired_space[0]][desired_space[1] + 1]
-    piece_attacked.class = 'BlackPawn' && (total_turn_counter - piece_attacked.initial_turn == 1)
+    piece_attacked.class == 'BlackPawn' && (total_turn_counter - piece_attacked.initial_turn == 1)
   end
 
   def pawn_initial_move?(piece)
