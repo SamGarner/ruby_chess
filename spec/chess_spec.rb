@@ -43,6 +43,20 @@ describe Game do
       # end
     end
 
+    describe '#valid_piece_to_move?' do
+      it "returns true when current player's piece" do
+        expect(@game.valid_piece_to_move?([7, 7], 'white')).to be true
+      end
+
+      it "returns false when opposing player's piece" do
+        expect(@game.valid_piece_to_move?([7, 7], 'black')).to be false
+      end
+
+      it 'returns false when empty space' do
+        expect(@game.valid_piece_to_move?([4, 4], 'black')).to be false
+      end      
+    end
+
     describe '#valid_finish_input' do
     end
 
