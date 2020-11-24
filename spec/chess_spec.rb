@@ -99,6 +99,19 @@ describe Game do
       end
     end
 
+    describe '#valid_move?' do
+      # possible move true and false
+      describe '#possible_move?' do
+        it 'should be true when desired move in piece.possible_moves' do
+          expect(@game.possible_move?(@rook_h1, [0, 5])).to be true
+        end
+
+        it 'should be false when desired move in piece.possible_moves' do
+          expect(@game.possible_move?(@rook_h1, [2, 2])).to be false
+        end
+      end
+    end
+
     context 'when attempting horizontal moves' do
       # it 'horizontal_impediment? will be true if a piece is in the way' do
       #   ba = @board.board_array
