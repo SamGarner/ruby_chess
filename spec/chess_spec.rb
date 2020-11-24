@@ -126,8 +126,13 @@ describe Game do
           it 'should be true if black pawn moved to proper position during last turn' do
             @black_pawn.initial_turn = 8
             @game.total_turn_counter = 9
-            # binding.pry
             expect(@game.white_can_en_passant?(@white_pawn, [2, 6])).to be true
+          end
+
+          it 'should be false if it has been more than one turn since black pawn moved' do
+            @black_pawn.initial_turn = 6
+            @game.total_turn_counter = 9
+            expect(@game.white_can_en_passant?(@white_pawn, [2, 6])).to be false
           end
         end
       end
