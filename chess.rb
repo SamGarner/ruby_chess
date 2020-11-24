@@ -150,26 +150,50 @@ class Rook
   end
 end
 
-class Pawn
-  attr_reader :symbol, :color, :initial_turn
+class WhitePawn
+  attr_reader :symbol, :color, :initial_turn, :starting_location
   attr_accessor :current_location, :possible_moves
 
-  def initialize(color, location)
-    @color = color
-    @symbol = "#{color[0].upcase}p"
+  def initialize(location)
+    @color = 'white'
+    @symbol = 'Wp' # "#{color[0].upcase}p"
     @current_location = location
-    # possible_moves does not include en passant, 2 square start, or diagonal capture
+    @starting_location = location
     @possible_moves = [0, 1], [0, 2]
+    @capture_moves = [-1, 1], [1, 1]
   end
 
-  def makes_first_move(move_number, starting_space, ending_space) #= game.total_turn_counter)
+  def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
     self.possible_moves = [0, 1]
-    @initial_turn = move_number if passant_vulnerable?(starting_space, ending_space)
+    @initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
   end
 
-  def passant_vulnerable?(starting_space, ending_space)
-    (starting_space[1] - ending_space[1]).abs == 2
+  # def passant_vulnerable?(starting_space, ending_space)
+  #   (starting_space[1] - ending_space[1]).abs == 2
+  # end
+end
+
+class BlackPawn
+  attr_reader :symbol, :color, :initial_turn, :starting_location
+  attr_accessor :current_location, :possible_moves
+
+  def initialize(location)
+    @color = 'black'
+    @symbol = 'Bp' # "#{color[0].upcase}p"
+    @current_location = location
+    @starting_location = location
+    @possible_moves = [0, -1], [0, -2]
+    @capture_moves = [-1, -1], [1, -1]
   end
+
+  def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
+    self.possible_moves = [0, -11]
+    @initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
+  end
+
+  # def passant_vulnerable?(starting_space, ending_space)
+  #   (starting_space[1] - ending_space[1]).abs == 2
+  # end
 end
 
 # Game
@@ -184,7 +208,7 @@ class Game
               :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, \
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
               :start_input, :finish_input, :valid_input, :piece_type
-  attr_accessor :gameboard, :turn, :total_turn_counter
+  attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path #travel_path to reader?
 
   def initialize(board)
     @gameboard = board
@@ -234,25 +258,25 @@ class Game
   end
 
   def initialize_black_pawns
-    @black_pawn_a = Pawn.new('black', [1, 0])
-    @black_pawn_b = Pawn.new('black', [1, 1])
-    @black_pawn_c = Pawn.new('black', [1, 2])
-    @black_pawn_d = Pawn.new('black', [1, 3])
-    @black_pawn_e = Pawn.new('black', [1, 4])
-    @black_pawn_f = Pawn.new('black', [1, 5])
-    @black_pawn_g = Pawn.new('black', [1, 6])
-    @black_pawn_h = Pawn.new('black', [1, 7])
+    @black_pawn_a = BlackPawn.new([1, 0])
+    @black_pawn_b = BlackPawn.new([1, 1])
+    @black_pawn_c = BlackPawn.new([1, 2])
+    @black_pawn_d = BlackPawn.new([1, 3])
+    @black_pawn_e = BlackPawn.new([1, 4])
+    @black_pawn_f = BlackPawn.new([1, 5])
+    @black_pawn_g = BlackPawn.new([1, 6])
+    @black_pawn_h = BlackPawn.new([1, 7])
   end
 
   def initialize_white_pawns
-    @white_pawn_a = Pawn.new('white', [6, 0])
-    @white_pawn_b = Pawn.new('white', [6, 1])
-    @white_pawn_c = Pawn.new('white', [6, 2])
-    @white_pawn_d = Pawn.new('white', [6, 3])
-    @white_pawn_e = Pawn.new('white', [6, 4])
-    @white_pawn_f = Pawn.new('white', [6, 5])
-    @white_pawn_g = Pawn.new('white', [6, 6])
-    @white_pawn_h = Pawn.new('white', [6, 7])
+    @white_pawn_a = WhitePawn.new([6, 0])
+    @white_pawn_b = WhitePawn.new([6, 1])
+    @white_pawn_c = WhitePawn.new([6, 2])
+    @white_pawn_d = WhitePawn.new([6, 3])
+    @white_pawn_e = WhitePawn.new([6, 4])
+    @white_pawn_f = WhitePawn.new([6, 5])
+    @white_pawn_g = WhitePawn.new([6, 6])
+    @white_pawn_h = WhitePawn.new([6, 7])
   end
 
   def place_starting_pieces(board = gameboard.board_array)  # module?
@@ -421,16 +445,63 @@ class Game
     # travel_path[1] = piece.current_location[0] - desired_space[0] # vertical plane
     # # e.g rook travel path, 7,7 --> 5, 7 = [-2, 0]
     # return unless valid_move?(piece, travel_path)
-    destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+
+    # destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+    white_pawn_has_moved(piece, desired_space) if piece.class = WhitePawn
+    capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
   end
 
+  def capture_opponent(piece, desired_space)
+    if piece.class = WhitePawn && piece.capture_moves.include?(travel_path)
+      white_pawn_captures(piece, desired_space)
+    elsif desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+      destroy_enemy(desired_space)
+    end
+  end
+
+  def white_pawn_has_moved(piece, desired_space)
+    # fill in
+    if passant_vulnerable?(piece.current_location, desired_space) && piece.possible_moves.include?(travel_path)
+    # if piece.possible_moves.include?(travel_path) && passant_vulnerable?(piece.current_location, desired_space)
+      piece.makes_first_move
+      piece.initial_turn = total_turn_counter
+    else
+      piece.makes_first_move
+    # elsif   #redundant
+    #   piece.possible_moves.include?(travel_path)
+
+    # elsif piece.capture_moves.include?(travel_path)
+    #   white_pawn_captures(piece, desired_space)
+    end
+
+    # NEXT two lines redundant so work this into move_piece.
+    # update_board(piece, desired_space)
+    # piece.current_location = desired_space
+  end
+
+  def white_pawn_captures(piece, desired_space)
+    if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+      destroy_enemy(desired_space)
+    elsif white_can_en_passant?(piece, desired_space)
+      destroy_enemy([desired_space[0], desired_space[1] + 1])
+    end
+  end
+
+  def passant_vulnerable?(starting_space, ending_space)
+    (starting_space[1] - ending_space[1]).abs == 2
+  end
+
   def commit_move?(piece, desired_space)
-    travel_path = []
+    @travel_path = [] # think regular x,y coordinates
     travel_path[0] = desired_space[1] - piece.current_location[1] # horizontal plane
     travel_path[1] = piece.current_location[0] - desired_space[0] # vertical plane
     # e.g rook travel path, 7,7 --> 5, 7 = [-2, 0]
+      # pawn [6,7] > [5,7]
+      # tp[0] = 7 - 7
+      # tp[1] = 6 - 5
+      # tp = [0, 1]
     valid_move?(piece, travel_path)
   end
 
@@ -438,16 +509,43 @@ class Game
     piece.possible_moves.include?(travel_path)
   end
 
-  def valid_move?(piece, travel_path)
-    possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path)
+  def valid_move?(piece, travel_path, desired_space)
+    case piece.class
+    when Knight
+      return possible_move?(piece, travel_path) # if piece.class = Knight
+    when WhitePawn
+      return valid_white_pawn_move?(piece, travel_path, desired_space) # if piece.class = WhitePawn
+    else
+      possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path)
+    end
   end
 
-  def valid_pawn_move?()
+  def valid_white_pawn_move?(piece, travel_path, desired_space)
+    # refactor into white and black
+    # split white and black pawns into separate classes?
+    if piece.possible_moves.include?(travel_path)
+      return true if !desired_space_occupied?(desired_space)
+    elsif piece.capture_moves.include?(travel_path)
+      return true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+      return true if white_can_en_passant?(piece, travel_path, desired_space)
+    else
+      false
+    end
   end
 
-  def valid_knight_move?(piece, travel_path)
-    possible_move?(piece, travel_path)
+  def white_can_en_passant?(piece, desired_space, board = gameboard.board_array)
+    # desired space is empty...redundant if can only happen on next turn
+    # travel_path in capture_moves...redundant from valid_white_pawn_move?
+    piece_attacked = board.board_array[desired_space[0]][desired_space[1] + 1]
+    piece_attacked.class = 'BlackPawn' && (total_turn_counter - piece_attacked.initial_turn == 1)
   end
+
+  def pawn_initial_move?(piece)
+    piece.current_location == piece.starting_location
+  end
+  # def valid_knight_move?(piece, travel_path)
+  #   possible_move?(piece, travel_path)
+  # end
 
   def impeding_piece?(piece, travel_path)
     horizontal_impediment?(piece, travel_path) #|| vertical_impediment? || diag_impediment?
