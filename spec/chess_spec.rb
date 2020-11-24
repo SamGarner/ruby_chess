@@ -110,6 +110,27 @@ describe Game do
           expect(@game.possible_move?(@rook_h1, [2, 2])).to be false
         end
       end
+
+      # WhitePawn
+      context 'when a white pawn is attempting en passant capture' do
+        before(:each) do
+          # @board = Board.new
+          # @game = Game.new(@board)
+          @black_pawn = BlackPawn.new([3, 6])
+          @white_pawn = WhitePawn.new([3, 7])
+          @board.board_array[3][6] = @black_pawn
+          @board.board_array[3][7] = @white_pawn
+        end
+
+        describe '#white_can_en_passant?' do
+          it 'should be true if black pawn moved to proper position during last turn' do
+            @black_pawn.initial_turn = 8
+            @game.total_turn_counter = 9
+            # binding.pry
+            expect(@game.white_can_en_passant?(@white_pawn, [2, 6])).to be true
+          end
+        end
+      end
     end
 
     context 'when attempting horizontal moves' do
