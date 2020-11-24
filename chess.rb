@@ -380,7 +380,7 @@ class Game
   end
 
   def valid_user_input?(space)
-    board.mapping_hash.key?(space)
+    gameboard.mapping_hash.key?(space)
   end
 
   def valid_piece_to_move?(starting_space, player_color = turn)
