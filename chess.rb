@@ -555,18 +555,32 @@ class Game
     space_check = piece.current_location[0]
     vertical_coord = piece.current_location[1]
     if travel_path[0].positive?
-      travel_path[0].times do
+      (travel_path[0] - 1).times do
         space_check += 1
-        return true if board[vertical_coord][space_check].class != String
+        return true if piece_exists?(vertical_coord, space_check)
       end
+      space_check += 1 
+      return true if piece_exists?(vertical_coord, space_check) && 
+        color_match?(piece, vertical_coord, space_check)
     else
-      # (travel_path[0].abs()).times
-      (-1 * travel_path[0]).times do
+      (travel_path[0].abs() - 1).times do
+      # (-1 * travel_path[0]).times do
         space_check -= 1
-        return true if board[vertical_coord][space_check].class != String
+        return true if piece_exists?(vertical_coord, space_check)
       end
+      space_check -= 1
+      return true if piece_exists?(vertical_coord, space_check) && 
+        color_match?(piece, vertical_coord, space_check)
     end
     false
+  end
+
+  def piece_exists?(vertical_coord, horizontal_coord, board = gameboard.board_array)
+    board[vertical_coord][horizontal_coord].class != String
+  end
+  
+  def color_match?(piece, vertical_coord, horizontal_coord, board = gameboard.board_array)
+    board[vertical_coord][horizontal_coord].color == piece.color
   end
 
   def update_board(piece, desired_space, board = gameboard.board_array)
