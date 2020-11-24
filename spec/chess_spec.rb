@@ -8,11 +8,25 @@ describe Game do
     before(:each) do
       @board = Board.new
       @game = Game.new(@board)
-      @rook_h1 = Rook.new('black', [7, 7])
-      # @pawn_g1 = Pawn.new('black', [7, 6])
-      # @pawn_h7 = Pawn.new('white', [1, 7])
+      @rook_h1 = Rook.new('white', [7, 7])
+      # @pawn_g1 = BlackPawn.new([7, 6])
+      # @pawn_h7 = WhitePawn.new([1, 7])
       @board.board_array[7][7] = @rook_h1
       # @board.board_array[7][6] = @pawn_g1
+    end
+
+    describe '#valid_target_space?' do
+      it 'returns true when target space is empty' do
+        expect(@game.valid_target_space?([4, 3], 'black')).to be true
+      end
+    
+      it 'returns true when target occupied by opponent' do
+        expect(@game.valid_target_space?([7, 7], 'black')).to be true
+      end
+
+      it 'returns false when target occupied by ally' do
+        expect(@game.valid_target_space?([7, 7], 'white')).to be false
+      end
     end
 
     context 'when attempting horizontal moves' do
@@ -21,8 +35,8 @@ describe Game do
       #   expect(@game.horizontal_impediment?(@rook_h1, [-2, 0], ba)).to be true
       # end
 
-      it 'will not happen if a piece is in the way' do
-        pawn_g1 = Pawn.new('black', [7, 6])
+      xit 'will not happen if a piece is in the way' do
+        pawn_g1 = WhitePawn.new([7, 6])
         @board.board_array[7][6] = pawn_g1
         @game.move_piece(@rook_h1, [7, 5])
         expect(@board.board_array[7][7]).to eq(@rook_h1)
@@ -42,20 +56,20 @@ describe Game do
       end
 
       it 'will take the opponents piece if one is on the target square' do
-        pawn_h7 = Pawn.new('white', [1, 7])
+        pawn_h7 = BlackPawn.new([1, 7])
         @board.board_array[1][7] = pawn_h7
         @game.move_piece(@rook_h1, [1, 7])
         expect(pawn_h7.current_location).to be nil
       end
 
-      it 'will not happen if ally is on the target square' do
-        pawn_g1 = Pawn.new('black', [7, 6])
+      xit 'will not happen if ally is on the target square' do
+        pawn_g1 = WhitePawn.new([7, 6])
         @board.board_array[7][6] = pawn_g1
         @game.move_piece(@rook_h1, [7, 6])
         expect(@board.board_array[7][6]).to eq(pawn_g1)
       end      
 
-      it 'will not happen if the piece cannot move horizontally' do
+      xit 'will not happen if the piece cannot move horizontally' do
         bishop_f1 = Bishop.new('black', [7, 5])
         @board.board_array[7][5] = bishop_f1
         @game.move_piece(bishop_f1, [7, 7])
