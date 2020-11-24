@@ -152,7 +152,7 @@ end
 
 class WhitePawn
   attr_reader :symbol, :color, :initial_turn, :starting_location
-  attr_accessor :current_location, :possible_moves
+  attr_accessor :current_location, :possible_moves, :initial_turn
 
   def initialize(location)
     @color = 'white'
@@ -161,11 +161,12 @@ class WhitePawn
     @starting_location = location
     @possible_moves = [0, 1], [0, 2]
     @capture_moves = [-1, 1], [1, 1]
+    @initial_turn = 0
   end
 
   def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
     self.possible_moves = [0, 1]
-    @initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
+    initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
   end
 
   # def passant_vulnerable?(starting_space, ending_space)
@@ -175,7 +176,7 @@ end
 
 class BlackPawn
   attr_reader :symbol, :color, :initial_turn, :starting_location
-  attr_accessor :current_location, :possible_moves
+  attr_accessor :current_location, :possible_moves, :initial_turn
 
   def initialize(location)
     @color = 'black'
@@ -184,11 +185,12 @@ class BlackPawn
     @starting_location = location
     @possible_moves = [0, -1], [0, -2]
     @capture_moves = [-1, -1], [1, -1]
+    @initial_turn = 0
   end
 
   def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
     self.possible_moves = [0, -11]
-    @initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
+    initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
   end
 
   # def passant_vulnerable?(starting_space, ending_space)
@@ -535,11 +537,11 @@ class Game
     end
   end
 
-  def white_can_en_passant?(piece, desired_space, board = gameboard.board_array)
+  def white_can_en_passant?(piece, desired_space, board_array = gameboard.board_array)
     # desired space is empty...redundant if can only happen on next turn
     # travel_path in capture_moves...redundant from valid_white_pawn_move?
-    piece_attacked = board.board_array[desired_space[0]][desired_space[1] + 1]
-    piece_attacked.class == 'BlackPawn' && (total_turn_counter - piece_attacked.initial_turn == 1)
+    piece_attacked = board_array[desired_space[0] + 1][desired_space[1]]
+    piece_attacked.class == BlackPawn && (total_turn_counter - piece_attacked.initial_turn == 1)
   end
 
   def pawn_initial_move?(piece)
