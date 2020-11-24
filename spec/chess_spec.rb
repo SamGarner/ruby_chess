@@ -88,6 +88,17 @@ describe Game do
       end
     end
 
+    describe '#commit_move?' do
+      context 'when moving piece from [7, 6] to [5, 4]' do
+        it 'should have travel_path of [-2, 2]' do
+          bishop = Bishop.new('black', [7, 6])
+          @board.board_array[7][6] = bishop
+          @game.commit_move?(bishop, [5, 4])
+          expect(@game.travel_path).to eq([-2, 2])
+        end
+      end
+    end
+
     context 'when attempting horizontal moves' do
       # it 'horizontal_impediment? will be true if a piece is in the way' do
       #   ba = @board.board_array

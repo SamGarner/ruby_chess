@@ -504,7 +504,7 @@ class Game
       # tp[0] = 7 - 7
       # tp[1] = 6 - 5
       # tp = [0, 1]
-    valid_move?(piece, travel_path)
+    valid_move?(piece, travel_path, desired_space)
   end
 
   def possible_move?(piece, travel_path) # direction possible for type of piece
