@@ -29,19 +29,20 @@ describe Game do
       end
     end
 
-    describe '#valid_start_input?' do
+    # describe '#valid_start_input?' do  #redundant testing, see notes within
       # xit 'returns false when player does not have a piece at that space' do
       #   #redundant - #valid_target_space
       # end
 
-      it 'returns false when not a space between A1 and H8' do
-        expect(@game.valid_start_input?('J8')).to be false
-      end
+      # it 'returns false when not a space between A1 and H8' do
+      #   expect(@game.valid_start_input?('J8')).to be false
+      #   # redundant with #valid_user_input? testing
+      # end
 
       # xit "returns true when space with player's piece on it" do
       #   # redundant - #valid_piece_to_move
       # end
-    end
+    # end
 
     describe '#valid_user_input?' do
       it 'should be false when space not on gameboard' do
@@ -49,7 +50,7 @@ describe Game do
       end
 
       it 'should be true when space is on gameboard' do
-        expect(@game.valid_user_input?('a3')).to be true
+        expect(@game.valid_user_input?('A3')).to be true
       end
     end
 
@@ -67,10 +68,24 @@ describe Game do
       end      
     end
 
-    describe '#valid_finish_input' do
-    end
+    # describe '#valid_finish_input' do
+    #   # covered with #valid_user_input? and valid_target_space? testing
+    # end
 
     describe '#display_to_array_map' do
+      before(:each) do
+        @board = Board.new
+        @game = Game.new(@board)
+        @game.display_to_array_map('A1', 'G3')
+      end
+
+      it "sets @start = [7, 0] when start_input = 'A1'" do
+        expect(@game.start).to eq([7, 0])
+      end
+
+      it "sets @finish = [5, 6] when start_input = 'G3'" do
+        expect(@game.finish).to eq([5, 6])
+      end
     end
 
     context 'when attempting horizontal moves' do
