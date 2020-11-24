@@ -166,7 +166,7 @@ class WhitePawn
 
   def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
     self.possible_moves = [0, 1]
-    initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
+    self.initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
   end
 
   # def passant_vulnerable?(starting_space, ending_space)
@@ -189,8 +189,8 @@ class BlackPawn
   end
 
   def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
-    self.possible_moves = [0, -11]
-    initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
+    self.possible_moves = [0, -1]
+    self.initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
   end
 
   # def passant_vulnerable?(starting_space, ending_space)
@@ -451,7 +451,9 @@ class Game
     # return unless valid_move?(piece, travel_path)
 
     # destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
-    white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
+    # white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
+    first_move_for_white_pawn(piece) if piece.class == WhitePawn &&
+                                        piece.current_location == piece.starting_location
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
@@ -465,24 +467,8 @@ class Game
     end
   end
 
-  def white_pawn_has_moved(piece, desired_space)
-    # fill in
-    if passant_vulnerable?(piece.current_location, desired_space) && piece.possible_moves.include?(travel_path)
-    # if piece.possible_moves.include?(travel_path) && passant_vulnerable?(piece.current_location, desired_space)
-      piece.makes_first_move
-      piece.initial_turn = total_turn_counter
-    else
-      piece.makes_first_move
-    # elsif   #redundant
-    #   piece.possible_moves.include?(travel_path)
-
-    # elsif piece.capture_moves.include?(travel_path)
-    #   white_pawn_captures(piece, desired_space)
-    end
-
-    # NEXT two lines redundant so work this into move_piece.
-    # update_board(piece, desired_space)
-    # piece.current_location = desired_space
+  def first_move_for_white_pawn(piece)
+    piece.makes_first_move
   end
 
   def white_pawn_captures(piece, desired_space)
