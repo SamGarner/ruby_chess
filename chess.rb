@@ -517,7 +517,7 @@ class Game
     
     # answer = nil
     if piece.possible_moves.include?(travel_path)
-      answer =  true if !desired_space_occupied?(desired_space)
+      answer =  true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path)
     elsif piece.capture_moves.include?(travel_path)
       answer =  true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       answer =  true if white_can_en_passant?(piece, desired_space)
