@@ -208,6 +208,18 @@ describe Game do
       end
     end
 
+    describe 'horizontal_impediment?' do
+      # @rook_h1 white, 7,7
+      before(:each) do
+        @pawn_ally = WhitePawn.new([7, 6])
+        @board.board_array[7][6] = @pawn_ally
+      end
+
+      it 'should be true when ally is in the way' do
+        expect(@game.horizontal_impediment?(@rook_h1, [-3, 0])).to be true
+      end
+    end
+
     context 'when attempting horizontal moves' do
       # it 'horizontal_impediment? will be true if a piece is in the way' do
       #   ba = @board.board_array
