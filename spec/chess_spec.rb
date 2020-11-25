@@ -208,17 +208,62 @@ describe Game do
       end
     end
 
-    describe 'horizontal_impediment?' do
+    describe '#horizontal_impediment?' do
       # @rook_h1 white, 7,7
-      before(:each) do
-        @pawn_ally = WhitePawn.new([7, 6])
-        @board.board_array[7][6] = @pawn_ally
+      context 'when moving towards an ally' do
+        before(:each) do
+          @pawn_ally = WhitePawn.new([7, 4])
+          @board.board_array[7][4] = @pawn_ally
+        end
+
+        it 'should be true when ally is in the way' do
+          expect(@game.horizontal_impediment?(@rook_h1, [-5, 0])).to be true
+        end
+
+        it 'should be true when ally is on the destination square' do
+          expect(@game.horizontal_impediment?(@rook_h1, [-3, 0])).to be true
+        end
       end
 
-      it 'should be true when ally is in the way' do
-        expect(@game.horizontal_impediment?(@rook_h1, [-3, 0])).to be true
+      it 'should be false when opponent is on the destination square' do
+        pawn_opponent = BlackPawn.new([7, 5])
+        @board.board_array[7][5] = pawn_opponent
+        expect(@game.horizontal_impediment?(@rook_h1, [-2, 0])).to be false
+      end
+
+      it 'should be false when there is no piece in the way' do
+        expect(@game.horizontal_impediment?(@rook_h1, [-5, 0])).to be false
       end
     end
+
+    # describe '#vertical_impediment?' do
+    #   # @rook_h1 white, 7,7
+    #   context 'when moving towards an ally' do
+    #     before(:each) do
+    #       @pawn_ally = WhitePawn.new([4, 7])
+    #       @board.board_array[4][7] = @pawn_ally
+    #     end
+
+    #     it 'should be true when ally is in the way' do
+    #       expect(@game.vertical_impediment?(@rook_h1, [-5, 0])).to be true
+    #     end
+
+    #     it 'should be true when ally is on the destination square' do
+    #       expect(@game.horizontal_impediment?(@rook_h1, [-3, 0])).to be true
+    #     end
+    #   end
+
+    #   it 'should be false when opponent is on the destination square' do
+    #     pawn_opponent = BlackPawn.new([7, 5])
+    #     @board.board_array[7][5] = pawn_opponent
+    #     expect(@game.horizontal_impediment?(@rook_h1, [-2, 0])).to be false
+    #   end
+
+    #   it 'should be false when there is no piece in the way' do
+    #     expect(@game.horizontal_impediment?(@rook_h1, [-5, 0])).to be false
+    #   end
+    # end
+
 
     context 'when attempting horizontal moves' do
       # it 'horizontal_impediment? will be true if a piece is in the way' do
