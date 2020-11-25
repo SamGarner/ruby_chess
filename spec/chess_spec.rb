@@ -145,6 +145,54 @@ describe Game do
           end
         end
       end
+
+      context 'when a white pawn is not attemping en passant capture' do
+        before(:each) do
+          # @board = Board.new
+          # @game = Game.new(@board)
+          # @black_pawn = BlackPawn.new([3, 6])
+          @white_pawn = WhitePawn.new([6, 6])
+          # @board.board_array[3][6] = @black_pawn
+          @board.board_array[6][7] = @white_pawn
+        end
+
+        ############################################
+
+        describe '#first_move_for_white_pawn' do
+          xit 'is called by move piece' do
+          end
+
+          it 'removes [0, 2] from possible_moves' do
+            @game.total_turn_counter = 3
+            @game.first_move_for_white_pawn(@white_pawn, [4, 6])
+            expect(@white_pawn.possible_moves).to_not include([0, 2])
+          end
+
+          it 'sets initial_turn to the current turn count' do
+            @game.total_turn_counter = 3
+            @game.first_move_for_white_pawn(@white_pawn, [4, 6])
+            expect(@white_pawn.initial_turn).to eq(3)
+          end
+        end
+
+        describe '#valid_white_pawn_move?' do
+          it 'allows moving two spaces for first move' do
+            expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be true
+          end
+
+          xit 'does not allow moving two spaces after first move' do
+          end
+
+          xit 'does not allow vertical move if space is blocked' do
+          end
+
+          xit 'does not allow capture move if no opponent on the space' do
+          end
+
+          xit 'does not allow horizontal/illegal move' do
+          end
+        end
+      end
     end
 
     context 'when attempting horizontal moves' do
