@@ -151,9 +151,9 @@ describe Game do
           # @board = Board.new
           # @game = Game.new(@board)
           # @black_pawn = BlackPawn.new([3, 6])
-          @white_pawn = WhitePawn.new([6, 6])
           # @board.board_array[3][6] = @black_pawn
-          @board.board_array[6][7] = @white_pawn
+          @white_pawn = WhitePawn.new([6, 6])
+          @board.board_array[6][6] = @white_pawn
         end
 
         describe '#first_move_for_white_pawn' do
@@ -186,10 +186,17 @@ describe Game do
             expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be true
           end
 
-          xit 'does not allow moving two spaces after first move' do
+          it 'does not allow moving two spaces after first move' do
+            @white_pawn.makes_first_move([5, 6], 2)
+            @white_pawn.current_location = [5, 6]
+            @board.board_array[5][6] = @white_pawn
+            expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [3, 6])).to be false
           end
 
           xit 'does not allow vertical move if space is blocked' do
+            @black_pawn = BlackPawn.new([5, 6])
+            @board.board_array[5][6] = @black_pawn
+            expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
           end
 
           xit 'does not allow capture move if no opponent on the space' do
