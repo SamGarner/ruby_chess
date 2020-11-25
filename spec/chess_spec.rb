@@ -135,6 +135,15 @@ describe Game do
             expect(@game.white_can_en_passant?(@white_pawn, [2, 6])).to be false
           end
         end
+
+        describe '#valid_white_pawn_move?' do
+          it 'should return true when white can white_can_en_passant' do
+            @black_pawn.initial_turn = 8
+            @game.total_turn_counter = 9
+            travel_path = [-1, 1]
+            expect(@game.valid_white_pawn_move?(@white_pawn, travel_path, [2, 6])).to be true
+          end
+        end
       end
     end
 
