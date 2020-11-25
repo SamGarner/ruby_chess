@@ -164,9 +164,10 @@ class WhitePawn
     @initial_turn = 0
   end
 
-  def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
+  def makes_first_move(ending_space, move_number)
     self.possible_moves = [0, 1]
-    self.initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
+    self.initial_turn = move_number if starting_location[0] - ending_space[0] == 2
+    # game.passant_vulnerable?(starting_space, ending_space)
   end
 
   # def passant_vulnerable?(starting_space, ending_space)
@@ -188,9 +189,9 @@ class BlackPawn
     @initial_turn = 0
   end
 
-  def makes_first_move(starting_space, ending_space, move_number = total_turn_counter)    
+  def makes_first_move(ending_space, move_number)    
     self.possible_moves = [0, -1]
-    self.initial_turn = move_number if game.passant_vulnerable?(starting_space, ending_space)
+    self.initial_turn = move_number if starting_location[0] - ending_space[0] == -2
   end
 
   # def passant_vulnerable?(starting_space, ending_space)
@@ -452,7 +453,7 @@ class Game
 
     # destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
     # white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
-    first_move_for_white_pawn(piece) if piece.class == WhitePawn &&
+    first_move_for_white_pawn(piece, desired_space) if piece.class == WhitePawn &&
                                         piece.current_location == piece.starting_location
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
@@ -467,8 +468,8 @@ class Game
     end
   end
 
-  def first_move_for_white_pawn(piece)
-    piece.makes_first_move
+  def first_move_for_white_pawn(piece, desired_space)
+    piece.makes_first_move(desired_space, total_turn_counter)
   end
 
   def white_pawn_captures(piece, desired_space)
@@ -479,9 +480,9 @@ class Game
     end
   end
 
-  def passant_vulnerable?(starting_space, ending_space)
-    (starting_space[1] - ending_space[1]).abs == 2
-  end
+  # def passant_vulnerable?(starting_space, ending_space)
+  #   (starting_space[1] - ending_space[1]).abs == 2
+  # end
 
   def commit_move?(piece, desired_space)
     @travel_path = [] # think regular x,y coordinates
