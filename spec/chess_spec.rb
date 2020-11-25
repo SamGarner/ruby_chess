@@ -156,10 +156,10 @@ describe Game do
           @board.board_array[6][7] = @white_pawn
         end
 
-        ############################################
-
         describe '#first_move_for_white_pawn' do
-          xit 'is called by move piece' do
+          it 'is called by move piece' do
+            expect(@white_pawn).to receive(:makes_first_move).once
+            @game.move_piece(@white_pawn, [4, 6])
           end
 
           it 'removes [0, 2] from possible_moves' do
@@ -168,10 +168,16 @@ describe Game do
             expect(@white_pawn.possible_moves).to_not include([0, 2])
           end
 
-          it 'sets initial_turn to the current turn count' do
+          it 'sets initial_turn to current turn count if pawn moves two' do
             @game.total_turn_counter = 3
             @game.first_move_for_white_pawn(@white_pawn, [4, 6])
             expect(@white_pawn.initial_turn).to eq(3)
+          end
+
+          it ' does not set initial_turn if pawn only moves one' do
+            @game.total_turn_counter = 3
+            @game.first_move_for_white_pawn(@white_pawn, [5, 6])
+            expect(@white_pawn.initial_turn).to eq(0)
           end
         end
 
