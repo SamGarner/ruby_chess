@@ -554,8 +554,6 @@ class Game
         return true if piece_exists?(vertical_coord, space_check)
       end
       space_check += 1 
-      return true if piece_exists?(vertical_coord, space_check) && 
-        color_match?(piece, vertical_coord, space_check)
     else
       (travel_path[0].abs() - 1).times do
       # (-1 * travel_path[0]).times do
@@ -563,9 +561,10 @@ class Game
         return true if piece_exists?(vertical_coord, space_check)
       end
       space_check -= 1
-      return true if piece_exists?(vertical_coord, space_check) && 
-        color_match?(piece, vertical_coord, space_check)
     end
+    return true if piece_exists?(vertical_coord, space_check) && 
+        color_match?(piece, vertical_coord, space_check)
+
     false
   end
 
