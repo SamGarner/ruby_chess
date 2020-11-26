@@ -426,6 +426,7 @@ class Game
       display_to_array_map
       # piece = identify_piece()
       break if commit_move?(identify_piece(), finish)
+
       puts 'Illegal move. Please try again.'
     end
     move_piece(identify_piece(), finish)
@@ -545,19 +546,28 @@ class Game
     friendly_fire?(piece, desired_space) || horizontal_impediment?(piece, travel_path) #|| vertical_impediment? || diag_impediment?
   end
 
-  def horizontal_impediment?(piece, travel_path, board = gameboard.board_array)
+  def horizontal_impediment?(piece, travel_path)
     space_check = piece.current_location[0]
     vertical_coord = piece.current_location[1]
     if travel_path[0].positive?
-      (travel_path[0] - 1).times do
-        space_check += 1
-        return true if piece_exists?([vertical_coord, space_check])
-      end
+      horizontal_positive_check?(travel_path, vertical_coord, space_check)
     else
-      (travel_path[0].abs() - 1).times do
-        space_check -= 1
-        return true if piece_exists?([vertical_coord, space_check])
-      end
+      horizontal_negative_check?(travel_path, vertical_coord, space_check)
+    end
+  end
+
+  def horizontal_positive_check?(travel_path, vertical_coord, space_check)
+    (travel_path[0] - 1).times do
+      space_check += 1
+      return true if piece_exists?([vertical_coord, space_check])
+    end
+    false
+  end
+
+  def horizontal_negative_check?(travel_path, vertical_coord, space_check)
+    (travel_path[0].abs() - 1).times do
+      space_check -= 1
+      return true if piece_exists?([vertical_coord, space_check])
     end
     false
   end
