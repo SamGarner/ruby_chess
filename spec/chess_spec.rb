@@ -17,15 +17,21 @@ describe Game do
 
     describe '#valid_target_space?' do
       it 'returns true when target space is empty' do
-        expect(@game.valid_target_space?([4, 3], 'black')).to be true
+        @game.turn = 'white'
+        @game.finish_input = 'D4'
+        expect(@game.valid_target_space?).to be true
       end
     
       it 'returns true when target occupied by opponent' do
-        expect(@game.valid_target_space?([7, 7], 'black')).to be true
+        @game.turn = 'black'
+        @game.finish_input = 'H1'
+        expect(@game.valid_target_space?).to be true
       end
 
       it 'returns false when target occupied by ally' do
-        expect(@game.valid_target_space?([7, 7], 'white')).to be false
+        @game.turn = 'white'
+        @game.finish_input = 'H1'
+        expect(@game.valid_target_space?).to be false
       end
     end
 
@@ -55,16 +61,22 @@ describe Game do
     end
 
     describe '#valid_piece_to_move?' do
+      before(:each) do
+        @game.turn = 'white'
+        @game.start_input = 'H1'
+      end
+
       it "returns true when current player's piece" do
-        expect(@game.valid_piece_to_move?([7, 7], 'white')).to be true
+        expect(@game.valid_piece_to_move?).to be true
       end
 
       it "returns false when opposing player's piece" do
-        expect(@game.valid_piece_to_move?([7, 7], 'black')).to be false
+        expect(@game.valid_piece_to_move?('black')).to be false
       end
 
       it 'returns false when empty space' do
-        expect(@game.valid_piece_to_move?([4, 4], 'black')).to be false
+        @game.start_input = 'E4'
+        expect(@game.valid_piece_to_move?).to be false
       end      
     end
 
@@ -76,15 +88,17 @@ describe Game do
       before(:each) do
         @board = Board.new
         @game = Game.new(@board)
-        @game.display_to_array_map('A1', 'G3')
+        # @game.display_to_array_map('A1', 'G3')
+        @game.start_display_to_array_map('A1')
+        @game.end_display_to_array_map('G3')
       end
 
-      it "sets @start = [7, 0] when start_input = 'A1'" do
-        expect(@game.start).to eq([7, 0])
+      it "sets @start_space = [7, 0] when start_input = 'A1'" do
+        expect(@game.start_space).to eq([7, 0])
       end
 
-      it "sets @finish = [5, 6] when start_input = 'G3'" do
-        expect(@game.finish).to eq([5, 6])
+      it "sets @end_space = [5, 6] when start_input = 'G3'" do
+        expect(@game.end_space).to eq([5, 6])
       end
     end
 
