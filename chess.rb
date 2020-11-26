@@ -507,7 +507,7 @@ class Game
     when WhitePawn
       return valid_white_pawn_move?(piece, travel_path, desired_space) # if piece.class = WhitePawn
     else
-      possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path)
+      possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path, desired_space)
     end
   end
 
@@ -517,7 +517,7 @@ class Game
     
     # answer = nil
     if piece.possible_moves.include?(travel_path)
-      answer =  true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path)
+      answer =  true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
     elsif piece.capture_moves.include?(travel_path)
       answer =  true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       answer =  true if white_can_en_passant?(piece, desired_space)
@@ -541,8 +541,8 @@ class Game
   #   possible_move?(piece, travel_path)
   # end
 
-  def impeding_piece?(piece, travel_path)
-    horizontal_impediment?(piece, travel_path) #|| vertical_impediment? || diag_impediment?
+  def impeding_piece?(piece, travel_path, desired_space)
+    friendly_fire?(piece, desired_space) || horizontal_impediment?(piece, travel_path) #|| vertical_impediment? || diag_impediment?
   end
 
   def horizontal_impediment?(piece, travel_path, board = gameboard.board_array)
@@ -551,29 +551,28 @@ class Game
     if travel_path[0].positive?
       (travel_path[0] - 1).times do
         space_check += 1
-        return true if piece_exists?(vertical_coord, space_check)
+        return true if piece_exists?([vertical_coord, space_check])
       end
-      space_check += 1 
     else
       (travel_path[0].abs() - 1).times do
-      # (-1 * travel_path[0]).times do
         space_check -= 1
-        return true if piece_exists?(vertical_coord, space_check)
+        return true if piece_exists?([vertical_coord, space_check])
       end
-      space_check -= 1
     end
-    return true if piece_exists?(vertical_coord, space_check) && 
-        color_match?(piece, vertical_coord, space_check)
-
     false
   end
 
-  def piece_exists?(vertical_coord, horizontal_coord, board = gameboard.board_array)
-    board[vertical_coord][horizontal_coord].class != String
+  def friendly_fire?(piece, desired_space)
+    piece_exists?(desired_space) &&
+    color_match?(piece, desired_space)
+  end
+
+  def piece_exists?(coordinates, board = gameboard.board_array)
+    board[coordinates[0]][coordinates[1]].class != String
   end
   
-  def color_match?(piece, vertical_coord, horizontal_coord, board = gameboard.board_array)
-    board[vertical_coord][horizontal_coord].color == piece.color
+  def color_match?(piece, coordinates, board = gameboard.board_array)
+    board[coordinates[0]][coordinates[1]].color == piece.color
   end
 
   def update_board(piece, desired_space, board = gameboard.board_array)
