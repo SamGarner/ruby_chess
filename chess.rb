@@ -210,9 +210,12 @@ class Game
               :black_pawn_e, :black_pawn_f, :black_pawn_g, :black_pawn_h, 
               :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, 
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
-              :start_input, :finish_input, :valid_input, :piece_type, :start, 
-              :finish
-  attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path #travel_path to reader?
+              # :start_input, :finish_input,
+              :valid_input, :piece_type, :start,
+              :finish, :start_space, :end_space
+  attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
+                :start_input, :finish_input 
+                # move :start_input and :finish input to attr_reader after redo testing setup
 
   def initialize(board)
     @gameboard = board
@@ -360,7 +363,9 @@ class Game
     puts "#{turn.capitalize}'s turn."
     puts 'Enter the space of the piece you want to move (e.g. a1 or H3):'
     @start_input = gets.chomp.upcase
-    if !valid_start_input?(start_input)
+    unless valid_user_input?(start_input) && valid_piece_to_move?
+
+    # if !valid_start_input?(start_input)
       puts 'Invalid piece. Please try again.'
       choose_piece_to_move
     end
@@ -369,37 +374,61 @@ class Game
   def choose_where_to_move
     puts "Where would you like to move your #{piece_type}?"
     @finish_input = gets.chomp.upcase
-    if !valid_finish_input?(finish_input)
+    unless valid_finish_input?(finish_input) && valid_target_space?
+
+    # if !valid_finish_input?(finish_input)
       puts 'Invalid space. Please try again.'
       choose_where_to_move
     end
   end
 
-  def valid_finish_input?(finish = finish_input)
-    valid_user_input?(finish) && valid_target_space?(finish)
+  # def display_to_array_map(start = start_input, finish = finish_input)
+  #   # # include in take_turn or in choose_move ?
+  #   # @start = gameboard.mapping_hash.fetch(start.to_sym)
+  #   # # error handling here or outside ?
+  #   # @finish = gameboard.mapping_hash.fetch(finish.to_sym)
+  # end
+
+  def valid_user_input?(user_input)
+    gameboard.mapping_hash.key?(user_input.to_sym)
   end
 
-  def valid_start_input?(start = start_input)
-    valid_user_input?(start) && valid_piece_to_move?(start)
+  def start_display_to_array_map(start = start_input)
+    @start_space = gameboard.mapping_hash.fetch(start.to_sym)
   end
 
-  def valid_user_input?(space)
-    gameboard.mapping_hash.key?(space.to_sym)
+  def end_display_to_array_map(finish = finish_input)
+    @end_space = gameboard.mapping_hash.fetch(finish.to_sym)
   end
 
-  def valid_piece_to_move?(starting_space, player_color = turn)
-    space = gameboard.board_array[starting_space[0]][starting_space[1]]
+  def valid_piece_to_move?(player_color = turn)
+    start_display_to_array_map
+    space = gameboard.board_array[start_space[0]][start_space[1]]
     space != '__' && space.color == player_color
   end
 
-  def valid_target_space?(target_space, player_color = turn)
-    space = gameboard.board_array[target_space[0]][target_space[1]]
+  # def valid_piece_to_move?(starting_space, player_color = turn)
+  #   space = gameboard.board_array[starting_space[0]][starting_space[1]]
+  #   space != '__' && space.color == player_color
+  # end
+
+  def valid_target_space?(player_color = turn)
+    end_display_to_array_map
+    space = gameboard.board_array[end_space[0]][end_space[1]]
     return true if space == '__'
 
     space.color != player_color
   end
 
-  def which_piece_selected(starting_space = self.start_input)
+  # def valid_finish_input?(user_input, finish = self.finish)
+  #   valid_user_input?(user_input) && valid_target_space?(finish)
+  # end
+
+  # def valid_start_input?(user_input, start = self.start)
+  #   valid_user_input?(user_input) && valid_piece_to_move?(start)
+  # end
+
+  def which_piece_selected(starting_space = self.start_space)
     space = board.board_array[starting_space[0]][starting_space[1]]
     @piece_type = space.class
   end
@@ -413,23 +442,16 @@ class Game
   #   end
   # end
 
-  def display_to_array_map(start = start_input, finish = finish_input)
-    # include in take_turn or in choose_move ?
-    @start = gameboard.mapping_hash.fetch(start.to_sym)
-    # error handling here or outside ?
-    @finish = gameboard.mapping_hash.fetch(finish.to_sym)
-  end
-
   def take_turn # WIP
     while true
       choose_move
-      display_to_array_map
+      # display_to_array_map
       # piece = identify_piece()
-      break if commit_move?(identify_piece(), finish)
+      break if commit_move?(identify_piece(), end_space)
 
       puts 'Illegal move. Please try again.'
     end
-    move_piece(identify_piece(), finish)
+    move_piece(identify_piece(), end_space)
     # pawn handling
     total_turn_counter += 1
     switch_turn_to_opponent
@@ -440,7 +462,7 @@ class Game
     turn == 'white' ? turn = 'black' : turn = 'white'
   end
 
-  def identify_piece(starting_space = start)
+  def identify_piece(starting_space = start_space)
     board.board_array[starting_space[0]][starting_space[1]]
   end
 
