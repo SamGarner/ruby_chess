@@ -42,11 +42,11 @@ class Board
   def display_rows
     text = ''
     (0..7).each do |n|
-      text << "#{n + 1}  |"
+      text << "#{8 - n}  |"
       board_array[n].each do |space|
         text << display_piece(space)
       end
-      text << " #{n + 1}\n"
+      text << " #{8 - n}\n"
     end
     text
   end
@@ -723,11 +723,14 @@ class Game
   end
 end
 
-# board = Board.new
-# game = Game.new(board)
-# game.initialize_pieces
-# game.place_starting_pieces
-# game.gameboard.display_board
+board = Board.new
+game = Game.new(board)
+game.initialize_pieces
+game.place_starting_pieces
+game.gameboard.display_board
+while true
+  game.take_turn
+end
 # binding.pry
 
 # king = King.new
