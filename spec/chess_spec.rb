@@ -246,6 +246,13 @@ describe Game do
       end
 
       describe '#horizontal_impediment?' do
+        before(:each) do
+          @white_pawn_h = WhitePawn.new([6, 7])
+          @board.board_array[6][7] = @white_pawn_h
+          @white_pawn_g = WhitePawn.new([6, 6])
+          @board.board_array[6][6] = @white_pawn_g
+        end
+
         # @rook_h1 white, 7,7
         it 'should be false when there is no piece in the way' do
           expect(@game.horizontal_impediment?(@rook_h1, [-5, 0])).to be false
