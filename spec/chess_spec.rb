@@ -305,6 +305,63 @@ describe Game do
           end
         end
       end
+
+      describe '#diagonal_impediment?' do
+        before(:each) do
+          @white_bishop = Bishop.new('white', [7, 5])
+          @board.board_array[7][5] = @white_bishop
+          @white_knight_g = Knight.new('white', [7, 6])
+          @board.board_array[7][6] = @white_knight_g
+          @white_pawn_f = WhitePawn.new([6, 5])
+          @board.board_array[6][5] = @white_pawn_f
+          @white_king = King.new('white', [7, 4])
+          @board.board_array[7][4] = @white_king
+          @black_bishop = Bishop.new('black', [0, 5])
+          @board.board_array[0][5] = @black_bishop
+          @black_knight_g = Knight.new('black', [0, 6])
+          @board.board_array[0][6] = @black_knight_g
+          @black_pawn_f = BlackPawn.new([1, 5])
+          @board.board_array[1][5] = @black_pawn_f
+          @black_king = King.new('black', [0, 4])
+          @board.board_array[0][4] = @black_king
+        end
+
+        # @rook_h1 white, 7,7
+        it 'should be false when there is no piece in the way' do
+          expect(@game.diagonal_impediment?(@white_bishop, [-2, 2])).to be false
+        end
+
+        context 'when moving towards an ally' do
+          # before(:each) do
+          #   @pawn_ally = WhitePawn.new([6, 4])
+          #   @board.board_array[6][4] = @pawn_ally
+          # end
+
+          it 'should be true when ally is in the way - Q1 check' do
+            pawn_ally = WhitePawn.new([6, 6])
+            @board.board_array[6][6] = pawn_ally
+            expect(@game.diagonal_impediment?(@white_bishop, [2, 2])).to be true
+          end
+
+          it 'should be true when ally is in the way - Q2 check' do
+            pawn_ally = WhitePawn.new([6, 4])
+            @board.board_array[6][4] = pawn_ally
+            expect(@game.diagonal_impediment?(@white_bishop, [-2, 2])).to be true
+          end
+
+          it 'should be true when ally is in the way - Q3 check' do
+            pawn_ally = BlackPawn.new([1, 4])
+            @board.board_array[1][4] = pawn_ally
+            expect(@game.diagonal_impediment?(@black_bishop, [-2, -2])).to be true
+          end
+
+          it 'should be true when ally is in the way - Q3 check' do
+            pawn_ally = BlackPawn.new([1, 6])
+            @board.board_array[1][6] = pawn_ally
+            expect(@game.diagonal_impediment?(@black_bishop, [2, -2])).to be true
+          end
+        end
+      end
     end
 
     # describe '#vertical_impediment?' do
