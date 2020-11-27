@@ -274,6 +274,37 @@ describe Game do
           end
         end
       end
+
+      describe '#vertical_impediment?' do
+        before(:each) do
+          @white_knight_g = Knight.new('white', [7, 6])
+          @board.board_array[7][6] = @white_knight_g
+          @white_pawn_g = WhitePawn.new([6, 6])
+          @board.board_array[6][6] = @white_pawn_g
+        end
+
+        # @rook_h1 white, 7,7
+        it 'should be false when there is no piece in the way' do
+          expect(@game.vertical_impediment?(@rook_h1, [0, 4])).to be false
+        end
+
+        context 'when moving towards an ally' do
+          before(:each) do
+            @pawn_ally = WhitePawn.new([5, 7])
+            @board.board_array[5][7] = @pawn_ally
+          end
+
+          it 'should be true when ally is in the way - positive check' do
+            expect(@game.vertical_impediment?(@rook_h1, [0, 4])).to be true
+          end
+
+          it 'should be true when ally is in the way - negative check' do
+            rook = Rook.new('white', [4, 7])
+            @board.board_array[4][7] = rook
+            expect(@game.vertical_impediment?(rook, [0, -2])).to be true
+          end
+        end
+      end
     end
 
     # describe '#vertical_impediment?' do
