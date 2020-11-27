@@ -459,7 +459,8 @@ class Game
   end
 
   def switch_turn_to_opponent
-    turn == 'white' ? turn = 'black' : turn = 'white'
+    # self.turn = turn == 'white' ? 'black' : 'white'
+    turn == 'white' ? self.turn = 'black' : self.turn = 'white'
   end
 
   def identify_piece(starting_space = start_space)
@@ -732,6 +733,7 @@ end
 # binding.pry
 # while true
 #   game.take_turn
+#   game.gameboard.display_board
 # end
 # binding.pry
 
