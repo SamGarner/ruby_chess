@@ -453,7 +453,7 @@ class Game
     end
     move_piece(identify_piece(), end_space)
     # pawn handling
-    total_turn_counter += 1
+    self.total_turn_counter += 1
     switch_turn_to_opponent
       # loop if invalid input
   end
@@ -538,7 +538,7 @@ class Game
     # refactor into white and black
     # split white and black pawns into separate classes?
     
-    # answer = nil
+    answer = nil
     if piece.possible_moves.include?(travel_path)
       answer =  true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
     elsif piece.capture_moves.include?(travel_path)
@@ -567,7 +567,8 @@ class Game
   def impeding_piece?(piece, travel_path, desired_space)
     friendly_fire?(piece, desired_space) || 
     horizontal_impediment?(piece, travel_path) ||
-    vertical_impediment?(piece, travel_path) # || diag_impediment?
+    vertical_impediment?(piece, travel_path) ||
+    diagonal_impediment?(piece, travel_path)
   end
 
   def friendly_fire?(piece, desired_space)
@@ -617,7 +618,7 @@ class Game
 
   def vertical_positive_check?(travel_path, vertical_coord, fixed_coord)
     (travel_path[1] - 1).times do
-      vertical_coord += 1
+      vertical_coord -= 1
       return true if piece_exists?([vertical_coord, fixed_coord])
     end
     false
@@ -625,7 +626,7 @@ class Game
 
   def vertical_negative_check?(travel_path, vertical_coord, fixed_coord)
     (travel_path[1].abs() - 1).times do
-      vertical_coord -= 1
+      vertical_coord += 1
       return true if piece_exists?([vertical_coord, fixed_coord])
     end
     false
@@ -723,14 +724,15 @@ class Game
   end
 end
 
-board = Board.new
-game = Game.new(board)
-game.initialize_pieces
-game.place_starting_pieces
-game.gameboard.display_board
-while true
-  game.take_turn
-end
+# board = Board.new
+# game = Game.new(board)
+# game.initialize_pieces
+# game.place_starting_pieces
+# game.gameboard.display_board
+# binding.pry
+# while true
+#   game.take_turn
+# end
 # binding.pry
 
 # king = King.new
