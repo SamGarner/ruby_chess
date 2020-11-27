@@ -71,7 +71,7 @@ end
 
 # King
 class King #s < Piece
-  attr_reader :symbol, :possible_moves
+  attr_reader :symbol, :possible_moves, :color
   attr_accessor :current_location
 
   def initialize(color, location)
@@ -87,7 +87,7 @@ class King #s < Piece
 end
 
 class Queen # < ChessPiece
-  attr_reader :symbol, :possible_moves
+  attr_reader :symbol, :possible_moves, :color
   attr_accessor :current_location
 
   def initialize(color, location)
@@ -107,7 +107,7 @@ class Queen # < ChessPiece
 end
 
 class Bishop
-  attr_reader :symbol, :possible_moves
+  attr_reader :symbol, :possible_moves, :color
   attr_accessor :current_location
 
   def initialize(color, location)
@@ -123,7 +123,7 @@ class Bishop
 end
 
 class Knight
-  attr_reader :symbol, :possible_moves
+  attr_reader :symbol, :possible_moves, :color
   attr_accessor :current_location
 
   def initialize(color, location)
@@ -374,7 +374,7 @@ class Game
   def choose_where_to_move
     puts "Where would you like to move your #{piece_type}?"
     @finish_input = gets.chomp.upcase
-    unless valid_finish_input?(finish_input) && valid_target_space?
+    unless valid_user_input?(finish_input) && valid_target_space?
 
     # if !valid_finish_input?(finish_input)
       puts 'Invalid space. Please try again.'
@@ -429,7 +429,7 @@ class Game
   # end
 
   def which_piece_selected(starting_space = self.start_space)
-    space = board.board_array[starting_space[0]][starting_space[1]]
+    space = gameboard.board_array[starting_space[0]][starting_space[1]]
     @piece_type = space.class
   end
 
@@ -463,7 +463,7 @@ class Game
   end
 
   def identify_piece(starting_space = start_space)
-    board.board_array[starting_space[0]][starting_space[1]]
+    gameboard.board_array[starting_space[0]][starting_space[1]]
   end
 
   def move_piece(piece, desired_space) # move to ChessPiece SuperClass once 'working'
