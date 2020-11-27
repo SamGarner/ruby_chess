@@ -643,13 +643,13 @@ class Game
   end
 
   def incremental_diagonal_check?(horizontal_coord, vertical_coord, travel_path)
-    if horizontal_coord.positive? && vertical_coord.positive?
+    if travel_path[0].positive? && travel_path[1].positive?
       return true if quadrant_one_check?(travel_path, horizontal_coord, vertical_coord)
 
-    elsif horizontal_coord.negative? && vertical_coord.positive?
+    elsif travel_path[0].negative? && travel_path[1].positive?
       return true if quadrant_two_check?(travel_path, horizontal_coord, vertical_coord)
 
-    elsif horizontal_coord.negative? && vertical_coord.negative?
+    elsif travel_path[0].negative? && travel_path[1].negative?
       return true if quadrant_three_check?(travel_path, horizontal_coord, vertical_coord)
 
     else
@@ -662,7 +662,7 @@ class Game
   def quadrant_one_check?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0] - 1).times do
       horizontal_coord += 1
-      vertical_coord += 1
+      vertical_coord -= 1
       return true if piece_exists?([vertical_coord, horizontal_coord])
     end
     false
@@ -671,7 +671,7 @@ class Game
   def quadrant_two_check?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0].abs - 1).times do
       horizontal_coord -= 1
-      vertical_coord += 1
+      vertical_coord -= 1
       return true if piece_exists?([vertical_coord, horizontal_coord])
     end
     false
@@ -680,7 +680,7 @@ class Game
   def quadrant_three_check?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0].abs - 1).times do
       horizontal_coord -= 1
-      vertical_coord -= 1
+      vertical_coord += 1
       return true if piece_exists?([vertical_coord, horizontal_coord])
     end
     false
@@ -689,7 +689,7 @@ class Game
   def quadrant_four_check?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0] - 1).times do
       horizontal_coord += 1
-      vertical_coord -= 1
+      vertical_coord += 1
       return true if piece_exists?([vertical_coord, horizontal_coord])
     end
     false
@@ -698,7 +698,7 @@ class Game
   def piece_exists?(coordinates, board = gameboard.board_array)
     board[coordinates[0]][coordinates[1]].class != String
   end
-  
+ 
   def color_match?(piece, coordinates, board = gameboard.board_array)
     board[coordinates[0]][coordinates[1]].color == piece.color
   end
