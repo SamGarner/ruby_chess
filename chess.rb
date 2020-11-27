@@ -638,6 +638,10 @@ class Game
     horizontal_coord = piece.current_location[1]
     vertical_coord = piece.current_location[0]
 
+    incremental_diagonal_check?(horizontal_coord, vertical_coord, travel_path)
+  end
+
+  def incremental_diagonal_check?(horizontal_coord, vertical_coord, travel_path)
     if horizontal_coord.positive? && vertical_coord.positive?
       return true if quadrant_one_check?(travel_path, horizontal_coord, vertical_coord)
 
