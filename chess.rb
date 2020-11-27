@@ -378,7 +378,7 @@ class Game
 
     # if !valid_finish_input?(finish_input)
       puts 'Invalid space. Please try again.'
-      choose_where_to_move
+      choose_move
     end
   end
 
@@ -730,7 +730,7 @@ end
 # game.initialize_pieces
 # game.place_starting_pieces
 # game.gameboard.display_board
-# binding.pry
+# # binding.pry
 # while true
 #   game.take_turn
 #   game.gameboard.display_board
