@@ -577,13 +577,13 @@ class Game
     horizontal_coord = piece.current_location[1] # 11/26 flip
     fixed_coord = piece.current_location[0] # 11/26 flip
     if travel_path[0].positive?
-      horizontal_positive_check?(travel_path, fixed_coord, horizontal_coord)
+      horizontal_positive_impediment?(travel_path, fixed_coord, horizontal_coord)
     else
-      horizontal_negative_check?(travel_path, fixed_coord, horizontal_coord)
+      horizontal_negative_impediment?(travel_path, fixed_coord, horizontal_coord)
     end
   end
 
-  def horizontal_positive_check?(travel_path, fixed_coord, horizontal_coord)
+  def horizontal_positive_impediment?(travel_path, fixed_coord, horizontal_coord)
     (travel_path[0] - 1).times do
       horizontal_coord += 1
       return true if piece_exists?([fixed_coord, horizontal_coord])
@@ -591,7 +591,7 @@ class Game
     false
   end
 
-  def horizontal_negative_check?(travel_path, fixed_coord, horizontal_coord)
+  def horizontal_negative_impediment?(travel_path, fixed_coord, horizontal_coord)
     (travel_path[0].abs() - 1).times do
       horizontal_coord -= 1
       return true if piece_exists?([fixed_coord, horizontal_coord])
@@ -605,13 +605,13 @@ class Game
     vertical_coord = piece.current_location[0]
     fixed_coord = piece.current_location[1]
     if travel_path[1].positive?
-      vertical_positive_check?(travel_path, vertical_coord, fixed_coord)
+      vertical_positive_impediment?(travel_path, vertical_coord, fixed_coord)
     else
-      vertical_negative_check?(travel_path, vertical_coord, fixed_coord)
+      vertical_negative_impediment?(travel_path, vertical_coord, fixed_coord)
     end
   end
 
-  def vertical_positive_check?(travel_path, vertical_coord, fixed_coord)
+  def vertical_positive_impediment?(travel_path, vertical_coord, fixed_coord)
     (travel_path[1] - 1).times do
       vertical_coord -= 1
       return true if piece_exists?([vertical_coord, fixed_coord])
@@ -619,7 +619,7 @@ class Game
     false
   end
 
-  def vertical_negative_check?(travel_path, vertical_coord, fixed_coord)
+  def vertical_negative_impediment?(travel_path, vertical_coord, fixed_coord)
     (travel_path[1].abs() - 1).times do
       vertical_coord += 1
       return true if piece_exists?([vertical_coord, fixed_coord])
