@@ -207,16 +207,18 @@ describe Game do
             expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [3, 6])).to be false
           end
 
-          xit 'does not allow vertical move if space is blocked' do
+          it 'does not allow vertical move if space is blocked' do
             @black_pawn = BlackPawn.new([5, 6])
             @board.board_array[5][6] = @black_pawn
             expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
           end
 
-          xit 'does not allow capture move if no opponent on the space' do
+          it 'does not allow capture move if no opponent on the space' do
+            expect(@game.valid_white_pawn_move?(@white_pawn, [-1, 1], [5, 5])).to be false
           end
 
-          xit 'does not allow horizontal/illegal move' do
+          it 'does not allow horizontal/illegal move' do
+            expect(@game.valid_white_pawn_move?(@white_pawn, [-1, 0], [6, 5])).to be false
           end
         end
       end
