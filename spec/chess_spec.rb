@@ -364,6 +364,37 @@ describe Game do
       end
     end
 
+    describe '#in_check?' do
+      describe '#knight_check?' do
+        before(:each) do
+          @black_king = King.new('black', [0, 4])
+          @board.board_array[0][4] = @black_king
+        end
+
+        context 'when no enemy knight in range' do
+          it 'is not check' do
+            expect(@game.in_check?(@black_king)).to be false
+          end
+        end
+
+        context 'when knight is one move away' do
+          it 'is not check when the knight is an ally' do
+            black_knight = Knight.new('black', [1, 2])
+            @board.board_array[1][2] = black_knight
+            expect(@game.in_check?(@black_king)).to be false
+          end
+
+          it 'is check when then knight is an enemy' do
+            white_knight = Knight.new('white', [1, 2])
+            @board.board_array[1][2] = white_knight
+            expect(@game.in_check?(@black_king)).to be true
+          end
+        end
+      end
+    end
+
+    
+
     # describe '#vertical_impediment?' do
     #   # @rook_h1 white, 7,7
     #   context 'when moving towards an ally' do
