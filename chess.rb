@@ -536,19 +536,13 @@ class Game
   end
 
   def valid_white_pawn_move?(piece, travel_path, desired_space)
-    # refactor into white and black
-    # split white and black pawns into separate classes?
-    
-    answer = nil
     if piece.possible_moves.include?(travel_path)
-      answer =  true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
+      return true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
     elsif piece.capture_moves.include?(travel_path)
-      answer =  true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
-      answer =  true if white_can_en_passant?(piece, desired_space)
-    else
-      answer = false
+      return true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+      return true if white_can_en_passant?(piece, desired_space)
     end
-    answer
+    false
   end
 
   def white_can_en_passant?(piece, desired_space, board_array = gameboard.board_array)
