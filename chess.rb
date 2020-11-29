@@ -645,22 +645,22 @@ class Game
 
   def incremental_diagonal_check?(horizontal_coord, vertical_coord, travel_path)
     if travel_path[0].positive? && travel_path[1].positive?
-      return true if quadrant_one_check?(travel_path, horizontal_coord, vertical_coord)
+      return true if quadrant_one_impediment?(travel_path, horizontal_coord, vertical_coord)
 
     elsif travel_path[0].negative? && travel_path[1].positive?
-      return true if quadrant_two_check?(travel_path, horizontal_coord, vertical_coord)
+      return true if quadrant_two_impediment?(travel_path, horizontal_coord, vertical_coord)
 
     elsif travel_path[0].negative? && travel_path[1].negative?
-      return true if quadrant_three_check?(travel_path, horizontal_coord, vertical_coord)
+      return true if quadrant_three_impediment?(travel_path, horizontal_coord, vertical_coord)
 
     else
-      return true if quadrant_four_check?(travel_path, horizontal_coord, vertical_coord)
+      return true if quadrant_four_impediment?(travel_path, horizontal_coord, vertical_coord)
 
     end
     false
   end
 
-  def quadrant_one_check?(travel_path, horizontal_coord, vertical_coord)
+  def quadrant_one_impediment?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0] - 1).times do
       horizontal_coord += 1
       vertical_coord -= 1
@@ -669,7 +669,7 @@ class Game
     false
   end
 
-  def quadrant_two_check?(travel_path, horizontal_coord, vertical_coord)
+  def quadrant_two_impediment?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0].abs - 1).times do
       horizontal_coord -= 1
       vertical_coord -= 1
@@ -678,7 +678,7 @@ class Game
     false
   end
 
-  def quadrant_three_check?(travel_path, horizontal_coord, vertical_coord)
+  def quadrant_three_impediment?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0].abs - 1).times do
       horizontal_coord -= 1
       vertical_coord += 1
@@ -687,7 +687,7 @@ class Game
     false
   end
 
-  def quadrant_four_check?(travel_path, horizontal_coord, vertical_coord)
+  def quadrant_four_impediment?(travel_path, horizontal_coord, vertical_coord)
     (travel_path[0] - 1).times do
       horizontal_coord += 1
       vertical_coord += 1
@@ -726,14 +726,15 @@ class Game
 
   # IN CHECK > MODULE?
   def in_check?(king)
-    horizontal_coord = King.current_location[1]
-    vertical_coord = King.current_location[0]
+    horizontal_coord = king.current_location[1]
+    vertical_coord = king.current_location[0]
     color = king.color
     return true if quadrant_one_check?(color, horizontal_coord, vertical_coord) ||
                    quadrant_two_check?(color, horizontal_coord, vertical_coord) ||
                    quadrant_three_check?(color, horizontal_coord, vertical_coord) ||
                    quadrant_four_check?(color, horizontal_coord, vertical_coord) ||
-                   knight_check?(color, horizontal_coord, vert)
+                   knight_check?(color, horizontal_coord, vertical_coord)
+    false
   end
 
   #knights
@@ -770,9 +771,10 @@ class Game
       break if piece_exists?([vertical_coord, horizontal_coord])
     end
     type_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].class
-    color_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].color
+    # color_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].color
     return true if [Bishop, Queen].include?(type_of_piece) &&
-                   color_of_piece != color
+                   color != gameboard.board_array[vertical_coord][horizontal_coord].color
+                   # color_of_piece != color
     false
   end
 
@@ -783,9 +785,8 @@ class Game
       break if piece_exists?([vertical_coord, horizontal_coord])
     end
     type_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].class
-    color_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].color
     return true if [Bishop, Queen].include?(type_of_piece) &&
-                   color_of_piece != color
+                   color != gameboard.board_array[vertical_coord][horizontal_coord].color
     false
   end
 
@@ -796,9 +797,8 @@ class Game
       break if piece_exists?([vertical_coord, horizontal_coord])
     end
     type_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].class
-    color_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].color
     return true if [Bishop, Queen].include?(type_of_piece) &&
-                   color_of_piece != color
+                   color != gameboard.board_array[vertical_coord][horizontal_coord].color
     false
   end
 
@@ -809,9 +809,8 @@ class Game
       break if piece_exists?([vertical_coord, horizontal_coord])
     end
     type_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].class
-    color_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].color
     return true if [Bishop, Queen].include?(type_of_piece) &&
-                   color_of_piece != color
+                   color != gameboard.board_array[vertical_coord][horizontal_coord].color
     false
   end
 end
