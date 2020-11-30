@@ -831,7 +831,7 @@ class Game
 
   #refactor to use possible_space (with board dependency) ?
   def quadrant_one_check?(color, horizontal_coord, vertical_coord, board)
-    while possible_space?([vertical_coord, horizontal_coord]) do
+    while true do
     # while possible_coord?(horizontal_coord) && possible_coord?(vertical_coord) do
       horizontal_coord += 1
       vertical_coord -= 1
@@ -849,7 +849,7 @@ class Game
   end
 
   def quadrant_two_check?(color, horizontal_coord, vertical_coord, board)
-    while possible_space?([vertical_coord, horizontal_coord]) do
+    while true do
       horizontal_coord -= 1
       vertical_coord -= 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
@@ -879,7 +879,7 @@ class Game
   end
 
   def quadrant_four_check?(color, horizontal_coord, vertical_coord, board)
-    while possible_space?([vertical_coord, horizontal_coord]) do
+    while true do
       horizontal_coord += 1
       vertical_coord += 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
