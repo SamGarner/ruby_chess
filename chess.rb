@@ -72,7 +72,7 @@ end
 # King
 class King #s < Piece
   attr_reader :symbol, :possible_moves, :color
-  attr_accessor :current_location
+  attr_accessor :current_location, :in_check
 
   def initialize(color, location)
     @color = color
@@ -80,7 +80,7 @@ class King #s < Piece
     @current_location = location
     @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],
                        [-1, 0], [-1, 1]]
-
+    @in_check = false
     # U+2654 White Chess King
     # U+265A Black Chess King
   end
@@ -212,15 +212,16 @@ class Game
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
               # :start_input, :finish_input,
               :valid_input, :piece_type, :start,
-              :finish, :start_space, :end_space
+              :finish, :start_space, :end_space, :checkmate, :winner
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
-                :start_input, :finish_input 
+                :start_input, :finish_input, :game_over
                 # move :start_input and :finish input to attr_reader after redo testing setup
 
   def initialize(board)
     @gameboard = board
     @turn = 'white'
     @total_turn_counter = 0
+    @game_over = false
   end
 
   def initialize_pieces
@@ -352,11 +353,34 @@ class Game
   end
 
   def choose_move
+    choose_move_when_in_check
     #update to be player specific
     choose_piece_to_move
-    # get the name type of the piece to output to the user (e.g. '..move your rook?')
     which_piece_selected
     choose_where_to_move
+  end
+
+  def choose_move_when_in_check
+    turn == 'white' ? friendly_king = @white_king : friendly_king = @black_king
+    resign = checkmate? if friendly_king.in_check
+    game_over if resign
+  end
+
+  def checkmate?
+    puts "You are in check. Do you resign y/n?"
+    @checkmate = gets.chomp.downcase
+    turn == 'white' ? @winner = 'black' : @winner = 'White'
+    return true if checkmate == 'y'
+    false
+  end
+
+  def game_over
+    game_over = true
+    if checkmate != 'y' 
+      puts "It's a draw. Good game!"
+    else
+      puts "\n#{winner} wins !\n"
+    end
   end
 
   def choose_piece_to_move
@@ -446,20 +470,30 @@ class Game
     while true
       choose_move
 
-      # copied_board = gameboard.dup
+      # 11/30 addition so cannot put self in check, refactor START
       start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
       end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
       move_piece(identify_piece(), end_space)
       turn == 'white' ? friendly_king = @white_king : friendly_king = @black_king
-      if in_check?(friendly_king) # can remove the board stuff from diag checks? still may be better overal
-        puts 'You cannot leave yourself in check. Please try again.'
+      escape_counter = 0
+      if friendly_king.in_check && in_check?(friendly_king)
+        puts 'You are in check and must escape. You can try one more time:'
+        gameboard.board_array[start_space[0]][start_space[1]] = start_copy
+        gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+        puts 'CHECK_MATE' if escape_counter == 1
+        escape_counter += 1
+        next unless escape_counter == 2
+
+        break
+      elsif in_check?(friendly_king) # can remove the board stuff from diag checks? still may be better overal
+        puts 'You cannot put yourself in check. Please try again.'
         gameboard.board_array[start_space[0]][start_space[1]] = start_copy
         gameboard.board_array[end_space[0]][end_space[1]] = end_copy
         next
       end
       gameboard.board_array[start_space[0]][start_space[1]] = start_copy
       gameboard.board_array[end_space[0]][end_space[1]] = end_copy
-      ###
+      # 11/30 addition so cannot put self in check, refactor END
 
       break if commit_move?(identify_piece(), end_space)
 
@@ -468,6 +502,12 @@ class Game
     move_piece(identify_piece(), end_space)
     # pawn handling
     self.total_turn_counter += 1
+
+    # 11/30 addition: check if put opponent in check START, refactor
+    turn == 'white' ? enemy_king = @black_king : enemy_king = @white_king
+    enemy_king.in_check = in_check?(enemy_king)
+    puts "\nCheck!\n" if enemy_king.in_check
+    # 11/30 addition: check if put opponent in check END, refactor
     switch_turn_to_opponent
       # loop if invalid input
   end
