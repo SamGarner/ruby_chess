@@ -781,8 +781,27 @@ class Game
                    quadrant_two_check?(color, horizontal_coord, vertical_coord, board) ||
                    quadrant_three_check?(color, horizontal_coord, vertical_coord, board) ||
                    quadrant_four_check?(color, horizontal_coord, vertical_coord, board) ||
-                   knight_check?(color, horizontal_coord, vertical_coord, board)
+                   knight_check?(color, horizontal_coord, vertical_coord, board) ||
+                   pawn_check?(color, horizontal_coord, vertical_coord, board)
     false
+  end
+
+  def pawn_check?(color, horizontal_coord, vertical_coord, board)
+    if color == 'white'
+      black_pawn_check?(horizontal_coord, vertical_coord, board)
+    else
+      white_pawn_check?(horizontal_coord, vertical_coord, board)
+    end
+  end
+
+  def black_pawn_check?(horizontal_coord, vertical_coord, board)
+    board[vertical_coord - 1][horizontal_coord - 1].class == BlackPawn ||
+    board[vertical_coord - 1][horizontal_coord + 1].class == BlackPawn
+  end
+
+  def white_pawn_check?(horizontal_coord, vertical_coord, board)
+    board[vertical_coord + 1][horizontal_coord - 1].class == WhitePawn ||
+    board[vertical_coord + 1][horizontal_coord + 1].class == WhitePawn
   end
 
   #knights
