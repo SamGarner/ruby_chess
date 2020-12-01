@@ -165,7 +165,7 @@ class WhitePawn
   end
 
   def makes_first_move(ending_space, move_number)
-    self.possible_moves = [0, 1]
+    self.possible_moves = [[0, 1]]
     self.initial_turn = move_number if starting_location[0] - ending_space[0] == 2
     # game.passant_vulnerable?(starting_space, ending_space)
   end
@@ -190,7 +190,7 @@ class BlackPawn
   end
 
   def makes_first_move(ending_space, move_number)    
-    self.possible_moves = [0, -1]
+    self.possible_moves = [[0, -1]]
     self.initial_turn = move_number if starting_location[0] - ending_space[0] == -2
   end
 
