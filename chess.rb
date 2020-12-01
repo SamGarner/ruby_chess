@@ -600,31 +600,22 @@ class Game
     case piece # cannot use .class here!
     when Knight
       return possible_move?(piece, travel_path)
-    when WhitePawn
-      return valid_white_pawn_move?(piece, travel_path, desired_space)
-    when BlackPawn
-      return valid_black_pawn_move?(piece, travel_path, desired_space)
+    when WhitePawn, BlackPawn
+      return valid_pawn_move?(piece, travel_path, desired_space)
+    # when BlackPawn
+    #   return valid_black_pawn_move?(piece, travel_path, desired_space)
     else
       possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path, desired_space)
     end
   end
 
-  def valid_white_pawn_move?(piece, travel_path, desired_space)
+  def valid_pawn_move?(piece, travel_path, desired_space)
     if piece.possible_moves.include?(travel_path)
       return true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
     elsif piece.capture_moves.include?(travel_path)
       return true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
-      return true if white_can_en_passant?(piece, desired_space)
-    end
-    false
-  end
-
-  def valid_black_pawn_move?(piece, travel_path, desired_space)
-    if piece.possible_moves.include?(travel_path)
-      return true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
-    elsif piece.capture_moves.include?(travel_path)
-      return true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
-      return true if black_can_en_passant?(piece, desired_space)
+      return true if piece.class == WhitePawn && white_can_en_passant?(piece, desired_space)
+      return true if piece.class == BlackPawn && black_can_en_passant?(piece, desired_space)
     end
     false
   end
@@ -993,15 +984,15 @@ class Game
   end
 end
 
-board = Board.new
-game = Game.new(board)
-game.initialize_pieces
-game.place_starting_pieces
-game.gameboard.display_board
-while game.game_over == false
-  game.take_turn
-  game.gameboard.display_board
-end
+# board = Board.new
+# game = Game.new(board)
+# game.initialize_pieces
+# game.place_starting_pieces
+# game.gameboard.display_board
+# while game.game_over == false
+#   game.take_turn
+#   game.gameboard.display_board
+# end
 # binding.pry
 
 # king = King.new
