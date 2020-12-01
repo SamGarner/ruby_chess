@@ -535,6 +535,8 @@ class Game
     # white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
     first_move_for_white_pawn(piece, desired_space) if piece.class == WhitePawn &&
                                         piece.current_location == piece.starting_location
+    first_move_for_black_pawn(piece, desired_space) if piece.class == BlackPawn &&
+                                        piece.current_location == piece.starting_location
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
@@ -543,6 +545,8 @@ class Game
   def capture_opponent(piece, desired_space)
     if piece.class == WhitePawn && piece.capture_moves.include?(travel_path)
       white_pawn_captures(piece, desired_space)
+    elsif piece.class == BlackPawn && piece.capture_moves.include?(travel_path)
+      black_pawn_captures(piece, desired_space)
     elsif desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
     end
@@ -552,10 +556,22 @@ class Game
     piece.makes_first_move(desired_space, total_turn_counter)
   end
 
+  def first_move_for_black_pawn(piece, desired_space)
+    piece.makes_first_move(desired_space, total_turn_counter)
+  end
+
   def white_pawn_captures(piece, desired_space)
     if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
     elsif white_can_en_passant?(piece, desired_space)
+      destroy_enemy([desired_space[0], desired_space[1] + 1])
+    end
+  end
+
+  def black_pawn_captures(piece, desired_space)
+    if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+      destroy_enemy(desired_space)
+    elsif black_can_en_passant?(piece, desired_space)
       destroy_enemy([desired_space[0], desired_space[1] + 1])
     end
   end
@@ -583,9 +599,11 @@ class Game
   def valid_move?(piece, travel_path, desired_space)
     case piece # cannot use .class here!
     when Knight
-      return possible_move?(piece, travel_path) # if piece.class = Knight
+      return possible_move?(piece, travel_path)
     when WhitePawn
-      return valid_white_pawn_move?(piece, travel_path, desired_space) # if piece.class = WhitePawn
+      return valid_white_pawn_move?(piece, travel_path, desired_space)
+    when BlackPawn
+      return valid_black_pawn_move?(piece, travel_path, desired_space)
     else
       possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path, desired_space)
     end
@@ -601,11 +619,26 @@ class Game
     false
   end
 
+  def valid_black_pawn_move?(piece, travel_path, desired_space)
+    if piece.possible_moves.include?(travel_path)
+      return true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
+    elsif piece.capture_moves.include?(travel_path)
+      return true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
+      return true if black_can_en_passant?(piece, desired_space)
+    end
+    false
+  end
+
   def white_can_en_passant?(piece, desired_space, board_array = gameboard.board_array)
     # desired space is empty...redundant if can only happen on next turn
     # travel_path in capture_moves...redundant from valid_white_pawn_move?
     piece_attacked = board_array[desired_space[0] + 1][desired_space[1]]
     piece_attacked.class == BlackPawn && (total_turn_counter - piece_attacked.initial_turn == 1)
+  end
+
+  def black_can_en_passant?(piece, desired_space, board_array = gameboard.board_array)
+    piece_attacked = board_array[desired_space[0] + 1][desired_space[1]]
+    piece_attacked.class == WhitePawn && (total_turn_counter - piece_attacked.initial_turn == 1)
   end
 
   def pawn_initial_move?(piece)
@@ -964,7 +997,6 @@ end
 # game.initialize_pieces
 # game.place_starting_pieces
 # game.gameboard.display_board
-# # binding.pry
 # while game.game_over == false
 #   game.take_turn
 #   game.gameboard.display_board
