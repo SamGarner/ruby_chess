@@ -212,9 +212,9 @@ class Game
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
               # :start_input, :finish_input,
               :valid_input, :piece_type, :start,
-              :finish, :start_space, :end_space, :checkmate, :winner
+              :finish, :start_space, :end_space, :winner
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
-                :start_input, :finish_input, :game_over
+                :start_input, :finish_input, :game_over, :checkmate
                 # move :start_input and :finish input to attr_reader after redo testing setup
 
   def initialize(board)
@@ -363,19 +363,19 @@ class Game
   def choose_move_when_in_check
     turn == 'white' ? friendly_king = @white_king : friendly_king = @black_king
     resign = checkmate? if friendly_king.in_check
-    game_over if resign
+    end_game if resign
   end
 
   def checkmate?
-    puts "You are in check. Do you resign y/n?"
+    puts "\nYou are in check. Do you resign y/n?\n"
     @checkmate = gets.chomp.downcase
     turn == 'white' ? @winner = 'black' : @winner = 'White'
     return true if checkmate == 'y'
     false
   end
 
-  def game_over
-    game_over = true
+  def end_game
+    self.game_over = true
     if checkmate != 'y' 
       puts "It's a draw. Good game!"
     else
@@ -467,6 +467,7 @@ class Game
   # end
 
   def take_turn # WIP
+    escape_counter = 0
     while true
       choose_move
 
@@ -475,15 +476,16 @@ class Game
       end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
       move_piece(identify_piece(), end_space)
       turn == 'white' ? friendly_king = @white_king : friendly_king = @black_king
-      escape_counter = 0
       if friendly_king.in_check && in_check?(friendly_king)
         puts 'You are in check and must escape. You can try one more time:'
         gameboard.board_array[start_space[0]][start_space[1]] = start_copy
         gameboard.board_array[end_space[0]][end_space[1]] = end_copy
-        puts 'CHECK_MATE' if escape_counter == 1
+        puts 'CHECK MATE' if escape_counter == 1
         escape_counter += 1
         next unless escape_counter == 2
-
+        turn == 'white' ? @winner = 'black' : @winner = 'White'
+        self.checkmate = 'y'
+        end_game
         break
       elsif in_check?(friendly_king) # can remove the board stuff from diag checks? still may be better overal
         puts 'You cannot put yourself in check. Please try again.'
@@ -963,7 +965,7 @@ end
 # game.place_starting_pieces
 # game.gameboard.display_board
 # # binding.pry
-# while true
+# while game.game_over == false
 #   game.take_turn
 #   game.gameboard.display_board
 # end
