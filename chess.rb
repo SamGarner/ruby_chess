@@ -579,7 +579,7 @@ class Game
   end
 
   def valid_move?(piece, travel_path, desired_space)
-    case piece.class
+    case piece # cannot use .class here!
     when Knight
       return possible_move?(piece, travel_path) # if piece.class = Knight
     when WhitePawn
