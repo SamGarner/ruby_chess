@@ -564,7 +564,7 @@ class Game
     if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
     elsif white_can_en_passant?(piece, desired_space)
-      destroy_enemy([desired_space[0], desired_space[1] + 1])
+      destroy_enemy([desired_space[0] + 1, desired_space[1]])
     end
   end
 
@@ -572,7 +572,7 @@ class Game
     if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
     elsif black_can_en_passant?(piece, desired_space)
-      destroy_enemy([desired_space[0], desired_space[1] + 1])
+      destroy_enemy([desired_space[0] - 1, desired_space[1]])
     end
   end
 
@@ -637,7 +637,7 @@ class Game
   end
 
   def black_can_en_passant?(piece, desired_space, board_array = gameboard.board_array)
-    piece_attacked = board_array[desired_space[0] + 1][desired_space[1]]
+    piece_attacked = board_array[desired_space[0] - 1][desired_space[1]]
     piece_attacked.class == WhitePawn && (total_turn_counter - piece_attacked.initial_turn == 1)
   end
 
@@ -805,6 +805,7 @@ class Game
   def destroy_enemy(desired_space, board = gameboard.board_array)
     attacked_piece = board[desired_space[0]][desired_space[1]]
     attacked_piece.current_location = nil
+    board[desired_space[0]][desired_space[1]] = '__'
   end
 
   # IN CHECK > MODULE?
@@ -992,15 +993,15 @@ class Game
   end
 end
 
-# board = Board.new
-# game = Game.new(board)
-# game.initialize_pieces
-# game.place_starting_pieces
-# game.gameboard.display_board
-# while game.game_over == false
-#   game.take_turn
-#   game.gameboard.display_board
-# end
+board = Board.new
+game = Game.new(board)
+game.initialize_pieces
+game.place_starting_pieces
+game.gameboard.display_board
+while game.game_over == false
+  game.take_turn
+  game.gameboard.display_board
+end
 # binding.pry
 
 # king = King.new
