@@ -547,10 +547,11 @@ class Game
 
     # destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
     # white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
-    first_move_for_white_pawn(piece, desired_space) if piece.class == WhitePawn &&
-                                        piece.current_location == piece.starting_location
-    first_move_for_black_pawn(piece, desired_space) if piece.class == BlackPawn &&
-                                        piece.current_location == piece.starting_location
+    if [WhitePawn, BlackPawn].include?(piece.class) &&
+       piece.current_location == piece.starting_location
+
+      first_move_for_pawn(piece, desired_space)
+    end
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
@@ -566,11 +567,7 @@ class Game
     end
   end
 
-  def first_move_for_white_pawn(piece, desired_space)
-    piece.makes_first_move(desired_space, total_turn_counter)
-  end
-
-  def first_move_for_black_pawn(piece, desired_space)
+  def first_move_for_pawn(piece, desired_space)
     piece.makes_first_move(desired_space, total_turn_counter)
   end
 
