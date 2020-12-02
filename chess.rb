@@ -202,19 +202,21 @@ end
 # Game
 class Game
 
-  attr_reader :white_king, :black_king, :black_queen, :white_queen,
+  attr_reader :black_queen, :white_queen, :white_king, :black_king,
               :black_bishop_c, :black_bishop_f, :white_bishop_c, :white_bishop_f,
-              :black_knight_b, :black_knight_g, :white_knight_b, :white_knight_g, 
-              :black_rook_a, :black_rook_h, :white_rook_a, :white_rook_h, 
-              :black_pawn_a, :black_pawn_b, :black_pawn_c, :black_pawn_d, 
-              :black_pawn_e, :black_pawn_f, :black_pawn_g, :black_pawn_h, 
-              :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d, 
+              :black_knight_b, :black_knight_g, :white_knight_b, :white_knight_g,
+              :black_rook_a, :black_rook_h, :white_rook_a, :white_rook_h,
+              :black_pawn_a, :black_pawn_b, :black_pawn_c, :black_pawn_d,
+              :black_pawn_e, :black_pawn_f, :black_pawn_g, :black_pawn_h,
+              :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d,
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
               # :start_input, :finish_input,
               :valid_input, :piece_type, :start,
-              :finish, :start_space, :end_space, :winner
+              :finish, :start_space, :end_space, :winner,
+              :enemy_king, :friendly_king
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
                 :start_input, :finish_input, :game_over, :checkmate
+                # :white_king, :black_king
                 # move :start_input and :finish input to attr_reader after redo testing setup
 
   def initialize(board)
@@ -361,7 +363,8 @@ class Game
   end
 
   def choose_move_when_in_check
-    turn == 'white' ? friendly_king = @white_king : friendly_king = @black_king
+    # turn == 'white' ? friendly_king = @white_king : friendly_king = @black_king
+    fetch_friendly_king
     resign = checkmate? if friendly_king.in_check
     end_game if resign
   end
@@ -470,48 +473,59 @@ class Game
     escape_counter = 0
     while true
       choose_move
-
-      # 11/30 addition so cannot put self in check, refactor START
+      # 11/30 addition so cannot put/leave self in check, refactor START
       start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
       end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
       move_piece(identify_piece(), end_space)
-      turn == 'white' ? friendly_king = @white_king : friendly_king = @black_king
+      fetch_friendly_king
       if friendly_king.in_check && in_check?(friendly_king)
-        puts 'You are in check and must escape. You can try one more time:'
+        puts 'You are in check and must escape. You can try one more time:' if escape_counter.zero?
         gameboard.board_array[start_space[0]][start_space[1]] = start_copy
         gameboard.board_array[end_space[0]][end_space[1]] = end_copy
         puts 'CHECK MATE' if escape_counter == 1
         escape_counter += 1
         next unless escape_counter == 2
-        turn == 'white' ? @winner = 'black' : @winner = 'White'
+
+        turn == 'white' ? @winner = 'Black' : @winner = 'White'
         self.checkmate = 'y'
         end_game
         break
+
       elsif in_check?(friendly_king) # can remove the board stuff from diag checks? still may be better overal
         puts 'You cannot put yourself in check. Please try again.'
         gameboard.board_array[start_space[0]][start_space[1]] = start_copy
         gameboard.board_array[end_space[0]][end_space[1]] = end_copy
         next
+
       end
       gameboard.board_array[start_space[0]][start_space[1]] = start_copy
       gameboard.board_array[end_space[0]][end_space[1]] = end_copy
-      # 11/30 addition so cannot put self in check, refactor END
-
+      # 11/30 addition so cannot put/leave self in check, refactor END
       break if commit_move?(identify_piece(), end_space)
 
       puts 'Illegal move. Please try again.'
     end
     move_piece(identify_piece(), end_space)
-    # pawn handling
     self.total_turn_counter += 1
 
     # 11/30 addition: check if put opponent in check START, refactor
-    turn == 'white' ? enemy_king = @black_king : enemy_king = @white_king
+    fetch_enemy_king
     enemy_king.in_check = in_check?(enemy_king)
     puts "\nCheck!\n" if enemy_king.in_check
     # 11/30 addition: check if put opponent in check END, refactor
     switch_turn_to_opponent
-      # loop if invalid input
+  end
+
+  def fetch_friendly_king(board = gameboard.board_array)
+    @friendly_king = board.flatten.select do |space|
+      space.class == King && space.color == turn
+    end[0]
+  end
+
+  def fetch_enemy_king(board = gameboard.board_array)
+    @enemy_king = board.flatten.select do |space|
+      space.class == King && space.color != turn
+    end[0]
   end
 
   def switch_turn_to_opponent
