@@ -563,11 +563,8 @@ class Game
 
     # destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
     # white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
-    if [WhitePawn, BlackPawn].include?(piece.class) &&
-       piece.current_location == piece.starting_location
-
-      first_move_for_pawn(piece, desired_space)
-    end
+    first_move_for_pawn(piece, desired_space) if [WhitePawn, BlackPawn].include?(piece.class) &&
+                                                 piece.current_location == piece.starting_location
     fetch_friendly_king # can likely remove this later by reordering/doublechecking #take_turn
     move_rook_for_castling if piece.class == King &&
                               (friendly_king.current_location[1] - desired_space[1]).abs == 2
