@@ -71,16 +71,18 @@ end
 
 # King
 class King #s < Piece
-  attr_reader :symbol, :possible_moves, :color
-  attr_accessor :current_location, :in_check
+  attr_reader :symbol, :possible_moves, :color, :starting_location
+  attr_accessor :current_location, :in_check, :has_moved
 
   def initialize(color, location)
     @color = color
     @symbol = "#{color[0].upcase}K"
     @current_location = location
+    @starting_location = location
     @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],
                        [-1, 0], [-1, 1]]
     @in_check = false
+    @has_moved = false
     # U+2654 White Chess King
     # U+265A Black Chess King
   end
@@ -136,17 +138,19 @@ class Knight
 end
 
 class Rook
-  attr_reader :symbol, :possible_moves, :color
-  attr_accessor :current_location
+  attr_reader :symbol, :possible_moves, :color, :starting_location
+  attr_accessor :current_location, :has_moved
 
   def initialize(color, location)
     @color = color
     @symbol = "#{color[0].upcase}R"
     @current_location = location
+    @starting_location = location
     @possible_moves = [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
                       [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
                       [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
                       [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0]
+    @has_moved = false
   end
 end
 
@@ -507,13 +511,24 @@ class Game
     end
     move_piece(identify_piece(), end_space)
     self.total_turn_counter += 1
-
+    flag_moved_rook_or_king
     # 11/30 addition: check if put opponent in check START, refactor
     fetch_enemy_king
     enemy_king.in_check = in_check?(enemy_king)
     puts "\nCheck!\n" if enemy_king.in_check
     # 11/30 addition: check if put opponent in check END, refactor
     switch_turn_to_opponent
+  end
+
+  def flag_moved_rook_or_king(board = gameboard.board_array)
+    board.flatten.each do |space|
+      space.has_moved = true if moved_rook_or_king?(space)
+    end
+  end
+
+  def moved_rook_or_king?(board_space)
+    [Rook, King].include?(board_space.class) &&
+      board_space.starting_location != board_space.current_location
   end
 
   def fetch_friendly_king(board = gameboard.board_array)
