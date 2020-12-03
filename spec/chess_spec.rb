@@ -150,12 +150,12 @@ describe Game do
           end
         end
 
-        describe '#valid_white_pawn_move?' do
+        describe '#valid_pawn_move?' do
           it 'should return true when white can white_can_en_passant' do
             @black_pawn.initial_turn = 8
             @game.total_turn_counter = 9
             travel_path = [-1, 1]
-            expect(@game.valid_white_pawn_move?(@white_pawn, travel_path, [2, 6])).to be true
+            expect(@game.valid_pawn_move?(@white_pawn, travel_path, [2, 6])).to be true
           end
         end
       end
@@ -170,7 +170,7 @@ describe Game do
           @board.board_array[6][6] = @white_pawn
         end
 
-        describe '#first_move_for_white_pawn' do
+        describe '#first_move_for_pawn' do
           it 'is called by move piece' do
             expect(@white_pawn).to receive(:makes_first_move).once
             @game.move_piece(@white_pawn, [4, 6])
@@ -178,47 +178,47 @@ describe Game do
 
           it 'removes [0, 2] from possible_moves' do
             @game.total_turn_counter = 3
-            @game.first_move_for_white_pawn(@white_pawn, [4, 6])
+            @game.first_move_for_pawn(@white_pawn, [4, 6])
             expect(@white_pawn.possible_moves).to_not include([0, 2])
           end
 
           it 'sets initial_turn to current turn count if pawn moves two' do
             @game.total_turn_counter = 3
-            @game.first_move_for_white_pawn(@white_pawn, [4, 6])
+            @game.first_move_for_pawn(@white_pawn, [4, 6])
             expect(@white_pawn.initial_turn).to eq(3)
           end
 
           it ' does not set initial_turn if pawn only moves one' do
             @game.total_turn_counter = 3
-            @game.first_move_for_white_pawn(@white_pawn, [5, 6])
+            @game.first_move_for_pawn(@white_pawn, [5, 6])
             expect(@white_pawn.initial_turn).to eq(0)
           end
         end
 
-        describe '#valid_white_pawn_move?' do
+        describe '#valid_pawn_move?' do
           it 'allows moving two spaces for first move' do
-            expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be true
+            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be true
           end
 
           it 'does not allow moving two spaces after first move' do
             @white_pawn.makes_first_move([5, 6], 2)
             @white_pawn.current_location = [5, 6]
             @board.board_array[5][6] = @white_pawn
-            expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [3, 6])).to be false
+            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [3, 6])).to be false
           end
 
           it 'does not allow vertical move if space is blocked' do
             @black_pawn = BlackPawn.new([5, 6])
             @board.board_array[5][6] = @black_pawn
-            expect(@game.valid_white_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
+            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
           end
 
           it 'does not allow capture move if no opponent on the space' do
-            expect(@game.valid_white_pawn_move?(@white_pawn, [-1, 1], [5, 5])).to be false
+            expect(@game.valid_pawn_move?(@white_pawn, [-1, 1], [5, 5])).to be false
           end
 
           it 'does not allow horizontal/illegal move' do
-            expect(@game.valid_white_pawn_move?(@white_pawn, [-1, 0], [6, 5])).to be false
+            expect(@game.valid_pawn_move?(@white_pawn, [-1, 0], [6, 5])).to be false
           end
         end
       end
