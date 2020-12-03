@@ -568,6 +568,9 @@ class Game
 
       first_move_for_pawn(piece, desired_space)
     end
+    fetch_friendly_king # can likely remove this later by reordering/doublechecking #take_turn
+    move_rook_for_castling if piece.class == King &&
+                              (friendly_king.current_location[1] - desired_space[1]).abs == 2
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
@@ -665,6 +668,21 @@ class Game
     when [7, 6]
       return true if board[7][7].class == Rook && board[7][7].has_moved == false
     end
+  end
+
+  def move_rook_for_castling(desired_space, board = gameboard.board_array)
+    piece = case desired_space
+            when [0, 2]
+              board[0][0]
+            when [0, 6]
+              board[0][7]
+            when [7, 2]
+              board[7][0]
+            when [7, 6]
+              board[7][7]
+            end
+    update_board(piece, desired_space)
+    piece.current_location = desired_space
   end
 
   def no_castling_impediments?(desired_space, board = gameboard.board_array)
