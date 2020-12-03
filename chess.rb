@@ -71,7 +71,7 @@ end
 
 # King
 class King #s < Piece
-  attr_reader :symbol, :possible_moves, :color, :starting_location
+  attr_reader :symbol, :possible_moves, :color, :starting_location, :castling_moves
   attr_accessor :current_location, :in_check, :has_moved
 
   def initialize(color, location)
@@ -81,6 +81,7 @@ class King #s < Piece
     @starting_location = location
     @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],
                        [-1, 0], [-1, 1]]
+    @castling_moves = [[-2, 0], [2, 0]]
     @in_check = false
     @has_moved = false
     # U+2654 White Chess King
@@ -630,8 +631,70 @@ class Game
       return valid_pawn_move?(piece, travel_path, desired_space)
     # when BlackPawn
     #   return valid_black_pawn_move?(piece, travel_path, desired_space)
+    when King
+      valid_king_move?(piece, travel_path, desired_space)
     else
       possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path, desired_space)
+    end
+  end
+
+  def valid_king_move?(king, travel_path, desired_space)
+    if king.possible_moves.include?(travel_path)
+      return true if possible_move?(king, travel_path) &&
+                     !impeding_piece?(king, travel_path, desired_space)
+    elsif king.castling_moves.include?(travel_path)
+      return true if king.has_moved == false &&
+        king.in_check == false &&
+        rook_for_castling?(desired_space) &&
+        no_castling_impediments?(desired_space) &&
+        !castling_thru_check?(desired_space)
+      # and no impeding pieces
+      # AND never pass through check
+    end
+    false
+  end
+
+  def rook_for_castling?(desired_space, board = gameboard.board_array)
+    case desired_space
+    when [0, 2]
+      return true if board[0][0].class == Rook && board[0][0].has_moved == false
+    when [0, 6]
+      return true if board[0][7].class == Rook && board[0][7].has_moved == false
+    when [7, 2]
+      return true if board[7][0].class == Rook && board[7][0].has_moved == false
+    when [7, 6]
+      return true if board[7][7].class == Rook && board[7][7].has_moved == false
+    end
+  end
+
+  def no_castling_impediments?(desired_space, board = gameboard.board_array)
+    case desired_space
+    when [0, 2]
+      return true if board[0][1, 3].all? { |space| space == '__' } #.class == String }
+    when [0, 6]
+      return true if board[0][5, 2].all? { |space| space == '__' }
+    when [7, 2]
+      return true if board[7][1, 3].all? { |space| space == '__' }
+    when [7, 6]
+      return true if board[7][5, 2].all? { |space| space == '__' }
+    end
+  end
+
+  def castling_thru_check?(desired_space, board = gameboard.board_array)
+    # in_check? for desired_space already covered since cannot put self in check
+    case desired_space
+    when [0, 2]
+      castle_king_step = King.new('black', [0, 3])
+      return true if in_check?(castle_king_step)
+    when [0, 6]
+      castle_king_step = King.new('black', [0, 5])
+      return true if in_check?(castle_king_step)
+    when [7, 2]
+      castle_king_step = King.new('white', [7, 3])
+      return true if in_check?(castle_king_step)
+    when [7, 6]
+      castle_king_step = King.new('white', [7, 5])
+      return true if in_check?(castle_king_step)
     end
   end
 
