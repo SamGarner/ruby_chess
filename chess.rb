@@ -217,10 +217,14 @@ class Game
               :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
               # :start_input, :finish_input,
               :valid_input, :piece_type, :start,
-              :finish, :start_space, :end_space, :winner,
-              :enemy_king, :friendly_king, :rook_start_copy, :rook_end_copy
+              :finish, :start_space, :winner,
+              :enemy_king, :friendly_king, :rook_start_copy, :rook_end_copy,
+              :castle_spaces_crossed_mapping, :castle_king_crossed_mapping, 
+              :castle_space_to_rook_mapping, :castle_restore_rook_mapping,
+              :rook_end_coord
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
-                :start_input, :finish_input, :game_over, :checkmate
+                :start_input, :finish_input, :game_over, :checkmate,
+                :end_space # only moved from attr_reader for tests, refactor tests
                 # :white_king, :black_king
                 # move :start_input and :finish input to attr_reader after redo testing setup
 
@@ -483,16 +487,19 @@ class Game
         puts 'Illegal move. Please try again.'
         next
       end
-      get_travel_path
-      copy_castling_spaces if identify_piece.class == King && travel_path[0].abs == 2
-      start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
-      end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
+      # get_travel_path
+      # copy_castling_spaces if identify_piece.class == King && travel_path[0].abs == 2
+      # start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
+      # end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
+        serialized_gameboard = Marshal.dump(gameboard)
       move_piece(identify_piece(), end_space)
       fetch_friendly_king
       if friendly_king.in_check && in_check?(friendly_king)
         puts 'You are in check and must escape. You can try one more time:' if escape_counter.zero?
-        gameboard.board_array[start_space[0]][start_space[1]] = start_copy
-        gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+        # gameboard.board_array[start_space[0]][start_space[1]] = start_copy
+        # gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+        # restore_castling_copies
+        self.gameboard = Marshal.load(serialized_gameboard)
         puts 'CHECK MATE' if escape_counter == 1
         escape_counter += 1
         next unless escape_counter == 2
@@ -504,13 +511,17 @@ class Game
 
       elsif in_check?(friendly_king) # can remove the board stuff from diag checks? still may be better overal
         puts 'You cannot put yourself in check. Please try again.'
-        gameboard.board_array[start_space[0]][start_space[1]] = start_copy
-        gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+        # gameboard.board_array[start_space[0]][start_space[1]] = start_copy
+        # gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+        # restore_castling_copies
+        self.gameboard = Marshal.load(serialized_gameboard)
         next
 
       end
-      gameboard.board_array[start_space[0]][start_space[1]] = start_copy
-      gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+      # gameboard.board_array[start_space[0]][start_space[1]] = start_copy
+      # gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+      # restore_castling_copies
+      self.gameboard = Marshal.load(serialized_gameboard)
       break
       # 11/30 addition so cannot put/leave self in check, refactor END
       # break if commit_move?(identify_piece(), end_space)
@@ -528,37 +539,52 @@ class Game
     switch_turn_to_opponent
   end
 
-  def copy_castling_spaces(board = gameboard.board_array)
-    if end_space == [0, 6]
-      @rook_start_copy = board[0][7]
-      @rook_end_copy = board[0][5]
-    elsif end_space == [0, 2]
-      @rook_start_copy = board[0][0]
-      @rook_end_copy = board[0][3]
-    elsif end_space == [7, 6]
-      @rook_start_copy = board[7][7]
-      @rook_end_copy = board[7][5]
-    else 
-      @rook_start_copy = board[7][0]
-      @rook_end_copy = board[7][3]
-    end
+  def define_castling_mappings(board = gameboard.board_array)
+    @castle_space_to_rook_mapping = { [0, 2] => board[0][0],
+                                      [0, 6] => board[0][7],
+                                      [7, 2] => board[7][0],
+                                      [7, 6] => board[7][7] }
+    @castle_king_crossed_mapping = { [0, 2] => [0, 3],
+                                     [0, 6] => [0, 5],
+                                     [7, 2] => [7, 3],
+                                     [7, 6] => [7, 5] }
+    @castle_spaces_crossed_mapping = { [0, 2] => board[0][1, 3],
+                                       [0, 6] => board[0][5, 2],
+                                       [7, 2] => board[7][1, 3],
+                                       [7, 6] => board[7][5, 2] }
+    @castle_restore_rook_mapping = { [0, 2] => [0, 0],
+                                     [0, 6] => [0, 7],
+                                     [7, 2] => [7, 0],
+                                     [7, 6] => [7, 7] }
   end
 
-  def restore_castling_copies
-    if end_space == [0, 6]
-      board[0][7] = rook_start_copy
-      board[0][5] = rook_end_copy
-    elsif end_space == [0, 2]
-      board[0][0] = rook_start_copy
-      board[0][3] = rook_end_copy
-    elsif end_space == [7, 6]
-      board[7][7] = rook_start_copy
-      board[7][5] = rook_end_copy
-    else 
-      board[7][0] = rook_start_copy
-      board[7][3] = rook_end_copy
-    end
-  end
+  # def copy_castling_spaces(board = gameboard.board_array)
+  #   @rook_start_copy = castle_space_to_rook_mapping.fetch(end_space).dup
+  #   @rook_end_coord = castle_king_crossed_mapping.fetch(end_space)
+  #   @rook_end_copy = board[rook_end_coord[0]][rook_end_coord[1]].dup
+  # end
+
+  # def restore_castling_copies(board = gameboard.board_array)
+  #   # rook_start = castle_space_to_rook_mapping.fetch(end_space)
+  #   rook_start_coord = castle_restore_rook_mapping.fetch(end_space)
+  #   board[rook_start_coord[0]][rook_end_coord[1]] = rook_start_copy
+  #   # rook_start = rook_start_copy
+  #   # # castle_space_to_rook_mapping.fetch(end_space) = rook_start_copy
+  #   board[rook_end_coord[0]][rook_end_coord[1]] = rook_end_copy
+  #   # if end_space == [0, 6]
+  #   #   board[0][7] = rook_start_copy
+  #   #   board[0][5] = rook_end_copy
+  #   # elsif end_space == [0, 2]
+  #   #   board[0][0] = rook_start_copy
+  #   #   board[0][3] = rook_end_copy
+  #   # elsif end_space == [7, 6]
+  #   #   board[7][7] = rook_start_copy
+  #   #   board[7][5] = rook_end_copy
+  #   # else 
+  #   #   board[7][0] = rook_start_copy
+  #   #   board[7][3] = rook_end_copy
+  #   # end
+  # end
 
   def flag_moved_rook_or_king(board = gameboard.board_array)
     board.flatten.each do |space|
@@ -605,8 +631,8 @@ class Game
     first_move_for_pawn(piece, desired_space) if [WhitePawn, BlackPawn].include?(piece.class) &&
                                                  piece.current_location == piece.starting_location
     fetch_friendly_king # can likely remove this later by reordering/doublechecking #take_turn
-    move_rook_for_castling if piece.class == King &&
-                              (friendly_king.current_location[1] - desired_space[1]).abs == 2
+    move_rook_for_castling(desired_space) if piece.class == King &&
+                                          (friendly_king.current_location[1] - desired_space[1]).abs == 2
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
     piece.current_location = desired_space
@@ -717,11 +743,11 @@ class Game
 
   def castling_thru_check?(desired_space, board = gameboard.board_array)
     # in_check? for desired_space already covered since cannot put self in check
-    castle_king_path_mapping = { [0, 2] => [0, 3],
-                                 [0, 6] => [0, 5],
-                                 [7, 2] => [7, 3],
-                                 [7, 6] => [7, 5] }
-    castle_king_path = King.new(turn, castle_king_path_mapping.fetch(desired_space))
+    castle_king_crossed_mapping = { [0, 2] => [0, 3],
+                                    [0, 6] => [0, 5],
+                                    [7, 2] => [7, 3],
+                                    [7, 6] => [7, 5] }
+    castle_king_path = King.new(turn, castle_king_crossed_mapping.fetch(desired_space))
     in_check?(castle_king_path)
   end
 
@@ -730,9 +756,12 @@ class Game
                                      [0, 6] => board[0][7],
                                      [7, 2] => board[7][0],
                                      [7, 6] => board[7][7] }
+    # rook will not be moved appropriately without mapping table above
+    # even though defined as instance var
     rook = castle_space_to_rook_mapping.fetch(desired_space)
-    update_board(rook, desired_space)
-    rook.current_location = desired_space
+    rook_desired_space = castle_king_crossed_mapping.fetch(desired_space)
+    update_board(rook, rook_desired_space)
+    rook.current_location = rook_desired_space
   end
 
   def valid_pawn_move?(piece, travel_path, desired_space)
@@ -1115,11 +1144,11 @@ end
 # game.initialize_pieces
 # game.place_starting_pieces
 # game.gameboard.display_board
-# # binding.pry
+# game.define_castling_mappings
 # while game.game_over == false
 #   game.take_turn
 #   game.gameboard.display_board
 # end
-# binding.pry
+# # binding.pry
 
 # king = King.new
