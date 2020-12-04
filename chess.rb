@@ -613,6 +613,11 @@ class Game
   # end
 
   def commit_move?(piece, desired_space)
+    get_travel_path(piece, desired_space)
+    valid_move?(piece, travel_path, desired_space)
+  end
+
+  def get_travel_path(piece, desired_space)
     @travel_path = [] # think regular x,y coordinates
     travel_path[0] = desired_space[1] - piece.current_location[1] # horizontal plane
     travel_path[1] = piece.current_location[0] - desired_space[0] # vertical plane
@@ -621,7 +626,6 @@ class Game
       # tp[0] = 7 - 7
       # tp[1] = 6 - 5
       # tp = [0, 1]
-    valid_move?(piece, travel_path, desired_space)
   end
 
   def possible_move?(piece, travel_path) # direction possible for type of piece
