@@ -395,6 +395,24 @@ describe Game do
       end
     end
 
+    describe '#no_castling_impediments' do
+      before(:each) do
+        @white_king = King.new('white', [7, 4])
+        @board.board_array[7][4] = @white_king
+        @white_rook_h = Rook.new('white', [7, 7])
+        @board.board_array[7][7] = @white_rook_h
+      end
+
+      it 'should be true when no pieces between the rook and king' do
+        expect(@game.no_castling_impediments?([7, 6])).to be true
+      end
+
+      it 'should be false when piece(s) between the rook and king' do
+        @white_bishop = Bishop.new('white', [7, 5])
+        @board.board_array[7][5] = @white_bishop
+        expect(@game.no_castling_impediments?([7, 6])).to be false
+      end
+    end
     
 
     # describe '#vertical_impediment?' do
