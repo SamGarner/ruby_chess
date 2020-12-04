@@ -479,6 +479,10 @@ class Game
     while true
       choose_move
       # 11/30 addition so cannot put/leave self in check, refactor START
+      unless commit_move?(identify_piece(), end_space)
+        puts 'Illegal move. Please try again.'
+        next
+      end
       start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
       end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
       move_piece(identify_piece(), end_space)
@@ -505,10 +509,11 @@ class Game
       end
       gameboard.board_array[start_space[0]][start_space[1]] = start_copy
       gameboard.board_array[end_space[0]][end_space[1]] = end_copy
+      break
       # 11/30 addition so cannot put/leave self in check, refactor END
-      break if commit_move?(identify_piece(), end_space)
+      # break if commit_move?(identify_piece(), end_space)
 
-      puts 'Illegal move. Please try again.'
+      # puts 'Illegal move. Please try again.'
     end
     move_piece(identify_piece(), end_space)
     self.total_turn_counter += 1
@@ -662,19 +667,6 @@ class Game
     rook_space = castle_space_to_rook_mapping.fetch(desired_space)
     rook_space.class == Rook && rook_space.has_moved == false
   end
-
-  # def no_castling_impediments?(desired_space, board = gameboard.board_array)
-  #   case desired_space
-  #   when [0, 2]
-  #     return true if board[0][1, 3].all? { |space| space == '__' } #.class == String }
-  #   when [0, 6]
-  #     return true if board[0][5, 2].all? { |space| space == '__' }
-  #   when [7, 2]
-  #     return true if board[7][1, 3].all? { |space| space == '__' }
-  #   when [7, 6]
-  #     return true if board[7][5, 2].all? { |space| space == '__' }
-  #   end
-  # end
 
   def no_castling_impediments?(desired_space, board = gameboard.board_array)
     castle_spaces_crossed_mapping = { [0, 2] => board[0][1, 3],
