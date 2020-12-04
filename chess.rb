@@ -655,62 +655,54 @@ class Game
   end
 
   def rook_for_castling?(desired_space, board = gameboard.board_array)
-    case desired_space
-    when [0, 2]
-      return true if board[0][0].class == Rook && board[0][0].has_moved == false
-    when [0, 6]
-      return true if board[0][7].class == Rook && board[0][7].has_moved == false
-    when [7, 2]
-      return true if board[7][0].class == Rook && board[7][0].has_moved == false
-    when [7, 6]
-      return true if board[7][7].class == Rook && board[7][7].has_moved == false
-    end
+    castle_space_to_rook_mapping = { [0, 2] => board[0][0],
+                                     [0, 6] => board[0][7],
+                                     [7, 2] => board[7][0],
+                                     [7, 6] => board[7][7] }
+    rook_space = castle_space_to_rook_mapping.fetch(desired_space)
+    rook_space.class == Rook && rook_space.has_moved == false
   end
 
-  def move_rook_for_castling(desired_space, board = gameboard.board_array)
-    piece = case desired_space
-            when [0, 2]
-              board[0][0]
-            when [0, 6]
-              board[0][7]
-            when [7, 2]
-              board[7][0]
-            when [7, 6]
-              board[7][7]
-            end
-    update_board(piece, desired_space)
-    piece.current_location = desired_space
-  end
+  # def no_castling_impediments?(desired_space, board = gameboard.board_array)
+  #   case desired_space
+  #   when [0, 2]
+  #     return true if board[0][1, 3].all? { |space| space == '__' } #.class == String }
+  #   when [0, 6]
+  #     return true if board[0][5, 2].all? { |space| space == '__' }
+  #   when [7, 2]
+  #     return true if board[7][1, 3].all? { |space| space == '__' }
+  #   when [7, 6]
+  #     return true if board[7][5, 2].all? { |space| space == '__' }
+  #   end
+  # end
 
   def no_castling_impediments?(desired_space, board = gameboard.board_array)
-    case desired_space
-    when [0, 2]
-      return true if board[0][1, 3].all? { |space| space == '__' } #.class == String }
-    when [0, 6]
-      return true if board[0][5, 2].all? { |space| space == '__' }
-    when [7, 2]
-      return true if board[7][1, 3].all? { |space| space == '__' }
-    when [7, 6]
-      return true if board[7][5, 2].all? { |space| space == '__' }
-    end
+    castle_spaces_crossed_mapping = { [0, 2] => board[0][1, 3],
+                                      [0, 6] => board[0][5, 2],
+                                      [7, 2] => board[7][1, 3],
+                                      [7, 6] => board[7][5, 2] }
+    spaces_to_check = castle_spaces_crossed_mapping.fetch(desired_space)
+    spaces_to_check.all? { |space| space == '__' }
   end
 
   def castling_thru_check?(desired_space, board = gameboard.board_array)
     # in_check? for desired_space already covered since cannot put self in check
-    case desired_space
-    when [0, 2]
-      castle_king_step = King.new('black', [0, 3])
-      return true if in_check?(castle_king_step)
-    when [0, 6]
-      castle_king_step = King.new('black', [0, 5])
-      return true if in_check?(castle_king_step)
-    when [7, 2]
-      castle_king_step = King.new('white', [7, 3])
-      return true if in_check?(castle_king_step)
-    when [7, 6]
-      castle_king_step = King.new('white', [7, 5])
-      return true if in_check?(castle_king_step)
-    end
+    castle_king_path_mapping = { [0, 2] => [0, 3],
+                                 [0, 6] => [0, 5],
+                                 [7, 2] => [7, 3],
+                                 [7, 6] => [7, 5] }
+    castle_king_path = King.new(turn, castle_king_path_mapping.fetch(desired_space))
+    in_check?(castle_king_path)
+  end
+
+  def move_rook_for_castling(desired_space, board = gameboard.board_array)
+    castle_space_to_rook_mapping = { [0, 2] => board[0][0],
+                                     [0, 6] => board[0][7],
+                                     [7, 2] => board[7][0],
+                                     [7, 6] => board[7][7] }
+    rook = castle_space_to_rook_mapping.fetch(desired_space)
+    update_board(rook, desired_space)
+    rook.current_location = desired_space
   end
 
   def valid_pawn_move?(piece, travel_path, desired_space)
@@ -1093,6 +1085,7 @@ end
 # game.initialize_pieces
 # game.place_starting_pieces
 # game.gameboard.display_board
+# # binding.pry
 # while game.game_over == false
 #   game.take_turn
 #   game.gameboard.display_board
