@@ -218,7 +218,7 @@ class Game
               # :start_input, :finish_input,
               :valid_input, :piece_type, :start,
               :finish, :start_space, :end_space, :winner,
-              :enemy_king, :friendly_king
+              :enemy_king, :friendly_king, :rook_start_copy, :rook_end_copy
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
                 :start_input, :finish_input, :game_over, :checkmate
                 # :white_king, :black_king
@@ -483,6 +483,8 @@ class Game
         puts 'Illegal move. Please try again.'
         next
       end
+      get_travel_path
+      copy_castling_spaces if identify_piece.class == King && travel_path[0].abs == 2
       start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
       end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
       move_piece(identify_piece(), end_space)
@@ -524,6 +526,38 @@ class Game
     puts "\nCheck!\n" if enemy_king.in_check
     # 11/30 addition: check if put opponent in check END, refactor
     switch_turn_to_opponent
+  end
+
+  def copy_castling_spaces(board = gameboard.board_array)
+    if end_space == [0, 6]
+      @rook_start_copy = board[0][7]
+      @rook_end_copy = board[0][5]
+    elsif end_space == [0, 2]
+      @rook_start_copy = board[0][0]
+      @rook_end_copy = board[0][3]
+    elsif end_space == [7, 6]
+      @rook_start_copy = board[7][7]
+      @rook_end_copy = board[7][5]
+    else 
+      @rook_start_copy = board[7][0]
+      @rook_end_copy = board[7][3]
+    end
+  end
+
+  def restore_castling_copies
+    if end_space == [0, 6]
+      board[0][7] = rook_start_copy
+      board[0][5] = rook_end_copy
+    elsif end_space == [0, 2]
+      board[0][0] = rook_start_copy
+      board[0][3] = rook_end_copy
+    elsif end_space == [7, 6]
+      board[7][7] = rook_start_copy
+      board[7][5] = rook_end_copy
+    else 
+      board[7][0] = rook_start_copy
+      board[7][3] = rook_end_copy
+    end
   end
 
   def flag_moved_rook_or_king(board = gameboard.board_array)
