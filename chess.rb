@@ -221,9 +221,10 @@ class Game
               :enemy_king, :friendly_king, :rook_start_copy, :rook_end_copy,
               :castle_spaces_crossed_mapping, :castle_king_crossed_mapping, 
               :castle_space_to_rook_mapping, :castle_restore_rook_mapping,
-              :rook_end_coord
+              :rook_end_coord, :promotion
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
                 :start_input, :finish_input, :game_over, :checkmate,
+                :new_promoted_piece,
                 :end_space # only moved from attr_reader for tests, refactor tests
                 # :white_king, :black_king
                 # move :start_input and :finish input to attr_reader after redo testing setup
@@ -491,7 +492,8 @@ class Game
       # copy_castling_spaces if identify_piece.class == King && travel_path[0].abs == 2
       # start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
       # end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
-        serialized_gameboard = Marshal.dump(gameboard)
+      serialized_gameboard = Marshal.dump(gameboard)
+      ask_how_to_promote_pawn if promoting_pawn?(identify_piece) #needs to be before #move_piece if using identify piece
       move_piece(identify_piece(), end_space)
       fetch_friendly_king
       if friendly_king.in_check && in_check?(friendly_king)
@@ -635,6 +637,7 @@ class Game
                                           (friendly_king.current_location[1] - desired_space[1]).abs == 2
     capture_opponent(piece, desired_space)
     update_board(piece, desired_space)
+    pawn_promotion if promoting_pawn?(piece)
     piece.current_location = desired_space
   end
 
@@ -666,6 +669,46 @@ class Game
     elsif black_can_en_passant?(piece, desired_space)
       destroy_enemy([desired_space[0] - 1, desired_space[1]])
     end
+  end
+
+  def promoting_pawn?(piece)
+    [WhitePawn, BlackPawn].include?(piece.class) && [0, 7].include?(end_space[0])
+  end
+
+  def pawn_promotion
+    create_piece_for_promotion
+    add_new_promoted_piece_to_board
+  end
+
+  def ask_how_to_promote_pawn
+    # loop do
+    loop do
+      puts "Your pawn has reached the final rank. Enter which piece you would like\
+            to replace it with - queen, bishop, rook, or knight:"
+      @promotion = gets.chomp.downcase
+      break if %w[queen bishop rook knight].include?(promotion)
+
+      puts "Invalid input. Please enter 'queen', 'bishop', 'rook', or 'knight':"
+    end
+  end
+
+  def create_piece_for_promotion
+    @new_promoted_piece = case promotion
+                          when 'queen'
+                            Queen.new(turn, end_space)
+                          when 'bishop'
+                            Bishop.new(turn, end_space)
+                          when 'rook'
+                            Rook.new(turn, end_space)
+                          when 'knight'
+                            Knight.new(turn, end_space)
+                          end
+    new_promoted_piece.has_moved = true if new_promoted_piece.class == Rook
+    # either the line above, or a comparison of King vs Rook color when castling is needed
+  end
+
+  def add_new_promoted_piece_to_board(board = gameboard.board_array)
+    board[end_space[0]][end_space[1]] = new_promoted_piece
   end
 
   # def passant_vulnerable?(starting_space, ending_space)
