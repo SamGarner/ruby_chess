@@ -172,6 +172,7 @@ describe Game do
 
         describe '#first_move_for_pawn' do
           it 'is called by move piece' do
+            @game.end_space = [4, 6]
             expect(@white_pawn).to receive(:makes_first_move).once
             @game.move_piece(@white_pawn, [4, 6])
           end
@@ -395,45 +396,88 @@ describe Game do
       end
     end
 
-    describe '#no_castling_impediments' do
+    context "when attempting to castle" do
       before(:each) do
-        @white_king = King.new('white', [7, 4])
-        @board.board_array[7][4] = @white_king
-        @white_rook_h = Rook.new('white', [7, 7])
-        @board.board_array[7][7] = @white_rook_h
+          @white_king = King.new('white', [7, 4])
+          @board.board_array[7][4] = @white_king
+          @white_rook_h = Rook.new('white', [7, 7])
+          @board.board_array[7][7] = @white_rook_h
+          @game.end_space = [7, 6]
+          @game.define_castling_mappings
+        end
+     
+      describe '#no_castling_impediments' do
+        it 'should be true when no pieces between the rook and king' do
+          expect(@game.no_castling_impediments?([7, 6])).to be true
+        end
+
+        it 'should be false when piece(s) between the rook and king' do
+          @white_bishop = Bishop.new('white', [7, 5])
+          @board.board_array[7][5] = @white_bishop
+          expect(@game.no_castling_impediments?([7, 6])).to be false
+        end
       end
 
-      it 'should be true when no pieces between the rook and king' do
-        expect(@game.no_castling_impediments?([7, 6])).to be true
-      end
+    #   describe '#copy_castling_spaces' do # combine with above castling tests?
+    #     context 'when castling white king to G1' do
+    #       # it 'rook_start_copy should be copy of board_array[7][7]' do
+    #       #   @game.copy_castling_spaces
+    #       #   expect(@game.rook_start_copy).to eq(@board.board_array[7][7])
+    #       # end
 
-      it 'should be false when piece(s) between the rook and king' do
-        @white_bishop = Bishop.new('white', [7, 5])
-        @board.board_array[7][5] = @white_bishop
-        expect(@game.no_castling_impediments?([7, 6])).to be false
-      end
+    #       it 'rook_end_copy should be copy of board_array[7][5]' do
+    #         @game.copy_castling_spaces
+    #         expect(@game.rook_end_copy).to eq(@board.board_array[7][5])
+    #       end
+    #     end
+    #   end
+
+    #   describe '#restore_castling_copies' do # combine with above castling tests?
+    #     context 'when castling white king to G1' do
+    #       it 'board_array[7][5] should be set back to an empty space' do
+    #         @game.copy_castling_spaces
+    #         @game.gameboard.board_array[7][5] = 'broken'
+    #         @game.restore_castling_copies
+    #         expect(@board.board_array[7][5]).to eql('__')
+    #       end
+
+    #       it 'board_array[7][7] should be set back to rook_start_copy' do
+    #         @game.copy_castling_spaces
+    #         #@game.gameboard.board_array[7][7] = '__'
+    #         @game.restore_castling_copies
+    #         expect(@game.gameboard.board_array[7][7]).to eq(@game.rook_start_copy)
+    #       end
+
+    #       it 'board_array[7][7] should be set back to a rook' do
+    #         @game.copy_castling_spaces
+    #         @game.gameboard.board_array[7][7] = '__'
+    #         @game.restore_castling_copies
+    #         expect(@game.gameboard.board_array[7][7].class).to eq(Rook)
+    #       end
+    #     end
+    #   end
     end
 
-    describe '#copy_castling_spaces' do # combine with above castling tests?
-      before(:each) do
-        @white_king = King.new('white', [7, 4])
-        @board.board_array[7][4] = @white_king
-        @white_rook_h = Rook.new('white', [7, 7])
-        @board.board_array[7][7] = @white_rook_h
-        @game.end_space = [7, 6]
-        @game.define_castling_mappings
-      end
+    # describe '#copy_castling_spaces' do # combine with above castling tests?
+    #   before(:each) do
+    #     @white_king = King.new('white', [7, 4])
+    #     @board.board_array[7][4] = @white_king
+    #     @white_rook_h = Rook.new('white', [7, 7])
+    #     @board.board_array[7][7] = @white_rook_h
+    #     @game.end_space = [7, 6]
+    #     @game.define_castling_mappings
+    #   end
 
-      it 'rook_start_copy should be copy of board_array[7][7]' do
-        @game.copy_castling_spaces
-        expect(@game.rook_start_copy).to eq(@board.board_array[7][7])
-      end
+    #   it 'rook_start_copy should be copy of board_array[7][7]' do
+    #     @game.copy_castling_spaces
+    #     expect(@game.rook_start_copy).to eq(@board.board_array[7][7])
+    #   end
 
-      it 'rook_end_copy should be copy of board_array[7][5]' do
-        @game.copy_castling_spaces
-        expect(@game.rook_end_copy).to eq(@board.board_array[7][5])
-      end
-    end
+    #   it 'rook_end_copy should be copy of board_array[7][5]' do
+    #     @game.copy_castling_spaces
+    #     expect(@game.rook_end_copy).to eq(@board.board_array[7][5])
+    #   end
+    # end
     
 
     # describe '#vertical_impediment?' do
