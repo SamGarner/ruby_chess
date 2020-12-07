@@ -483,24 +483,16 @@ class Game
     escape_counter = 0
     while true
       choose_move
-      # 11/30 addition so cannot put/leave self in check, refactor START
       unless commit_move?(identify_piece(), end_space)
         puts 'Illegal move. Please try again.'
         next
       end
-      # get_travel_path
-      # copy_castling_spaces if identify_piece.class == King && travel_path[0].abs == 2
-      # start_copy = gameboard.board_array[start_space[0]][start_space[1]].dup
-      # end_copy = gameboard.board_array[end_space[0]][end_space[1]].dup
       serialized_gameboard = Marshal.dump(gameboard)
-      ask_how_to_promote_pawn if promoting_pawn?(identify_piece) #needs to be before #move_piece if using identify piece
+      ask_how_to_promote_pawn if promoting_pawn?(identify_piece) # needs to be before #move_piece if using identify piece
       move_piece(identify_piece(), end_space)
       fetch_friendly_king
       if friendly_king.in_check && in_check?(friendly_king)
         puts 'You are in check and must escape. You can try one more time:' if escape_counter.zero?
-        # gameboard.board_array[start_space[0]][start_space[1]] = start_copy
-        # gameboard.board_array[end_space[0]][end_space[1]] = end_copy
-        # restore_castling_copies
         self.gameboard = Marshal.load(serialized_gameboard)
         puts 'CHECK MATE' if escape_counter == 1
         escape_counter += 1
@@ -513,31 +505,20 @@ class Game
 
       elsif in_check?(friendly_king) # can remove the board stuff from diag checks? still may be better overal
         puts 'You cannot put yourself in check. Please try again.'
-        # gameboard.board_array[start_space[0]][start_space[1]] = start_copy
-        # gameboard.board_array[end_space[0]][end_space[1]] = end_copy
-        # restore_castling_copies
         self.gameboard = Marshal.load(serialized_gameboard)
         next
 
       end
-      # gameboard.board_array[start_space[0]][start_space[1]] = start_copy
-      # gameboard.board_array[end_space[0]][end_space[1]] = end_copy
-      # restore_castling_copies
       self.gameboard = Marshal.load(serialized_gameboard)
       break
-      # 11/30 addition so cannot put/leave self in check, refactor END
-      # break if commit_move?(identify_piece(), end_space)
 
-      # puts 'Illegal move. Please try again.'
     end
     move_piece(identify_piece(), end_space)
     self.total_turn_counter += 1
     flag_moved_rook_or_king
-    # 11/30 addition: check if put opponent in check START, refactor
     fetch_enemy_king
     enemy_king.in_check = in_check?(enemy_king)
     puts "\nCheck!\n" if enemy_king.in_check
-    # 11/30 addition: check if put opponent in check END, refactor
     switch_turn_to_opponent
   end
 
@@ -621,15 +602,6 @@ class Game
   end
 
   def move_piece(piece, desired_space) # move to ChessPiece SuperClass once 'working'
-    # # desired space (non-converted) example: [6, 4] - white king move forward one
-    # travel_path = []
-    # travel_path[0] = desired_space[1] - piece.current_location[1] # horizontal plane
-    # travel_path[1] = piece.current_location[0] - desired_space[0] # vertical plane
-    # # e.g rook travel path, 7,7 --> 5, 7 = [-2, 0]
-    # return unless valid_move?(piece, travel_path)
-
-    # destroy_enemy(desired_space) if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
-    # white_pawn_has_moved(piece, desired_space) if piece.class == WhitePawn
     first_move_for_pawn(piece, desired_space) if [WhitePawn, BlackPawn].include?(piece.class) &&
                                                  piece.current_location == piece.starting_location
     fetch_friendly_king # can likely remove this later by reordering/doublechecking #take_turn
@@ -741,8 +713,6 @@ class Game
       return possible_move?(piece, travel_path)
     when WhitePawn, BlackPawn
       return valid_pawn_move?(piece, travel_path, desired_space)
-    # when BlackPawn
-    #   return valid_black_pawn_move?(piece, travel_path, desired_space)
     when King
       valid_king_move?(piece, travel_path, desired_space)
     else
