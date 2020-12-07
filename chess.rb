@@ -221,10 +221,10 @@ class Game
               :enemy_king, :friendly_king, :rook_start_copy, :rook_end_copy,
               :castle_spaces_crossed_mapping, :castle_king_crossed_mapping, 
               :castle_space_to_rook_mapping, :castle_restore_rook_mapping,
-              :rook_end_coord, :promotion
+              :rook_end_coord, :promotion, :serialized_gameboard
   attr_accessor :gameboard, :turn, :total_turn_counter, :travel_path, #travel_path to reader?
                 :start_input, :finish_input, :game_over, :checkmate,
-                :new_promoted_piece,
+                :new_promoted_piece, :escape_counter,
                 :end_space # only moved from attr_reader for tests, refactor tests
                 # :white_king, :black_king
                 # move :start_input and :finish input to attr_reader after redo testing setup
@@ -479,47 +479,77 @@ class Game
   #   end
   # end
 
-  def take_turn # WIP
-    escape_counter = 0
-    while true
-      choose_move
-      unless commit_move?(identify_piece(), end_space)
-        puts 'Illegal move. Please try again.'
-        next
-      end
-      serialized_gameboard = Marshal.dump(gameboard)
-      ask_how_to_promote_pawn if promoting_pawn?(identify_piece) # needs to be before #move_piece if using identify piece
-      move_piece(identify_piece(), end_space)
-      fetch_friendly_king
-      if friendly_king.in_check && in_check?(friendly_king)
-        puts 'You are in check and must escape. You can try one more time:' if escape_counter.zero?
-        self.gameboard = Marshal.load(serialized_gameboard)
-        puts 'CHECK MATE' if escape_counter == 1
-        escape_counter += 1
-        next unless escape_counter == 2
-
-        turn == 'white' ? @winner = 'Black' : @winner = 'White'
-        self.checkmate = 'y'
-        end_game
-        break
-
-      elsif in_check?(friendly_king) # can remove the board stuff from diag checks? still may be better overal
-        puts 'You cannot put yourself in check. Please try again.'
-        self.gameboard = Marshal.load(serialized_gameboard)
-        next
-
-      end
-      self.gameboard = Marshal.load(serialized_gameboard)
-      break
-
-    end
-    move_piece(identify_piece(), end_space)
+  def take_turn
+    self.escape_counter = 0 # for #ensure_move_not_sacrificing_king
+    ensure_move_not_sacrificing_king
+    move_piece(identify_piece, end_space)
     self.total_turn_counter += 1
     flag_moved_rook_or_king
+    confirm_enemy_king_status
+    switch_turn_to_opponent
+  end
+
+  def ensure_move_not_sacrificing_king
+    loop do
+      choose_legal_move_loop
+      @serialized_gameboard = Marshal.dump(gameboard)
+      ask_how_to_promote_pawn if promoting_pawn?(identify_piece) # needs to stay before #move_piece if using identify piece
+      move_piece(identify_piece, end_space)
+      fetch_friendly_king
+      if friendly_king.in_check && in_check?(friendly_king) # must escape check
+        demand_user_escape_check
+        restore_board_after_checking_move_legality
+        self.escape_counter += 1
+
+        escape_counter < 2 ? next : unable_to_escape_check
+
+        break
+
+      elsif in_check?(friendly_king) # cannot put oneself in check
+        puts 'You cannot put yourself in check. Please try again.'
+        restore_board_after_checking_move_legality
+        next
+
+      end
+      restore_board_after_checking_move_legality
+      break
+    end
+  end
+
+  def choose_legal_move_loop
+    loop do
+      choose_move
+      unless commit_move?(identify_piece, end_space)
+        puts 'Illegal move. Please try again.'
+        next
+
+      end
+      break
+    end
+  end
+
+  def demand_user_escape_check
+    if escape_counter.zero?
+      puts 'You are in check and must escape. You can try one more time:'
+    else
+      puts 'CHECK MATE'
+    end
+  end
+
+  def restore_board_after_checking_move_legality
+    self.gameboard = Marshal.load(serialized_gameboard)
+  end
+
+  def unable_to_escape_check
+    turn == 'white' ? @winner = 'Black' : @winner = 'White'
+    self.checkmate = 'y'
+    end_game 
+  end
+
+  def confirm_enemy_king_status
     fetch_enemy_king
     enemy_king.in_check = in_check?(enemy_king)
     puts "\nCheck!\n" if enemy_king.in_check
-    switch_turn_to_opponent
   end
 
   def define_castling_mappings(board = gameboard.board_array)
@@ -1152,16 +1182,16 @@ class Game
   end
 end
 
-# board = Board.new
-# game = Game.new(board)
-# game.initialize_pieces
-# game.place_starting_pieces
-# game.gameboard.display_board
-# game.define_castling_mappings
-# while game.game_over == false
-#   game.take_turn
-#   game.gameboard.display_board
-# end
+board = Board.new
+game = Game.new(board)
+game.initialize_pieces
+game.place_starting_pieces
+game.gameboard.display_board
+game.define_castling_mappings
+while game.game_over == false
+  game.take_turn
+  game.gameboard.display_board
+end
 # # binding.pry
 
 # king = King.new
