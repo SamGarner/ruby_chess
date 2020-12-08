@@ -408,6 +408,25 @@ class Game
     end
   end
 
+  def valid_user_input?(user_input)
+    gameboard.mapping_hash.key?(user_input.to_sym)
+  end
+
+  def valid_piece_to_move?(player_color = turn)
+    start_display_to_array_map
+    space = gameboard.board_array[start_space[0]][start_space[1]]
+    space != '__' && space.color == player_color
+  end
+
+  def start_display_to_array_map(start = start_input)
+    @start_space = gameboard.mapping_hash.fetch(start.to_sym)
+  end
+
+  def which_piece_selected(starting_space = self.start_space)
+    space = gameboard.board_array[starting_space[0]][starting_space[1]]
+    @piece_type = space.class
+  end
+
   def choose_where_to_move
     puts "Where would you like to move your #{piece_type}?"
     @finish_input = gets.chomp.upcase
@@ -419,36 +438,6 @@ class Game
     end
   end
 
-  # def display_to_array_map(start = start_input, finish = finish_input)
-  #   # # include in take_turn or in choose_move ?
-  #   # @start = gameboard.mapping_hash.fetch(start.to_sym)
-  #   # # error handling here or outside ?
-  #   # @finish = gameboard.mapping_hash.fetch(finish.to_sym)
-  # end
-
-  def valid_user_input?(user_input)
-    gameboard.mapping_hash.key?(user_input.to_sym)
-  end
-
-  def start_display_to_array_map(start = start_input)
-    @start_space = gameboard.mapping_hash.fetch(start.to_sym)
-  end
-
-  def end_display_to_array_map(finish = finish_input)
-    @end_space = gameboard.mapping_hash.fetch(finish.to_sym)
-  end
-
-  def valid_piece_to_move?(player_color = turn)
-    start_display_to_array_map
-    space = gameboard.board_array[start_space[0]][start_space[1]]
-    space != '__' && space.color == player_color
-  end
-
-  # def valid_piece_to_move?(starting_space, player_color = turn)
-  #   space = gameboard.board_array[starting_space[0]][starting_space[1]]
-  #   space != '__' && space.color == player_color
-  # end
-
   def valid_target_space?(player_color = turn)
     end_display_to_array_map
     space = gameboard.board_array[end_space[0]][end_space[1]]
@@ -457,27 +446,9 @@ class Game
     space.color != player_color
   end
 
-  # def valid_finish_input?(user_input, finish = self.finish)
-  #   valid_user_input?(user_input) && valid_target_space?(finish)
-  # end
-
-  # def valid_start_input?(user_input, start = self.start)
-  #   valid_user_input?(user_input) && valid_piece_to_move?(start)
-  # end
-
-  def which_piece_selected(starting_space = self.start_space)
-    space = gameboard.board_array[starting_space[0]][starting_space[1]]
-    @piece_type = space.class
+  def end_display_to_array_map(finish = finish_input)
+    @end_space = gameboard.mapping_hash.fetch(finish.to_sym)
   end
-
-  # def populate_valid_input_array
-  #   @valid_input = []
-  #   ('A'..'H').each do |l|
-  #     (1..8).each do |n|
-  #       @valid_input << (l + n.to_s)
-  #     end
-  #   end
-  # end
 
   def take_turn
     self.escape_counter = 0 # for #ensure_move_not_sacrificing_king
@@ -623,7 +594,6 @@ class Game
   end
 
   def switch_turn_to_opponent
-    # self.turn = turn == 'white' ? 'black' : 'white'
     turn == 'white' ? self.turn = 'black' : self.turn = 'white'
   end
 
@@ -683,7 +653,6 @@ class Game
   end
 
   def ask_how_to_promote_pawn
-    # loop do
     loop do
       puts "Your pawn has reached the final rank. Enter which piece you would like\
             to replace it with - queen, bishop, rook, or knight:"
@@ -760,8 +729,6 @@ class Game
         rook_for_castling?(desired_space) &&
         no_castling_impediments?(desired_space) &&
         !castling_thru_check?(desired_space)
-      # and no impeding pieces
-      # AND never pass through check
     end
     false
   end
@@ -833,9 +800,6 @@ class Game
   def pawn_initial_move?(piece)
     piece.current_location == piece.starting_location
   end
-  # def valid_knight_move?(piece, travel_path)
-  #   possible_move?(piece, travel_path)
-  # end
 
   def impeding_piece?(piece, travel_path, desired_space)
     friendly_fire?(piece, desired_space) || 
@@ -971,7 +935,7 @@ class Game
   def piece_exists?(coordinates, board = gameboard.board_array)
     board[coordinates[0]][coordinates[1]].class != String
   end
- 
+
   def color_match?(piece, coordinates, board = gameboard.board_array)
     board[coordinates[0]][coordinates[1]].color == piece.color
   end
@@ -1182,16 +1146,16 @@ class Game
   end
 end
 
-board = Board.new
-game = Game.new(board)
-game.initialize_pieces
-game.place_starting_pieces
-game.gameboard.display_board
-game.define_castling_mappings
-while game.game_over == false
-  game.take_turn
-  game.gameboard.display_board
-end
+# board = Board.new
+# game = Game.new(board)
+# game.initialize_pieces
+# game.place_starting_pieces
+# game.gameboard.display_board
+# game.define_castling_mappings
+# while game.game_over == false
+#   game.take_turn
+#   game.gameboard.display_board
+# end
 # # binding.pry
 
 # king = King.new
