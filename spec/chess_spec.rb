@@ -102,12 +102,28 @@ describe Game do
       end
     end
 
-    describe '#commit_move?' do
+    # describe '#commit_move?' do
+    #     let(:piece) { instance_double(Bishop) }
+
+    #     before do
+    #       allow(piece).to receive(:possible_move?)
+    #       # allow(piece).to receive(:impeding_piece?)
+    #     end
+
+    #     it 'should call #get_travel_path' do
+    #       desired_space = [3, 3]
+    #       expect(@game).to receive(:get_travel_path).once
+    #       @game.commit_move?(piece, desired_space)
+    #     end
+    # end
+
+    describe '#get_travel_path' do
       context 'when moving piece from [7, 6] to [5, 4]' do
+        let(:bishop) { instance_double(Bishop, color: 'black', current_location: [7, 6]) }
         it 'should have travel_path of [-2, 2]' do
-          bishop = Bishop.new('black', [7, 6])
+          # bishop = Bishop.new('black', [7, 6])
           @board.board_array[7][6] = bishop
-          @game.commit_move?(bishop, [5, 4])
+          @game.get_travel_path(bishop, [5, 4])
           expect(@game.travel_path).to eq([-2, 2])
         end
       end
