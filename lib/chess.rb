@@ -1,6 +1,13 @@
 # frozen_string_literal: false
 
 require 'pry'
+require_relative 'pieces/king.rb'
+require_relative 'pieces/queen.rb'
+require_relative 'pieces/bishop.rb'
+require_relative 'pieces/knight.rb'
+require_relative 'pieces/rook.rb'
+require_relative 'pieces/white_pawn.rb'
+require_relative 'pieces/black_pawn.rb'
 
 # display board (.each with .each to print [0][0] through [7][7]?)
 # figure out king with unicode piece
@@ -31,6 +38,59 @@ class Board
                          H1: [7, 7], H2: [6, 7], H3: [5, 7], H4: [4, 7],
                          H5: [3, 7], H6: [2, 7], H7: [1, 7], H8: [0, 7]
                        ]
+  end
+
+  def place_starting_kings
+    board_array[0][4] = King.new('black', [0, 4])
+    board_array[7][4] = King.new('white', [7, 4])
+  end
+
+  def place_starting_queens
+    board_array[0][3] = Queen.new('black', [0, 3])
+    board_array[7][3] = Queen.new('white', [7, 3])
+  end
+
+  def place_starting_bishops
+    board_array[0][2] = Bishop.new('black', [0, 2])
+    board_array[0][5] = Bishop.new('black', [0, 5])
+    board_array[7][2] = Bishop.new('white', [7, 2])
+    board_array[7][5] = Bishop.new('white', [7, 5])
+  end
+
+  def place_starting_knights
+    board_array[0][1] = Knight.new('black', [0, 1])
+    board_array[0][6] = Knight.new('black', [0, 6])
+    board_array[7][1] = Knight.new('white', [7, 1])
+    board_array[7][6] = Knight.new('white', [7, 6])
+  end
+
+  def place_starting_rooks
+    board_array[0][0] = Rook.new('black', [0, 0])
+    board_array[0][7] = Rook.new('black', [0, 7])
+    board_array[7][0] = Rook.new('white', [7, 0])
+    board_array[7][7] = Rook.new('white', [7, 7])
+  end
+
+  def place_starting_black_pawns
+    board_array[1][0] = BlackPawn.new([1, 0])
+    board_array[1][1] = BlackPawn.new([1, 1])
+    board_array[1][2] = BlackPawn.new([1, 2])
+    board_array[1][3] = BlackPawn.new([1, 3])
+    board_array[1][4] = BlackPawn.new([1, 4])
+    board_array[1][5] = BlackPawn.new([1, 5])
+    board_array[1][6] = BlackPawn.new([1, 6])
+    board_array[1][7] = BlackPawn.new([1, 7])
+  end
+
+  def place_starting_white_pawns
+    board_array[6][0] = WhitePawn.new([6, 0])
+    board_array[6][1] = WhitePawn.new([6, 1])
+    board_array[6][2] = WhitePawn.new([6, 2])
+    board_array[6][3] = WhitePawn.new([6, 3])
+    board_array[6][4] = WhitePawn.new([6, 4])
+    board_array[6][5] = WhitePawn.new([6, 5])
+    board_array[6][6] = WhitePawn.new([6, 6])
+    board_array[6][7] = WhitePawn.new([6, 7])
   end
 
   def display_board
@@ -69,141 +129,6 @@ end
 #   end
 # end
 
-# King
-class King #s < Piece
-  attr_reader :symbol, :possible_moves, :color, :starting_location, :castling_moves
-  attr_accessor :current_location, :in_check, :has_moved
-
-  def initialize(color, location)
-    @color = color
-    @symbol = "#{color[0].upcase}K"
-    @current_location = location
-    @starting_location = location
-    @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],
-                       [-1, 0], [-1, 1]]
-    @castling_moves = [[-2, 0], [2, 0]]
-    @in_check = false
-    @has_moved = false
-    # U+2654 White Chess King
-    # U+265A Black Chess King
-  end
-end
-
-class Queen # < ChessPiece
-  attr_reader :symbol, :possible_moves, :color
-  attr_accessor :current_location
-
-  def initialize(color, location)
-    # super(location)
-    @color = color
-    @symbol = "#{color[0].upcase}Q"
-    @current_location = location
-    @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
-                      [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
-                      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
-                      [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7],
-                      [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
-                      [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
-                      [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
-                      [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0]
-  end
-end
-
-class Bishop
-  attr_reader :symbol, :possible_moves, :color
-  attr_accessor :current_location
-
-  def initialize(color, location)
-    @color = color
-    @symbol = "#{color[0].upcase}B"
-    @current_location = location
-    @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
-                      [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],
-                      [-1, -1], [-2, -2], [-3, -3], [-4, -4], [-5, -5], [-6, -6], [-7, -7],
-                      [-1, 1], [-2, 2], [-3, 3], [-4, 4], [-5, 5], [-6, 6], [-7, 7]
-    # share with Queen ?
-  end
-end
-
-class Knight
-  attr_reader :symbol, :possible_moves, :color
-  attr_accessor :current_location
-
-  def initialize(color, location)
-    @color = color
-    @symbol = "#{color[0].upcase}k"
-    @current_location = location
-    @possible_moves = [1, 2], [2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1],
-                      [-1, 2], [-2, 1]
-  end
-end
-
-class Rook
-  attr_reader :symbol, :possible_moves, :color, :starting_location
-  attr_accessor :current_location, :has_moved
-
-  def initialize(color, location)
-    @color = color
-    @symbol = "#{color[0].upcase}R"
-    @current_location = location
-    @starting_location = location
-    @possible_moves = [0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
-                      [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
-                      [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
-                      [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0]
-    @has_moved = false
-  end
-end
-
-class WhitePawn
-  attr_reader :symbol, :color, :starting_location, :capture_moves
-  attr_accessor :current_location, :possible_moves, :initial_turn
-
-  def initialize(location)
-    @color = 'white'
-    @symbol = 'Wp' # "#{color[0].upcase}p"
-    @current_location = location
-    @starting_location = location
-    @possible_moves = [0, 1], [0, 2]
-    @capture_moves = [-1, 1], [1, 1]
-    @initial_turn = 0
-  end
-
-  def makes_first_move(ending_space, move_number)
-    self.possible_moves = [[0, 1]]
-    self.initial_turn = move_number if starting_location[0] - ending_space[0] == 2
-    # game.passant_vulnerable?(starting_space, ending_space)
-  end
-
-  # def passant_vulnerable?(starting_space, ending_space)
-  #   (starting_space[1] - ending_space[1]).abs == 2
-  # end
-end
-
-class BlackPawn
-  attr_reader :symbol, :color, :starting_location, :capture_moves
-  attr_accessor :current_location, :possible_moves, :initial_turn
-
-  def initialize(location)
-    @color = 'black'
-    @symbol = 'Bp' # "#{color[0].upcase}p"
-    @current_location = location
-    @starting_location = location
-    @possible_moves = [0, -1], [0, -2]
-    @capture_moves = [-1, -1], [1, -1]
-    @initial_turn = 0
-  end
-
-  def makes_first_move(ending_space, move_number)    
-    self.possible_moves = [[0, -1]]
-    self.initial_turn = move_number if starting_location[0] - ending_space[0] == -2
-  end
-
-  # def passant_vulnerable?(starting_space, ending_space)
-  #   (starting_space[1] - ending_space[1]).abs == 2
-  # end
-end
-
 # Game
 class Game
 
@@ -236,132 +161,14 @@ class Game
     @game_over = false
   end
 
-  def initialize_pieces
-    initialize_kings
-    initialize_queens
-    initialize_bishops
-    initialize_knights
-    initialize_rooks
-    initialize_black_pawns
-    initialize_white_pawns
-  end
-
-  def initialize_kings
-    @black_king = King.new('black', [0, 4])
-    @white_king = King.new('white', [7, 4])
-  end
-
-  def initialize_queens
-    @black_queen = Queen.new('black', [0, 3])
-    @white_queen = Queen.new('white', [7, 3])
-  end
-
-  def initialize_bishops
-    @black_bishop_c = Bishop.new('black', [0, 2])
-    @black_bishop_f = Bishop.new('black', [0, 5])
-    @white_bishop_c = Bishop.new('white', [7, 2])
-    @white_bishop_f = Bishop.new('white', [7, 5])
-  end
-
-  def initialize_knights
-    @black_knight_b = Knight.new('black', [0, 1])
-    @black_knight_g = Knight.new('black', [0, 6])
-    @white_knight_b = Knight.new('white', [7, 1])
-    @white_knight_g = Knight.new('white', [7, 6])
-  end
-
-  def initialize_rooks
-    @black_rook_a = Rook.new('black', [0, 0])
-    @black_rook_h = Rook.new('black', [0, 7])
-    @white_rook_a = Rook.new('white', [7, 0])
-    @white_rook_h = Rook.new('white', [7, 7])
-  end
-
-  def initialize_black_pawns
-    @black_pawn_a = BlackPawn.new([1, 0])
-    @black_pawn_b = BlackPawn.new([1, 1])
-    @black_pawn_c = BlackPawn.new([1, 2])
-    @black_pawn_d = BlackPawn.new([1, 3])
-    @black_pawn_e = BlackPawn.new([1, 4])
-    @black_pawn_f = BlackPawn.new([1, 5])
-    @black_pawn_g = BlackPawn.new([1, 6])
-    @black_pawn_h = BlackPawn.new([1, 7])
-  end
-
-  def initialize_white_pawns
-    @white_pawn_a = WhitePawn.new([6, 0])
-    @white_pawn_b = WhitePawn.new([6, 1])
-    @white_pawn_c = WhitePawn.new([6, 2])
-    @white_pawn_d = WhitePawn.new([6, 3])
-    @white_pawn_e = WhitePawn.new([6, 4])
-    @white_pawn_f = WhitePawn.new([6, 5])
-    @white_pawn_g = WhitePawn.new([6, 6])
-    @white_pawn_h = WhitePawn.new([6, 7])
-  end
-
-  def place_starting_pieces(board = gameboard.board_array)  # module?
-    starting_kings(board)
-    starting_queens(board)
-    starting_bishops(board)
-    starting_knights(board)
-    starting_rooks(board)
-    starting_pawns_black(board)
-    starting_pawns_white(board)
-  end
-
-  def starting_kings(board)
-    board[0][4] = black_king
-    board[7][4] = white_king
-  end
-
-  def starting_queens(board)
-    board[0][3] = black_queen
-    board[7][3] = white_queen
-  end
-
-  def starting_bishops(board)
-    board[0][2] = black_bishop_c
-    board[0][5] = black_bishop_f
-    board[7][2] = white_bishop_c
-    board[7][5] = white_bishop_f
-  end
-
-  def starting_knights(board)
-    board[0][1] = black_knight_b
-    board[0][6] = black_knight_g
-    board[7][1] = white_knight_b
-    board[7][6] = white_knight_g
-  end
-
-  def starting_rooks(board)
-    board[0][0] = black_rook_a
-    board[0][7] = black_rook_h
-    board[7][0] = white_rook_a
-    board[7][7] = white_rook_h
-  end
-
-  def starting_pawns_black(board)
-    # (0..7).each { |space| board[1][space] = 'Bp' }
-    board[1][0] = black_pawn_a
-    board[1][1] = black_pawn_b
-    board[1][2] = black_pawn_c
-    board[1][3] = black_pawn_d
-    board[1][4] = black_pawn_e
-    board[1][5] = black_pawn_f
-    board[1][6] = black_pawn_g
-    board[1][7] = black_pawn_h
-  end
-
-  def starting_pawns_white(board)
-    # (0..7).each { |space| board[6][space] = 'Wp' }
-    board[6][0] = white_pawn_a
-    board[6][1] = white_pawn_b
-    board[6][2] = white_pawn_c
-    board[6][3] = white_pawn_d
-    board[6][4] = white_pawn_e
-    board[6][5] = white_pawn_f
-    board[6][6] = white_pawn_g
-    board[6][7] = white_pawn_h
+  def place_starting_pieces(board = gameboard)  # module?
+    board.place_starting_kings
+    board.place_starting_queens
+    board.place_starting_bishops
+    board.place_starting_knights
+    board.place_starting_rooks
+    board.place_starting_white_pawns
+    board.place_starting_black_pawns
   end
 
   def choose_move
@@ -1148,7 +955,7 @@ end
 
 # board = Board.new
 # game = Game.new(board)
-# game.initialize_pieces
+# # game.initialize_pieces
 # game.place_starting_pieces
 # game.gameboard.display_board
 # game.define_castling_mappings
