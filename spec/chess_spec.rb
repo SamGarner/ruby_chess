@@ -1,7 +1,14 @@
 # frozen_string_literal: false
 
 require 'pry'
-require_relative '../chess.rb'
+require_relative '../lib/chess.rb'
+require_relative '../lib/pieces/king'
+require_relative '../lib/pieces/queen'
+require_relative '../lib/pieces/bishop'
+require_relative '../lib/pieces/knight'
+require_relative '../lib/pieces/rook'
+require_relative '../lib/pieces/white_pawn'
+require_relative '../lib/pieces/black_pawn'
 
 describe Game do
     # create game and game board to be shared across tests below
@@ -102,20 +109,29 @@ describe Game do
       end
     end
 
-    # describe '#commit_move?' do
-    #     let(:piece) { instance_double(Bishop) }
+    describe '#pawn_promotion' do
+      subject(:game_pawn_promo) { described_class.new(promotion_board) }
+      let(:promotion_board) { instance_double(Board) }
+      let(:new_piece) { instance_double(Queen) }
+    
+      before do
+        game_pawn_promo.instance_variable_set(:@promotion, 'queen')
+        game_pawn_promo.instance_variable_set(:@new_promoted_piece, new_piece)
+        game_pawn_promo.instance_variable_set(:@end_space, [0, 2])
+        allow(game_pawn_promo).to receive(:create_piece_for_promotion)
+        allow(promotion_board).to receive(:add_new_promoted_piece_to_board).once
+      end
 
-    #     before do
-    #       allow(piece).to receive(:possible_move?)
-    #       # allow(piece).to receive(:impeding_piece?)
-    #     end
+      it 'sends #create_piece_for_promotion' do
+        expect(game_pawn_promo).to receive(:create_piece_for_promotion).once
+        game_pawn_promo.pawn_promotion(promotion_board)
+      end
 
-    #     it 'should call #get_travel_path' do
-    #       desired_space = [3, 3]
-    #       expect(@game).to receive(:get_travel_path).once
-    #       @game.commit_move?(piece, desired_space)
-    #     end
-    # end
+      it 'sends Board #add_new_promoted_piece_to_board' do
+        expect(promotion_board).to receive(:add_new_promoted_piece_to_board).with([0, 2], new_piece)
+        game_pawn_promo.pawn_promotion(promotion_board)
+      end
+    end
 
     describe '#get_travel_path' do
       context 'when moving piece from [7, 6] to [5, 4]' do
