@@ -109,27 +109,27 @@ describe Game do
       end
     end
 
-    describe '#pawn_promotion' do
-      subject(:game_pawn_promo) { described_class.new(promotion_board) }
-      let(:promotion_board) { instance_double(Board) }
-      let(:new_piece) { instance_double(Queen) }
-    
+    describe '#commit_move?' do
+      subject(:game_commit_move) { described_class.new(board_commit) }
+      let(:board_commit) { instance_double(Board) }
+      let(:piece) { instance_double(Bishop) }
+      let(:desired_space) { [3, 4] }
+
       before do
-        game_pawn_promo.instance_variable_set(:@promotion, 'queen')
-        game_pawn_promo.instance_variable_set(:@new_promoted_piece, new_piece)
-        game_pawn_promo.instance_variable_set(:@end_space, [0, 2])
-        allow(game_pawn_promo).to receive(:create_piece_for_promotion)
-        allow(promotion_board).to receive(:add_new_promoted_piece_to_board).once
+        game_commit_move.instance_variable_set(:@travel_path, [1, 1])
+        allow(game_commit_move).to receive(:get_travel_path).with(piece, desired_space)
+        travel_path = game_commit_move.instance_variable_get(:@travel_path)
+        allow(game_commit_move).to receive(:valid_move?).with(piece, travel_path, desired_space)
       end
 
-      it 'sends #create_piece_for_promotion' do
-        expect(game_pawn_promo).to receive(:create_piece_for_promotion).once
-        game_pawn_promo.pawn_promotion(promotion_board)
+      it 'should call #get_travel_path' do
+        expect(game_commit_move).to receive(:get_travel_path).once
+        game_commit_move.commit_move?(piece, desired_space)
       end
 
-      it 'sends Board #add_new_promoted_piece_to_board' do
-        expect(promotion_board).to receive(:add_new_promoted_piece_to_board).with([0, 2], new_piece)
-        game_pawn_promo.pawn_promotion(promotion_board)
+      it 'should call #valid_move?' do
+        expect(game_commit_move).to receive(:valid_move?).once
+        game_commit_move.commit_move?(piece, desired_space)
       end
     end
 
@@ -156,6 +156,45 @@ describe Game do
           expect(@game.possible_move?(@rook_h1, [2, 2])).to be false
         end
       end
+
+    describe '#pawn_promotion' do
+      subject(:game_pawn_promo) { described_class.new(promotion_board) }
+      let(:promotion_board) { instance_double(Board) }
+      let(:new_piece) { instance_double(Queen) }
+
+      before do
+        game_pawn_promo.instance_variable_set(:@promotion, 'queen')
+        game_pawn_promo.instance_variable_set(:@new_promoted_piece, new_piece)
+        game_pawn_promo.instance_variable_set(:@end_space, [0, 2])
+        allow(game_pawn_promo).to receive(:create_piece_for_promotion)
+        allow(promotion_board).to receive(:add_new_promoted_piece_to_board).once
+      end
+
+      it 'sends #create_piece_for_promotion' do
+        expect(game_pawn_promo).to receive(:create_piece_for_promotion).once
+        game_pawn_promo.pawn_promotion(promotion_board)
+      end
+
+      it 'sends Board #add_new_promoted_piece_to_board' do
+        expect(promotion_board).to receive(:add_new_promoted_piece_to_board).with([0, 2], new_piece)
+        game_pawn_promo.pawn_promotion(promotion_board)
+      end
+    end
+
+    # describe '#get_travel_path' do
+    #   context 'when moving piece from [7, 6] to [5, 4]' do
+    #     let(:bishop) { instance_double(Bishop, color: 'black', current_location: [7, 6]) }
+    #     let(:board) { instance_double(Board) }
+    #     let(:game) {instance_double(Game, gameboard: board) }
+    #     it 'should have travel_path of [-2, 2]' do
+    #       # bishop = Bishop.new('black', [7, 6])
+    #       allow(:board).to receive(:board_array[7][6]).and_return(:bishop)
+    #       # board.board_array[7][6] = bishop
+    #       game.get_travel_path(bishop, [5, 4])
+    #       expect(game.travel_path).to eq([-2, 2])
+    #     end
+    #   end
+    # end
 
       # WhitePawn
       context 'when a white pawn is attempting en passant capture' do
