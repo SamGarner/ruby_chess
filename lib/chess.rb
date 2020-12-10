@@ -513,7 +513,7 @@ class Game
       # tp = [0, 1]
   end
 
-  def possible_move?(piece, travel_path) # direction possible for type of piece
+  def possible_move?(piece) # direction possible for type of piece
     piece.possible_moves.include?(travel_path)
   end
 
