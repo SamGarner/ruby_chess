@@ -118,6 +118,10 @@ class Board
       " #{space.symbol} |"
     end
   end
+
+  def add_new_promoted_piece_to_board(end_space, new_promoted_piece)
+    board_array[end_space[0]][end_space[1]] = new_promoted_piece
+  end
 end
 
 # class ChessPiece
@@ -454,9 +458,9 @@ class Game
     [WhitePawn, BlackPawn].include?(piece.class) && [0, 7].include?(end_space[0])
   end
 
-  def pawn_promotion
+  def pawn_promotion(board = gameboard)
     create_piece_for_promotion
-    add_new_promoted_piece_to_board
+    board.add_new_promoted_piece_to_board(end_space, new_promoted_piece)
   end
 
   def ask_how_to_promote_pawn
@@ -485,9 +489,9 @@ class Game
     # either the line above, or a comparison of King vs Rook color when castling is needed
   end
 
-  def add_new_promoted_piece_to_board(board = gameboard.board_array)
-    board[end_space[0]][end_space[1]] = new_promoted_piece
-  end
+  # def add_new_promoted_piece_to_board(board = gameboard.board_array)
+  #   board[end_space[0]][end_space[1]] = new_promoted_piece
+  # end
 
   # def passant_vulnerable?(starting_space, ending_space)
   #   (starting_space[1] - ending_space[1]).abs == 2
