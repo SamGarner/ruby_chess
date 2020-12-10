@@ -145,17 +145,36 @@ describe Game do
       end
     end
 
-    describe '#valid_move?' do
-      # possible move true and false
+    context 'when testing valid move' do
+      subject(:valid_move_game) { described_class.new(valid_move_board) }
+      let(:valid_move_board) { instance_double(Board) }
+      let(:rook) { instance_double(Rook) } #, possible_moves: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
+                      # [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
+                      # [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
+                      # [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0]]) }
+
       describe '#possible_move?' do
+        before do
+          allow(rook).to receive(:possible_moves).and_return([[0, 1], [0, 2], [0, 3], [0, 4],
+                                                              [0, 5], [0, 6], [0, 7], [1, 0],
+                                                              [2, 0], [3, 0], [4, 0], [5, 0],
+                                                              [6, 0], [7, 0], [0, -1], [0, -2],
+                                                              [0, -3], [0, -4], [0, -5], [0, -6],
+                                                              [0, -7], [-1, 0], [-2, 0], [-3, 0],
+                                                              [-4, 0], [-5, 0], [-6, 0], [-7, 0]]
+                                                            )
+        end
+
         it 'should be true when desired move in piece.possible_moves' do
-          expect(@game.possible_move?(@rook_h1, [0, 5])).to be true
+          valid_move_game.instance_variable_set(:@travel_path, [0, 5])
+          expect(valid_move_game.possible_move?(rook)).to be true
         end
 
         it 'should be false when desired move in piece.possible_moves' do
-          expect(@game.possible_move?(@rook_h1, [2, 2])).to be false
+          valid_move_game.instance_variable_set(:@travel_path, [2, 2])
+          expect(valid_move_game.possible_move?(rook)).to be false
         end
-      end
+    end
 
     describe '#pawn_promotion' do
       subject(:game_pawn_promo) { described_class.new(promotion_board) }
