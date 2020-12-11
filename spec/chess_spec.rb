@@ -119,7 +119,7 @@ describe Game do
         game_commit_move.instance_variable_set(:@travel_path, [1, 1])
         allow(game_commit_move).to receive(:get_travel_path).with(piece, desired_space)
         travel_path = game_commit_move.instance_variable_get(:@travel_path)
-        allow(game_commit_move).to receive(:valid_move?).with(piece, travel_path, desired_space)
+        allow(game_commit_move).to receive(:valid_move?).with(piece, desired_space)
       end
 
       it 'should call #get_travel_path' do
@@ -148,10 +148,7 @@ describe Game do
     context 'when testing valid move' do
       subject(:valid_move_game) { described_class.new(valid_move_board) }
       let(:valid_move_board) { instance_double(Board) }
-      let(:rook) { instance_double(Rook) } #, possible_moves: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [0, 6], [0, 7],
-                      # [1, 0], [2, 0], [3, 0], [4, 0], [5, 0], [6, 0], [7, 0],
-                      # [0, -1], [0, -2], [0, -3], [0, -4], [0, -5], [0, -6], [0, -7],
-                      # [-1, 0], [-2, 0], [-3, 0], [-4, 0], [-5, 0], [-6, 0], [-7, 0]]) }
+      let(:rook) { instance_double(Rook) }
 
       describe '#possible_move?' do
         before do
@@ -161,8 +158,7 @@ describe Game do
                                                               [6, 0], [7, 0], [0, -1], [0, -2],
                                                               [0, -3], [0, -4], [0, -5], [0, -6],
                                                               [0, -7], [-1, 0], [-2, 0], [-3, 0],
-                                                              [-4, 0], [-5, 0], [-6, 0], [-7, 0]]
-                                                            )
+                                                              [-4, 0], [-5, 0], [-6, 0], [-7, 0]])
         end
 
         it 'should be true when desired move in piece.possible_moves' do
@@ -174,6 +170,36 @@ describe Game do
           valid_move_game.instance_variable_set(:@travel_path, [2, 2])
           expect(valid_move_game.possible_move?(rook)).to be false
         end
+
+      describe '#valid_move?' do
+        # let(:piece) { instance_double(Knight) }
+        let(:knight) { Knight.new('black', [2, 2]) }
+
+        context 'when moving a Knight' do
+          before do
+            # allow(piece).to receive(:possible_moves).and_return([[1, 2], [2, 1],
+            #                                                      [1, -2], [2, -1],
+            #                                                      [-1, -2], [-2, -1],
+            #                                                      [-1, 2], [-2, 1]])
+            # allow(piece).to receive(:class).and_return(Knight)
+            allow(valid_move_game).to receive(:possible_move?)
+          end
+
+          it 'should call #possible_move?' do
+            valid_move_game.instance_variable_set(:@travel_path, [1, 2])
+            # allow(piece).to receive(:===).with(Knight).and_return(true)
+            expect(valid_move_game).to receive(:possible_move?)
+            valid_move_game.valid_move?(knight, [2, 2])
+          end
+
+          it 'should not call #impeding_piece?' do
+            valid_move_game.instance_variable_set(:@travel_path, [1, 2])
+            # allow(piece).to receive(:===).with(Knight).and_return(true)
+            expect(valid_move_game).not_to receive(:impeding_piece?)
+            valid_move_game.valid_move?(knight, [2, 2])
+          end
+        end
+      end
     end
 
     describe '#pawn_promotion' do
