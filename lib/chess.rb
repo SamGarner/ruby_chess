@@ -123,6 +123,10 @@ class Board
     board_array[coordinates[0]][coordinates[1]].class != String
   end
 
+  def color_match?(piece, coordinates)
+    board_array[coordinates[0]][coordinates[1]].color == piece.color
+  end
+
   def add_new_promoted_piece_to_board(end_space, new_promoted_piece)
     board_array[end_space[0]][end_space[1]] = new_promoted_piece
   end
@@ -625,7 +629,7 @@ class Game
 
   def friendly_fire?(piece, desired_space)
     gameboard.piece_exists?(desired_space) &&
-    color_match?(piece, desired_space)
+    gameboard.color_match?(piece, desired_space)
   end
 
   def horizontal_impediment?(piece, travel_path)
@@ -751,9 +755,9 @@ class Game
   #   board[coordinates[0]][coordinates[1]].class != String
   # end
 
-  def color_match?(piece, coordinates, board = gameboard.board_array)
-    board[coordinates[0]][coordinates[1]].color == piece.color
-  end
+  # def color_match?(piece, coordinates, board = gameboard.board_array)
+  #   board[coordinates[0]][coordinates[1]].color == piece.color
+  # end
 
   def update_board(piece, desired_space, board = gameboard.board_array)
     ds = desired_space
