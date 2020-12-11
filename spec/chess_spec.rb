@@ -199,6 +199,32 @@ describe Game do
             valid_move_game.valid_move?(knight, [2, 2])
           end
         end
+
+        context 'when moving a pawn' do
+          let(:white_pawn) { WhitePawn.new([6, 2]) }
+          let(:black_pawn) { BlackPawn.new([1, 2]) }
+
+          before do
+            # allow(piece).to receive(:class).and_return(WhitePawn)
+            allow(valid_move_game).to receive(:valid_pawn_move?)
+          end
+
+          it 'should call #valid_pawn_move? when moving a WhitePawn' do
+            expect(valid_move_game).to receive(:valid_pawn_move?)
+            valid_move_game.valid_move?(white_pawn, [2, 2])
+          end
+
+          it 'should call #valid_pawn_move? when moving a BlackPawn' do
+            expect(valid_move_game).to receive(:valid_pawn_move?)
+            valid_move_game.valid_move?(black_pawn, [2, 2])
+          end
+        end
+
+        xit 'should call #valid_king_move? when moving a King' do
+        end
+
+        xit 'should call #possible_move? & #impeding_piece otherwise' do
+        end
       end
     end
 
