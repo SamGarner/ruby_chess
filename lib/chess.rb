@@ -499,7 +499,7 @@ class Game
 
   def commit_move?(piece, desired_space)
     get_travel_path(piece, desired_space)
-    valid_move?(piece, travel_path, desired_space)
+    valid_move?(piece, desired_space)
   end
 
   def get_travel_path(piece, desired_space)
@@ -517,23 +517,23 @@ class Game
     piece.possible_moves.include?(travel_path)
   end
 
-  def valid_move?(piece, travel_path, desired_space)
+  def valid_move?(piece, desired_space)
     case piece # cannot use .class here!
     when Knight
-      return possible_move?(piece, travel_path)
+      return possible_move?(piece)
     when WhitePawn, BlackPawn
       return valid_pawn_move?(piece, travel_path, desired_space)
     when King
       valid_king_move?(piece, travel_path, desired_space)
     else
-      possible_move?(piece, travel_path) && !impeding_piece?(piece, travel_path, desired_space)
+      possible_move?(piece) && !impeding_piece?(piece, desired_space)
     end
   end
 
   def valid_king_move?(king, travel_path, desired_space)
     if king.possible_moves.include?(travel_path)
-      return true if possible_move?(king, travel_path) &&
-                     !impeding_piece?(king, travel_path, desired_space)
+      return true if possible_move?(king) &&
+                     !impeding_piece?(king, desired_space)
     elsif king.castling_moves.include?(travel_path)
       return true if king.has_moved == false &&
         king.in_check == false &&
@@ -587,7 +587,7 @@ class Game
 
   def valid_pawn_move?(piece, travel_path, desired_space)
     if piece.possible_moves.include?(travel_path)
-      return true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, travel_path, desired_space)
+      return true if !desired_space_occupied?(desired_space) && !impeding_piece?(piece, desired_space)
     elsif piece.capture_moves.include?(travel_path)
       return true if desired_space_occupied?(desired_space) && attacking_opponent?(piece, desired_space)
       return true if piece.class == WhitePawn && white_can_en_passant?(piece, desired_space)
@@ -612,7 +612,7 @@ class Game
     piece.current_location == piece.starting_location
   end
 
-  def impeding_piece?(piece, travel_path, desired_space)
+  def impeding_piece?(piece, desired_space)
     friendly_fire?(piece, desired_space) || 
     horizontal_impediment?(piece, travel_path) ||
     vertical_impediment?(piece, travel_path) ||
