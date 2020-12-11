@@ -119,6 +119,10 @@ class Board
     end
   end
 
+  def piece_exists?(coordinates)
+    board_array[coordinates[0]][coordinates[1]].class != String
+  end
+
   def add_new_promoted_piece_to_board(end_space, new_promoted_piece)
     board_array[end_space[0]][end_space[1]] = new_promoted_piece
   end
@@ -620,7 +624,7 @@ class Game
   end
 
   def friendly_fire?(piece, desired_space)
-    piece_exists?(desired_space) &&
+    gameboard.piece_exists?(desired_space) &&
     color_match?(piece, desired_space)
   end
 
@@ -639,7 +643,7 @@ class Game
   def horizontal_positive_impediment?(travel_path, fixed_coord, horizontal_coord)
     (travel_path[0] - 1).times do
       horizontal_coord += 1
-      return true if piece_exists?([fixed_coord, horizontal_coord])
+      return true if gameboard.piece_exists?([fixed_coord, horizontal_coord])
     end
     false
   end
@@ -647,7 +651,7 @@ class Game
   def horizontal_negative_impediment?(travel_path, fixed_coord, horizontal_coord)
     (travel_path[0].abs() - 1).times do
       horizontal_coord -= 1
-      return true if piece_exists?([fixed_coord, horizontal_coord])
+      return true if gameboard.piece_exists?([fixed_coord, horizontal_coord])
     end
     false
   end
@@ -667,7 +671,7 @@ class Game
   def vertical_positive_impediment?(travel_path, vertical_coord, fixed_coord)
     (travel_path[1] - 1).times do
       vertical_coord -= 1
-      return true if piece_exists?([vertical_coord, fixed_coord])
+      return true if gameboard.piece_exists?([vertical_coord, fixed_coord])
     end
     false
   end
@@ -675,7 +679,7 @@ class Game
   def vertical_negative_impediment?(travel_path, vertical_coord, fixed_coord)
     (travel_path[1].abs() - 1).times do
       vertical_coord += 1
-      return true if piece_exists?([vertical_coord, fixed_coord])
+      return true if gameboard.piece_exists?([vertical_coord, fixed_coord])
     end
     false
   end
@@ -711,7 +715,7 @@ class Game
     (travel_path[0] - 1).times do
       horizontal_coord += 1
       vertical_coord -= 1
-      return true if piece_exists?([vertical_coord, horizontal_coord])
+      return true if gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     false
   end
@@ -720,7 +724,7 @@ class Game
     (travel_path[0].abs - 1).times do
       horizontal_coord -= 1
       vertical_coord -= 1
-      return true if piece_exists?([vertical_coord, horizontal_coord])
+      return true if gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     false
   end
@@ -729,7 +733,7 @@ class Game
     (travel_path[0].abs - 1).times do
       horizontal_coord -= 1
       vertical_coord += 1
-      return true if piece_exists?([vertical_coord, horizontal_coord])
+      return true if gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     false
   end
@@ -738,14 +742,14 @@ class Game
     (travel_path[0] - 1).times do
       horizontal_coord += 1
       vertical_coord += 1
-      return true if piece_exists?([vertical_coord, horizontal_coord])
+      return true if gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     false
   end
 
-  def piece_exists?(coordinates, board = gameboard.board_array)
-    board[coordinates[0]][coordinates[1]].class != String
-  end
+  # def piece_exists?(coordinates, board = gameboard.board_array)
+  #   board[coordinates[0]][coordinates[1]].class != String
+  # end
 
   def color_match?(piece, coordinates, board = gameboard.board_array)
     board[coordinates[0]][coordinates[1]].color == piece.color
@@ -841,7 +845,7 @@ class Game
       horizontal_coord += 1
       vertical_coord -= 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
@@ -857,7 +861,7 @@ class Game
       horizontal_coord -= 1
       vertical_coord -= 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
@@ -871,7 +875,7 @@ class Game
       horizontal_coord -= 1
       vertical_coord += 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
@@ -885,7 +889,7 @@ class Game
       horizontal_coord += 1
       vertical_coord += 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
@@ -903,7 +907,7 @@ class Game
     while true
       vertical_coord -= 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
@@ -916,7 +920,7 @@ class Game
     while true
       vertical_coord += 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
@@ -934,7 +938,7 @@ class Game
     while true
       horizontal_coord += 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
@@ -947,7 +951,7 @@ class Game
     while true
       horizontal_coord -= 1
       break if !possible_space?([vertical_coord, horizontal_coord]) ||
-               piece_exists?([vertical_coord, horizontal_coord])
+               gameboard.piece_exists?([vertical_coord, horizontal_coord])
     end
     return false unless possible_space?([vertical_coord, horizontal_coord])
 
