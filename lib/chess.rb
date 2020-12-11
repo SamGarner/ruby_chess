@@ -127,6 +127,13 @@ class Board
     board_array[coordinates[0]][coordinates[1]].color == piece.color
   end
 
+  def update_board(piece, desired_space)
+    ds = desired_space
+    old_space = piece.current_location
+    board_array[ds[0]][ds[1]] = piece
+    board_array[old_space[0]][old_space[1]] = '__'
+  end
+
   def add_new_promoted_piece_to_board(end_space, new_promoted_piece)
     board_array[end_space[0]][end_space[1]] = new_promoted_piece
   end
@@ -427,7 +434,7 @@ class Game
     move_rook_for_castling(desired_space) if piece.class == King &&
                                           (friendly_king.current_location[1] - desired_space[1]).abs == 2
     capture_opponent(piece, desired_space)
-    update_board(piece, desired_space)
+    gameboard.update_board(piece, desired_space)
     pawn_promotion if promoting_pawn?(piece)
     piece.current_location = desired_space
   end
@@ -589,7 +596,7 @@ class Game
     # even though defined as instance var
     rook = castle_space_to_rook_mapping.fetch(desired_space)
     rook_desired_space = castle_king_crossed_mapping.fetch(desired_space)
-    update_board(rook, rook_desired_space)
+    gameboard.update_board(rook, rook_desired_space)
     rook.current_location = rook_desired_space
   end
 
@@ -751,20 +758,12 @@ class Game
     false
   end
 
-  # def piece_exists?(coordinates, board = gameboard.board_array)
-  #   board[coordinates[0]][coordinates[1]].class != String
+  # def update_board(piece, desired_space, board = gameboard.board_array)
+  #   ds = desired_space
+  #   old_space = piece.current_location
+  #   board[ds[0]][ds[1]] = piece
+  #   board[old_space[0]][old_space[1]] = '__'
   # end
-
-  # def color_match?(piece, coordinates, board = gameboard.board_array)
-  #   board[coordinates[0]][coordinates[1]].color == piece.color
-  # end
-
-  def update_board(piece, desired_space, board = gameboard.board_array)
-    ds = desired_space
-    old_space = piece.current_location
-    board[ds[0]][ds[1]] = piece
-    board[old_space[0]][old_space[1]] = '__'
-  end
 
   def desired_space_occupied?(desired_space, board = gameboard.board_array)
     board[desired_space[0]][desired_space[1]].class != String

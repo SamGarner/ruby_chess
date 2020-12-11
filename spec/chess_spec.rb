@@ -51,6 +51,27 @@ describe Board do
       end
     end
   end
+
+  describe '#update_board' do
+    subject(:board_to_update) { described_class.new }
+    let(:rook_for_update) { instance_double(Rook, current_location: [0, 7]) }
+    let(:desired_space) { [4, 7] }
+
+    context 'when moving rook from [0, 7] to [4, 7]' do
+      it 'should update board_array[4][7] to contain the rook' do
+        board_to_update.update_board(rook_for_update, desired_space)
+        new_space = board_to_update.board_array[desired_space[0]][desired_space[1]]
+        expect(new_space).to eq(rook_for_update)
+      end
+
+      it 'should update board_array[0][7] to be a blank space' do
+        board_to_update.update_board(rook_for_update, desired_space)
+        location = rook_for_update.current_location
+        old_space = board_to_update.board_array[location[0]][location[1]]
+        expect(old_space).to eq('__')
+      end
+    end
+  end
 end
 
 describe Game do
