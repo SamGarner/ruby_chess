@@ -145,7 +145,7 @@ describe Game do
       end
     end
 
-    context 'when testing valid move' do
+    describe 'when using #valid_move?' do
       subject(:valid_move_game) { described_class.new(valid_move_board) }
       let(:valid_move_board) { instance_double(Board) }
       let(:rook) { instance_double(Rook) }
@@ -220,10 +220,36 @@ describe Game do
           end
         end
 
-        xit 'should call #valid_king_move? when moving a King' do
+        context 'when moving a King' do
+          let(:king) { King.new('black', [0, 4]) }
+
+          before do
+            allow(valid_move_game).to receive(:valid_pawn_move?)
+          end
+
+          it 'should call #valid_king_move?' do
+            expect(valid_move_game).to receive(:valid_king_move?)
+            valid_move_game.valid_move?(king, [1, 4])
+          end
         end
 
-        xit 'should call #possible_move? & #impeding_piece otherwise' do
+        context 'when piece is not a pawn, king, or knight' do
+          let(:rook) { Rook.new('white', [7, 0]) }
+
+          before do
+            allow(valid_move_game).to receive(:possible_move?).and_return(true)
+            allow(valid_move_game).to receive(:impeding_piece?)
+          end
+
+          it 'should call #possible_move?' do
+            expect(valid_move_game).to receive(:possible_move?)
+            valid_move_game.valid_move?(rook, [4, 0])
+          end
+
+          it 'should also call #impeding_piece when #possible_move? is true' do
+            expect(valid_move_game).to receive(:impeding_piece?)
+            valid_move_game.valid_move?(rook, [4, 0])
+          end
         end
       end
     end
