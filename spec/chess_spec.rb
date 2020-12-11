@@ -10,6 +10,27 @@ require_relative '../lib/pieces/rook'
 require_relative '../lib/pieces/white_pawn'
 require_relative '../lib/pieces/black_pawn'
 
+describe Board do
+  describe '#piece_exists?' do
+    subject(:piece_exists_board) { described_class.new }
+    let(:existing_rook) { instance_double(Rook) }
+
+    before do
+      piece_exists_board.board_array[0][7] = existing_rook
+    end
+
+    it 'should be true when a piece exists' do
+      result = piece_exists_board.piece_exists?([0, 7])
+      expect(result).to be true
+    end
+
+    it 'should be false when the space is empty' do
+      result = piece_exists_board.piece_exists?([2, 2])
+      expect(result).to be false
+    end
+  end
+end
+
 describe Game do
     # create game and game board to be shared across tests below
     before(:each) do
@@ -177,10 +198,6 @@ describe Game do
 
         context 'when moving a Knight' do
           before do
-            # allow(piece).to receive(:possible_moves).and_return([[1, 2], [2, 1],
-            #                                                      [1, -2], [2, -1],
-            #                                                      [-1, -2], [-2, -1],
-            #                                                      [-1, 2], [-2, 1]])
             # allow(piece).to receive(:class).and_return(Knight)
             allow(valid_move_game).to receive(:possible_move?)
           end
@@ -222,10 +239,6 @@ describe Game do
 
         context 'when moving a King' do
           let(:king) { King.new('black', [0, 4]) }
-
-          before do
-            allow(valid_move_game).to receive(:valid_pawn_move?)
-          end
 
           it 'should call #valid_king_move?' do
             expect(valid_move_game).to receive(:valid_king_move?)
@@ -366,6 +379,7 @@ describe Game do
 
         describe '#valid_pawn_move?' do
           it 'allows moving two spaces for first move' do
+            @game.travel_path = [0, 2]
             expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be true
           end
 
@@ -379,6 +393,7 @@ describe Game do
           it 'does not allow vertical move if space is blocked' do
             @black_pawn = BlackPawn.new([5, 6])
             @board.board_array[5][6] = @black_pawn
+            @game.travel_path = [0, 2]
             expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
           end
 
@@ -393,27 +408,19 @@ describe Game do
       end
     end
 
-    describe '#piece_exists?' do
-      it 'should be true when a piece exists on the space' do
-        expect(@game.piece_exists?([7, 7])).to be true
-      end
-
-      it 'should be false when a piece exists on the space' do
-        expect(@game.piece_exists?([3, 0])).to be false
-      end
-    end
-
     describe '#impeding_piece?' do
       it 'should be true when ally is on the destination square' do
         pawn_ally = WhitePawn.new([7, 4])
         @board.board_array[7][4] = pawn_ally
-        expect(@game.impeding_piece?(@rook_h1, [-3, 0], [7, 4])).to be true
+        @game.travel_path = [-3, 0]
+        expect(@game.impeding_piece?(@rook_h1, [7, 4])).to be true
       end
       
       it 'should be false when opponent is on the destination square' do
         pawn_opponent = BlackPawn.new([7, 5])
         @board.board_array[7][5] = pawn_opponent
-        expect(@game.impeding_piece?(@rook_h1, [-2, 0], [7, 5])).to be false
+        @game.travel_path = [-2, 0]
+        expect(@game.impeding_piece?(@rook_h1, [7, 5])).to be false
       end
 
       describe '#horizontal_impediment?' do
