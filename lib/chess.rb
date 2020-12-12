@@ -141,6 +141,12 @@ class Board
   def add_new_promoted_piece_to_board(end_space, new_promoted_piece)
     board_array[end_space[0]][end_space[1]] = new_promoted_piece
   end
+
+  def destroy_enemy(desired_space)
+    attacked_piece = board_array[desired_space[0]][desired_space[1]]
+    attacked_piece.current_location = nil
+    board_array[desired_space[0]][desired_space[1]] = '__'
+  end
 end
 
 # class ChessPiece
@@ -449,7 +455,7 @@ class Game
     elsif piece.class == BlackPawn && piece.capture_moves.include?(travel_path)
       black_pawn_captures(piece, desired_space)
     elsif gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
-      destroy_enemy(desired_space)
+      gameboard.destroy_enemy(desired_space)
     end
   end
 
@@ -459,17 +465,17 @@ class Game
 
   def white_pawn_captures(piece, desired_space)
     if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
-      destroy_enemy(desired_space)
+      gameboard.destroy_enemy(desired_space)
     elsif white_can_en_passant?(piece, desired_space)
-      destroy_enemy([desired_space[0] + 1, desired_space[1]])
+      gameboard.destroy_enemy([desired_space[0] + 1, desired_space[1]])
     end
   end
 
   def black_pawn_captures(piece, desired_space)
     if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
-      destroy_enemy(desired_space)
+      gameboard.destroy_enemy(desired_space)
     elsif black_can_en_passant?(piece, desired_space)
-      destroy_enemy([desired_space[0] - 1, desired_space[1]])
+      gameboard.destroy_enemy([desired_space[0] - 1, desired_space[1]])
     end
   end
 
@@ -777,11 +783,11 @@ class Game
   #   piece.color != gameboard.board_array[desired_space[0]][desired_space[1]].color
   # end
 
-  def destroy_enemy(desired_space, board = gameboard.board_array)
-    attacked_piece = board[desired_space[0]][desired_space[1]]
-    attacked_piece.current_location = nil
-    board[desired_space[0]][desired_space[1]] = '__'
-  end
+  # def destroy_enemy(desired_space, board = gameboard.board_array)
+  #   attacked_piece = board[desired_space[0]][desired_space[1]]
+  #   attacked_piece.current_location = nil
+  #   board[desired_space[0]][desired_space[1]] = '__'
+  # end
 
   # IN CHECK > MODULE?
   def in_check?(king, board = gameboard.board_array)
