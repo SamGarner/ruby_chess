@@ -127,6 +127,10 @@ class Board
     board_array[coordinates[0]][coordinates[1]].color == piece.color
   end
 
+  def attacking_opponent?(piece, desired_space)
+    piece.color != board_array[desired_space[0]][desired_space[1]].color
+  end
+
   def update_board(piece, desired_space)
     ds = desired_space
     old_space = piece.current_location
@@ -444,7 +448,7 @@ class Game
       white_pawn_captures(piece, desired_space)
     elsif piece.class == BlackPawn && piece.capture_moves.include?(travel_path)
       black_pawn_captures(piece, desired_space)
-    elsif gameboard.piece_exists?(desired_space) && attacking_opponent?(piece, desired_space)
+    elsif gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
     end
   end
@@ -454,7 +458,7 @@ class Game
   end
 
   def white_pawn_captures(piece, desired_space)
-    if gameboard.piece_exists?(desired_space) && attacking_opponent?(piece, desired_space)
+    if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
     elsif white_can_en_passant?(piece, desired_space)
       destroy_enemy([desired_space[0] + 1, desired_space[1]])
@@ -462,7 +466,7 @@ class Game
   end
 
   def black_pawn_captures(piece, desired_space)
-    if gameboard.piece_exists?(desired_space) && attacking_opponent?(piece, desired_space)
+    if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
       destroy_enemy(desired_space)
     elsif black_can_en_passant?(piece, desired_space)
       destroy_enemy([desired_space[0] - 1, desired_space[1]])
@@ -604,7 +608,7 @@ class Game
     if piece.possible_moves.include?(travel_path)
       return true if !gameboard.piece_exists?(desired_space) && !impeding_piece?(piece, desired_space)
     elsif piece.capture_moves.include?(travel_path)
-      return true if gameboard.piece_exists?(desired_space) && attacking_opponent?(piece, desired_space)
+      return true if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
       return true if piece.class == WhitePawn && white_can_en_passant?(piece, desired_space)
       return true if piece.class == BlackPawn && black_can_en_passant?(piece, desired_space)
     end
@@ -769,9 +773,9 @@ class Game
   #   board[desired_space[0]][desired_space[1]].class != String
   # end
 
-  def attacking_opponent?(piece, desired_space) # update after test to include board default
-    piece.color != gameboard.board_array[desired_space[0]][desired_space[1]].color
-  end
+  # def attacking_opponent?(piece, desired_space) # update after test to include board default
+  #   piece.color != gameboard.board_array[desired_space[0]][desired_space[1]].color
+  # end
 
   def destroy_enemy(desired_space, board = gameboard.board_array)
     attacked_piece = board[desired_space[0]][desired_space[1]]
