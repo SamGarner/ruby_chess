@@ -184,6 +184,69 @@ class Board
     end
     false
   end
+
+  def diagonals_check?(color, horizontal_coord, vertical_coord)
+    quadrant_one_check?(color, horizontal_coord, vertical_coord) ||
+    quadrant_two_check?(color, horizontal_coord, vertical_coord) ||
+    quadrant_three_check?(color, horizontal_coord, vertical_coord) ||
+    quadrant_four_check?(color, horizontal_coord, vertical_coord)
+  end
+
+  def quadrant_one_check?(color, horizontal_coord, vertical_coord)
+    while true
+      horizontal_coord += 1
+      vertical_coord -= 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Bishop, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
+
+  def quadrant_two_check?(color, horizontal_coord, vertical_coord)
+    while true
+      horizontal_coord -= 1
+      vertical_coord -= 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Bishop, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
+
+  def quadrant_three_check?(color, horizontal_coord, vertical_coord)
+    while true
+      horizontal_coord -= 1
+      vertical_coord += 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Bishop, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
+
+  def quadrant_four_check?(color, horizontal_coord, vertical_coord)
+    while true
+      horizontal_coord += 1
+      vertical_coord += 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Bishop, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
 end
 
 # class ChessPiece
@@ -810,78 +873,11 @@ class Game
     horizontal_coord = king.current_location[1]
     vertical_coord = king.current_location[0]
     color = king.color
-    return diagonals_check?(color, horizontal_coord, vertical_coord, board) ||
+    return gameboard.diagonals_check?(color, horizontal_coord, vertical_coord) ||
            gameboard.knight_check?(color, horizontal_coord, vertical_coord) ||
            gameboard.pawn_check?(color, horizontal_coord, vertical_coord) ||
            vertical_check?(color, horizontal_coord, vertical_coord, board) ||
            horizontal_check?(color, horizontal_coord, vertical_coord, board)
-  end
-
-  def diagonals_check?(color, horizontal_coord, vertical_coord, board)
-    quadrant_one_check?(color, horizontal_coord, vertical_coord, board) ||
-    quadrant_two_check?(color, horizontal_coord, vertical_coord, board) ||
-    quadrant_three_check?(color, horizontal_coord, vertical_coord, board) ||
-    quadrant_four_check?(color, horizontal_coord, vertical_coord, board)
-  end
-
-  #refactor to use possible_space (with board dependency) ?
-  def quadrant_one_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-    # while possible_coord?(horizontal_coord) && possible_coord?(vertical_coord) do
-      horizontal_coord += 1
-      vertical_coord -= 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    # color_of_piece = gameboard.board_array[vertical_coord][horizontal_coord].color
-    return [Bishop, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
-           # color_of_piece != color
-  end
-
-  def quadrant_two_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-      horizontal_coord -= 1
-      vertical_coord -= 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    return [Bishop, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
-  end
-
-  def quadrant_three_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-      horizontal_coord -= 1
-      vertical_coord += 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    return [Bishop, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
-  end
-
-  def quadrant_four_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-      horizontal_coord += 1
-      vertical_coord += 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    return [Bishop, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
   end
 
   def vertical_check?(color, horizontal_coord, vertical_coord, board)
