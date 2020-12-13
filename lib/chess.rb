@@ -247,6 +247,68 @@ class Board
     return [Bishop, Queen].include?(type_of_piece) &&
            color != board_array[vertical_coord][horizontal_coord].color
   end
+
+  def vertical_check?(color, horizontal_coord, vertical_coord)
+    upwards_vertical_check?(color, horizontal_coord, vertical_coord) ||
+    downwards_vertical_check?(color, horizontal_coord, vertical_coord)
+  end
+
+  def upwards_vertical_check?(color, horizontal_coord, vertical_coord)
+    while true
+      vertical_coord -= 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Rook, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
+
+  def downwards_vertical_check?(color, horizontal_coord, vertical_coord)
+    while true
+      vertical_coord += 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Rook, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
+
+  def horizontal_check?(color, horizontal_coord, vertical_coord)
+    upwards_horizontal_check?(color, horizontal_coord, vertical_coord) ||
+    downwards_horizontal_check?(color, horizontal_coord, vertical_coord)
+  end
+
+  def upwards_horizontal_check?(color, horizontal_coord, vertical_coord)
+    while true
+      horizontal_coord += 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Rook, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
+
+  def downwards_horizontal_check?(color, horizontal_coord, vertical_coord)
+    while true
+      horizontal_coord -= 1
+      break if !possible_space?([vertical_coord, horizontal_coord]) ||
+               piece_exists?([vertical_coord, horizontal_coord])
+    end
+    return false unless possible_space?([vertical_coord, horizontal_coord])
+
+    type_of_piece = board_array[vertical_coord][horizontal_coord].class
+    return [Rook, Queen].include?(type_of_piece) &&
+           color != board_array[vertical_coord][horizontal_coord].color
+  end
 end
 
 # class ChessPiece
@@ -876,70 +938,8 @@ class Game
     return gameboard.diagonals_check?(color, horizontal_coord, vertical_coord) ||
            gameboard.knight_check?(color, horizontal_coord, vertical_coord) ||
            gameboard.pawn_check?(color, horizontal_coord, vertical_coord) ||
-           vertical_check?(color, horizontal_coord, vertical_coord, board) ||
-           horizontal_check?(color, horizontal_coord, vertical_coord, board)
-  end
-
-  def vertical_check?(color, horizontal_coord, vertical_coord, board)
-    upwards_vertical_check?(color, horizontal_coord, vertical_coord, board) ||
-    downwards_vertical_check?(color, horizontal_coord, vertical_coord, board)
-  end
-
-  def upwards_vertical_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-      vertical_coord -= 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    return [Rook, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
-  end
-
-  def downwards_vertical_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-      vertical_coord += 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    return [Rook, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
-  end
-
-  def horizontal_check?(color, horizontal_coord, vertical_coord, board)
-    upwards_horizontal_check?(color, horizontal_coord, vertical_coord, board) ||
-    downwards_horizontal_check?(color, horizontal_coord, vertical_coord, board)
-  end
-
-  def upwards_horizontal_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-      horizontal_coord += 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    return [Rook, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
-  end
-
-  def downwards_horizontal_check?(color, horizontal_coord, vertical_coord, board)
-    while true
-      horizontal_coord -= 1
-      break if !gameboard.possible_space?([vertical_coord, horizontal_coord]) ||
-               gameboard.piece_exists?([vertical_coord, horizontal_coord])
-    end
-    return false unless gameboard.possible_space?([vertical_coord, horizontal_coord])
-
-    type_of_piece = board[vertical_coord][horizontal_coord].class
-    return [Rook, Queen].include?(type_of_piece) &&
-           color != board[vertical_coord][horizontal_coord].color
+           gameboard.vertical_check?(color, horizontal_coord, vertical_coord) ||
+           gameboard.horizontal_check?(color, horizontal_coord, vertical_coord)
   end
 end
 
