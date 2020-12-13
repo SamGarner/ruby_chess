@@ -147,6 +147,24 @@ class Board
     attacked_piece.current_location = nil
     board_array[desired_space[0]][desired_space[1]] = '__'
   end
+
+  def pawn_check?(color, horizontal_coord, vertical_coord)
+    if color == 'white'
+      black_pawn_check?(horizontal_coord, vertical_coord)
+    else
+      white_pawn_check?(horizontal_coord, vertical_coord)
+    end
+  end
+
+  def black_pawn_check?(horizontal_coord, vertical_coord)
+    board_array[vertical_coord - 1][horizontal_coord - 1].class == BlackPawn ||
+    board_array[vertical_coord - 1][horizontal_coord + 1].class == BlackPawn
+  end
+
+  def white_pawn_check?(horizontal_coord, vertical_coord)
+    board_array[vertical_coord + 1][horizontal_coord - 1].class == WhitePawn ||
+    board_array[vertical_coord + 1][horizontal_coord + 1].class == WhitePawn
+  end
 end
 
 # class ChessPiece
@@ -796,28 +814,28 @@ class Game
     color = king.color
     return diagonals_check?(color, horizontal_coord, vertical_coord, board) ||
            knight_check?(color, horizontal_coord, vertical_coord, board) ||
-           pawn_check?(color, horizontal_coord, vertical_coord, board) ||
+           gameboard.pawn_check?(color, horizontal_coord, vertical_coord) ||
            vertical_check?(color, horizontal_coord, vertical_coord, board) ||
            horizontal_check?(color, horizontal_coord, vertical_coord, board)
   end
 
-  def pawn_check?(color, horizontal_coord, vertical_coord, board)
-    if color == 'white'
-      black_pawn_check?(horizontal_coord, vertical_coord, board)
-    else
-      white_pawn_check?(horizontal_coord, vertical_coord, board)
-    end
-  end
+  # def pawn_check?(color, horizontal_coord, vertical_coord, board)
+  #   if color == 'white'
+  #     black_pawn_check?(horizontal_coord, vertical_coord, board)
+  #   else
+  #     white_pawn_check?(horizontal_coord, vertical_coord, board)
+  #   end
+  # end
 
-  def black_pawn_check?(horizontal_coord, vertical_coord, board)
-    board[vertical_coord - 1][horizontal_coord - 1].class == BlackPawn ||
-    board[vertical_coord - 1][horizontal_coord + 1].class == BlackPawn
-  end
+  # def black_pawn_check?(horizontal_coord, vertical_coord, board)
+  #   board[vertical_coord - 1][horizontal_coord - 1].class == BlackPawn ||
+  #   board[vertical_coord - 1][horizontal_coord + 1].class == BlackPawn
+  # end
 
-  def white_pawn_check?(horizontal_coord, vertical_coord, board)
-    board[vertical_coord + 1][horizontal_coord - 1].class == WhitePawn ||
-    board[vertical_coord + 1][horizontal_coord + 1].class == WhitePawn
-  end
+  # def white_pawn_check?(horizontal_coord, vertical_coord, board)
+  #   board[vertical_coord + 1][horizontal_coord - 1].class == WhitePawn ||
+  #   board[vertical_coord + 1][horizontal_coord + 1].class == WhitePawn
+  # end
 
   #knights
   def knight_check?(color, horizontal_coord, vertical_coord, board)# = gameboard.board_array)
