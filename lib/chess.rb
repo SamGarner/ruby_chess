@@ -411,7 +411,7 @@ class Game
   end
 
   def valid_king_move?(king, travel_path, desired_space)
-    if king.possible_moves.include?(travel_path)
+    if possible_move?(king)
       return true if !impeding_piece?(king, desired_space)
     elsif king.castling_moves.include?(travel_path)
       return true if king.has_moved == false &&
@@ -465,7 +465,7 @@ class Game
   end
 
   def valid_pawn_move?(piece, travel_path, desired_space)
-    if piece.possible_moves.include?(travel_path)
+    if possible_move?(piece)
       return true if !gameboard.piece_exists?(desired_space) && !impeding_piece?(piece, desired_space)
     elsif piece.capture_moves.include?(travel_path)
       return true if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
