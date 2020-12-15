@@ -308,6 +308,46 @@ describe Game do
           end
         end
       end
+
+      describe '#valid_king_move?' do
+        let(:king) { instance_double(King, possible_moves: [[0, 1], [1, 1],
+                                                            [1, 0], [1, -1],
+                                                            [0, -1], [-1, -1],
+                                                            [-1, 0], [-1, 1]],
+                                           castling_moves: [[-2, 0], [2, 0]]) }
+        let(:desired_space) { [1, 4] }
+
+        context 'when a king attempts a standard one-space move' do
+          it 'will call #impeding_piece?' do
+            valid_move_game.instance_variable_set(:@travel_path, [1, 0])
+            expect(valid_move_game).to receive(:impeding_piece?)
+            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+          end
+
+          it 'will not call king.has_moved' do
+            allow(valid_move_board).to receive(:piece_exists?).and_return(false)
+            allow(king).to receive(:current_location).and_return([1, 3])
+            valid_move_game.instance_variable_set(:@travel_path, [1, 0])
+            expect(king).to_not receive(:has_moved)
+            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+          end
+        end
+
+        context 'when a king attempts to castle' do
+          it 'will call king.has_moved' do
+            valid_move_game.instance_variable_set(:@travel_path, [-2, 0])
+            expect(king).to receive(:has_moved)
+            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+          end
+
+          it 'will not call #impeding_piece?' do
+            allow(king).to receive(:has_moved)
+            valid_move_game.instance_variable_set(:@travel_path, [-2, 0])
+            expect(valid_move_game).to_not receive(:impeding_piece?)
+            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+          end
+        end
+      end
     end
 
     describe '#pawn_promotion' do
