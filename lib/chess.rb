@@ -412,8 +412,7 @@ class Game
 
   def valid_king_move?(king, travel_path, desired_space)
     if king.possible_moves.include?(travel_path)
-      return true if possible_move?(king) &&
-                     !impeding_piece?(king, desired_space)
+      return true if !impeding_piece?(king, desired_space)
     elsif king.castling_moves.include?(travel_path)
       return true if king.has_moved == false &&
         king.in_check == false &&
