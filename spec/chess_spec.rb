@@ -353,51 +353,68 @@ describe Game do
         describe '#valid_pawn_move?' do
           subject(:pawn_move_game) { described_class.new(pawn_move_board) }
           let(:pawn_move_board) { instance_double(Board) }
-          let(:white_pawn_start) { instance_double(WhitePawn, possible_moves: [[0, 1], [0, 2]],
-                                                        capture_moves: [[-1, 1], [1, 1]]) }
-          let(:white_pawn_moved) { instance_double(WhitePawn, possible_moves: [0, 1],
+          let(:white_pawn) { instance_double(WhitePawn, possible_moves: [[0, 1], [0, 2]],
                                                         capture_moves: [[-1, 1], [1, 1]]) }
 
-          it 'allows moving two spaces as first move' do
+
+          it 'calls #valid_pawn_vertical_move? if possible_move?' do
             pawn_move_game.instance_variable_set(:@travel_path, [0, 2])
-            allow(pawn_move_board).to receive(:piece_exists?)
-            allow(white_pawn_start).to receive(:current_location).and_return([6, 6])
-            travel_path = pawn_move_game.travel_path
-            desired_space = [4, 6]
-
-            result = pawn_move_game.valid_pawn_move?(white_pawn_start, travel_path, desired_space)
-            expect(result).to be true
+            expect(pawn_move_game).to receive(:valid_pawn_vertical_move?).with(white_pawn, [4, 3])
+            pawn_move_game.valid_pawn_move?(white_pawn, pawn_move_game.travel_path, [4, 3])
           end
 
-          it 'does not allow moving two spaces after first move' do
-            allow(white_pawn_moved).to receive(:current_location).and_return([5, 6])
-            travel_path = [0, 2]
-            desired_space = [3, 6]
-            result = pawn_move_game.valid_pawn_move?(white_pawn_moved, travel_path, desired_space)
+          it 'calls #valid_pawn_capture_move? if pawn_capture_move?' do
+            pawn_move_game.instance_variable_set(:@travel_path, [-1, 1])
+            expect(pawn_move_game).to receive(:valid_pawn_capture_move?).with(white_pawn, [4, 3])
+            pawn_move_game.valid_pawn_move?(white_pawn, pawn_move_game.travel_path, [4, 3])
+          end
+
+          it 'returns false otherwise' do
+            pawn_move_game.instance_variable_set(:@travel_path, [-1, -1])
+            result = pawn_move_game.valid_pawn_move?(white_pawn, pawn_move_game.travel_path, [4, 3])
             expect(result).to be false
           end
 
-          xit 'does not allow moving two spaces after first move' do
-            @white_pawn.makes_first_move([5, 6], 2)
-            @white_pawn.current_location = [5, 6]
-            @board.board_array[5][6] = @white_pawn
-            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [3, 6])).to be false
-          end
+          # it 'allows moving two spaces as first move' do
+          #   pawn_move_game.instance_variable_set(:@travel_path, [0, 2])
+          #   allow(pawn_move_board).to receive(:piece_exists?)
+          #   allow(white_pawn_start).to receive(:current_location).and_return([6, 6])
+          #   travel_path = pawn_move_game.travel_path
+          #   desired_space = [4, 6]
 
-          xit 'does not allow vertical move if space is blocked' do
-            @black_pawn = BlackPawn.new([5, 6])
-            @board.board_array[5][6] = @black_pawn
-            @game.travel_path = [0, 2]
-            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
-          end
+          #   result = pawn_move_game.valid_pawn_move?(white_pawn_start, travel_path, desired_space)
+          #   expect(result).to be true
+          # end
 
-          xit 'does not allow capture move if no opponent on the space' do
-            expect(@game.valid_pawn_move?(@white_pawn, [-1, 1], [5, 5])).to be false
-          end
+          # it 'does not allow moving two spaces after first move' do
+          #   allow(white_pawn_moved).to receive(:current_location).and_return([5, 6])
+          #   travel_path = [0, 2]
+          #   desired_space = [3, 6]
+          #   result = pawn_move_game.valid_pawn_move?(white_pawn_moved, travel_path, desired_space)
+          #   expect(result).to be false
+          # end
 
-          xit 'does not allow horizontal/illegal move' do
-            expect(@game.valid_pawn_move?(@white_pawn, [-1, 0], [6, 5])).to be false
-          end
+          # xit 'does not allow vertical move if space is blocked' do
+          #   @black_pawn = BlackPawn.new([5, 6])
+          #   @board.board_array[5][6] = @black_pawn
+          #   @game.travel_path = [0, 2]
+          #   expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
+          # end
+
+          # xit 'does not allow vertical move if space is blocked' do
+          #   @black_pawn = BlackPawn.new([5, 6])
+          #   @board.board_array[5][6] = @black_pawn
+          #   @game.travel_path = [0, 2]
+          #   expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
+          # end
+
+          # xit 'does not allow capture move if no opponent on the space' do
+          #   expect(@game.valid_pawn_move?(@white_pawn, [-1, 1], [5, 5])).to be false
+          # end
+
+          # xit 'does not allow horizontal/illegal move' do
+          #   expect(@game.valid_pawn_move?(@white_pawn, [-1, 0], [6, 5])).to be false
+          # end
         end
 
     describe '#pawn_promotion' do
@@ -464,14 +481,15 @@ describe Game do
           end
         end
 
-        describe '#valid_pawn_move?' do
-          it 'should return true when white can white_can_en_passant' do
-            @black_pawn.initial_turn = 8
-            @game.total_turn_counter = 9
-            travel_path = [-1, 1]
-            expect(@game.valid_pawn_move?(@white_pawn, travel_path, [2, 6])).to be true
-          end
-        end
+        # describe '#valid_pawn_move?' do
+        #   it 'should return true when white can white_can_en_passant' do
+        #     @black_pawn.initial_turn = 8
+        #     @game.total_turn_counter = 9
+        #     @game.travel_path = [-1, 1]
+        #     travel_path = [-1, 1]
+        #     expect(@game.valid_pawn_move?(@white_pawn, travel_path, [2, 6])).to be true
+        #   end
+        # end
       end
 
       context 'when a white pawn is not attemping en passant capture' do
