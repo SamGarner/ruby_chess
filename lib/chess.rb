@@ -305,9 +305,9 @@ class Game
   end
 
   def capture_opponent(piece, desired_space)
-    if piece.class == WhitePawn && piece.capture_moves.include?(travel_path)
+    if piece.class == WhitePawn && pawn_capture_move?(piece)
       white_pawn_captures(piece, desired_space)
-    elsif piece.class == BlackPawn && piece.capture_moves.include?(travel_path)
+    elsif piece.class == BlackPawn && pawn_capture_move?(piece)
       black_pawn_captures(piece, desired_space)
     elsif gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
       gameboard.destroy_enemy(desired_space)
@@ -397,6 +397,10 @@ class Game
     piece.possible_moves.include?(travel_path)
   end
 
+  def pawn_capture_move?(piece)
+    piece.capture_moves.include?(travel_path) # only Pawn classes have capture_moves
+  end
+
   def valid_move?(piece, desired_space)
     case piece # cannot use .class here!
     when Knight
@@ -466,13 +470,28 @@ class Game
 
   def valid_pawn_move?(piece, travel_path, desired_space)
     if possible_move?(piece)
-      return true if !gameboard.piece_exists?(desired_space) && !impeding_piece?(piece, desired_space)
-    elsif piece.capture_moves.include?(travel_path)
-      return true if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
-      return true if piece.class == WhitePawn && white_can_en_passant?(piece, desired_space)
-      return true if piece.class == BlackPawn && black_can_en_passant?(piece, desired_space)
+      valid_pawn_vertical_move?(piece, desired_space)
+    elsif pawn_capture_move?(piece) # #pawn_capture_move?
+      valid_pawn_capture_move?(piece, desired_space)
+    else
+      false
     end
-    false
+  end
+
+  def valid_pawn_vertical_move?(piece, desired_space)
+    !gameboard.piece_exists?(desired_space) && !impeding_piece?(piece, desired_space)
+  end
+
+  def valid_pawn_capture_move?(piece, desired_space)
+    if gameboard.piece_exists?(desired_space) && gameboard.attacking_opponent?(piece, desired_space)
+      true
+    elsif piece.class == WhitePawn && white_can_en_passant?(piece, desired_space)
+      true
+    elsif piece.class == BlackPawn && black_can_en_passant?(piece, desired_space)
+      true
+    else
+      false
+    end
   end
 
   def white_can_en_passant?(piece, desired_space, board_array = gameboard.board_array)
