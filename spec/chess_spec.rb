@@ -230,37 +230,36 @@ describe Game do
           expect(valid_move_game.possible_move?(rook)).to be true
         end
 
-        it 'should be false when desired move in piece.possible_moves' do
+        it 'should be false when desired move not in piece.possible_moves' do
           valid_move_game.instance_variable_set(:@travel_path, [2, 2])
           expect(valid_move_game.possible_move?(rook)).to be false
         end
+      end
 
-      describe '#valid_move?' do
-        # let(:piece) { instance_double(Knight) }
+      context 'moving a Knight' do
         let(:knight) { Knight.new('black', [2, 2]) }
 
-        context 'when moving a Knight' do
-          before do
-            # allow(piece).to receive(:class).and_return(Knight)
-            allow(valid_move_game).to receive(:possible_move?)
-          end
-
-          it 'should call #possible_move?' do
-            valid_move_game.instance_variable_set(:@travel_path, [1, 2])
-            # allow(piece).to receive(:===).with(Knight).and_return(true)
-            expect(valid_move_game).to receive(:possible_move?)
-            valid_move_game.valid_move?(knight, [2, 2])
-          end
-
-          it 'should not call #impeding_piece?' do
-            valid_move_game.instance_variable_set(:@travel_path, [1, 2])
-            # allow(piece).to receive(:===).with(Knight).and_return(true)
-            expect(valid_move_game).not_to receive(:impeding_piece?)
-            valid_move_game.valid_move?(knight, [2, 2])
-          end
+        before do
+          # allow(piece).to receive(:class).and_return(Knight)
+          allow(valid_move_game).to receive(:possible_move?)
         end
 
-        context 'when moving a pawn' do
+        it 'should call #possible_move?' do
+          valid_move_game.instance_variable_set(:@travel_path, [1, 2])
+          # allow(piece).to receive(:===).with(Knight).and_return(true)
+          expect(valid_move_game).to receive(:possible_move?)
+          valid_move_game.valid_move?(knight, [2, 2])
+        end
+
+        it 'should not call #impeding_piece?' do
+          valid_move_game.instance_variable_set(:@travel_path, [1, 2])
+          # allow(piece).to receive(:===).with(Knight).and_return(true)
+          expect(valid_move_game).not_to receive(:impeding_piece?)
+          valid_move_game.valid_move?(knight, [2, 2])
+        end
+      end
+
+        context 'moving a pawn' do
           let(:white_pawn) { WhitePawn.new([6, 2]) }
           let(:black_pawn) { BlackPawn.new([1, 2]) }
 
@@ -280,7 +279,7 @@ describe Game do
           end
         end
 
-        context 'when moving a King' do
+        context 'moving a King' do
           let(:king) { King.new('black', [0, 4]) }
 
           it 'should call #valid_king_move?' do
@@ -289,7 +288,7 @@ describe Game do
           end
         end
 
-        context 'when piece is not a pawn, king, or knight' do
+        context 'when moving piece is not a pawn, king, or knight' do
           let(:rook) { Rook.new('white', [7, 0]) }
 
           before do
@@ -310,6 +309,8 @@ describe Game do
       end
 
       describe '#valid_king_move?' do
+        subject(:king_move_game) { described_class.new(king_move_board) }
+        let(:king_move_board) { instance_double(Board) }
         let(:king) { instance_double(King, possible_moves: [[0, 1], [1, 1],
                                                             [1, 0], [1, -1],
                                                             [0, -1], [-1, -1],
@@ -319,36 +320,85 @@ describe Game do
 
         context 'when a king attempts a standard one-space move' do
           it 'will call #impeding_piece?' do
-            valid_move_game.instance_variable_set(:@travel_path, [1, 0])
-            expect(valid_move_game).to receive(:impeding_piece?)
-            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+            king_move_game.instance_variable_set(:@travel_path, [1, 0])
+            expect(king_move_game).to receive(:impeding_piece?)
+            king_move_game.valid_king_move?(king, king_move_game.travel_path, desired_space)
           end
 
           it 'will not call king.has_moved' do
-            allow(valid_move_board).to receive(:piece_exists?).and_return(false)
+            allow(king_move_board).to receive(:piece_exists?).and_return(false)
             allow(king).to receive(:current_location).and_return([1, 3])
-            valid_move_game.instance_variable_set(:@travel_path, [1, 0])
+            king_move_game.instance_variable_set(:@travel_path, [1, 0])
             expect(king).to_not receive(:has_moved)
-            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+            king_move_game.valid_king_move?(king, king_move_game.travel_path, desired_space)
           end
         end
 
         context 'when a king attempts to castle' do
           it 'will call king.has_moved' do
-            valid_move_game.instance_variable_set(:@travel_path, [-2, 0])
+            king_move_game.instance_variable_set(:@travel_path, [-2, 0])
             expect(king).to receive(:has_moved)
-            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+            king_move_game.valid_king_move?(king, king_move_game.travel_path, desired_space)
           end
 
           it 'will not call #impeding_piece?' do
             allow(king).to receive(:has_moved)
-            valid_move_game.instance_variable_set(:@travel_path, [-2, 0])
-            expect(valid_move_game).to_not receive(:impeding_piece?)
-            valid_move_game.valid_king_move?(king, valid_move_game.travel_path, desired_space)
+            king_move_game.instance_variable_set(:@travel_path, [-2, 0])
+            expect(king_move_game).to_not receive(:impeding_piece?)
+            king_move_game.valid_king_move?(king, king_move_game.travel_path, desired_space)
           end
         end
       end
-    end
+
+        describe '#valid_pawn_move?' do
+          subject(:pawn_move_game) { described_class.new(pawn_move_board) }
+          let(:pawn_move_board) { instance_double(Board) }
+          let(:white_pawn_start) { instance_double(WhitePawn, possible_moves: [[0, 1], [0, 2]],
+                                                        capture_moves: [[-1, 1], [1, 1]]) }
+          let(:white_pawn_moved) { instance_double(WhitePawn, possible_moves: [0, 1],
+                                                        capture_moves: [[-1, 1], [1, 1]]) }
+
+          it 'allows moving two spaces as first move' do
+            pawn_move_game.instance_variable_set(:@travel_path, [0, 2])
+            allow(pawn_move_board).to receive(:piece_exists?)
+            allow(white_pawn_start).to receive(:current_location).and_return([6, 6])
+            travel_path = pawn_move_game.travel_path
+            desired_space = [4, 6]
+
+            result = pawn_move_game.valid_pawn_move?(white_pawn_start, travel_path, desired_space)
+            expect(result).to be true
+          end
+
+          it 'does not allow moving two spaces after first move' do
+            allow(white_pawn_moved).to receive(:current_location).and_return([5, 6])
+            travel_path = [0, 2]
+            desired_space = [3, 6]
+            result = pawn_move_game.valid_pawn_move?(white_pawn_moved, travel_path, desired_space)
+            expect(result).to be false
+          end
+
+          xit 'does not allow moving two spaces after first move' do
+            @white_pawn.makes_first_move([5, 6], 2)
+            @white_pawn.current_location = [5, 6]
+            @board.board_array[5][6] = @white_pawn
+            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [3, 6])).to be false
+          end
+
+          xit 'does not allow vertical move if space is blocked' do
+            @black_pawn = BlackPawn.new([5, 6])
+            @board.board_array[5][6] = @black_pawn
+            @game.travel_path = [0, 2]
+            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
+          end
+
+          xit 'does not allow capture move if no opponent on the space' do
+            expect(@game.valid_pawn_move?(@white_pawn, [-1, 1], [5, 5])).to be false
+          end
+
+          xit 'does not allow horizontal/illegal move' do
+            expect(@game.valid_pawn_move?(@white_pawn, [-1, 0], [6, 5])).to be false
+          end
+        end
 
     describe '#pawn_promotion' do
       subject(:game_pawn_promo) { described_class.new(promotion_board) }
@@ -459,37 +509,7 @@ describe Game do
             expect(@white_pawn.initial_turn).to eq(0)
           end
         end
-
-        describe '#valid_pawn_move?' do
-          it 'allows moving two spaces for first move' do
-            @game.travel_path = [0, 2]
-            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be true
-          end
-
-          it 'does not allow moving two spaces after first move' do
-            @white_pawn.makes_first_move([5, 6], 2)
-            @white_pawn.current_location = [5, 6]
-            @board.board_array[5][6] = @white_pawn
-            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [3, 6])).to be false
-          end
-
-          it 'does not allow vertical move if space is blocked' do
-            @black_pawn = BlackPawn.new([5, 6])
-            @board.board_array[5][6] = @black_pawn
-            @game.travel_path = [0, 2]
-            expect(@game.valid_pawn_move?(@white_pawn, [0, 2], [4, 6])).to be false
-          end
-
-          it 'does not allow capture move if no opponent on the space' do
-            expect(@game.valid_pawn_move?(@white_pawn, [-1, 1], [5, 5])).to be false
-          end
-
-          it 'does not allow horizontal/illegal move' do
-            expect(@game.valid_pawn_move?(@white_pawn, [-1, 0], [6, 5])).to be false
-          end
-        end
       end
-    end
 
     describe '#impeding_piece?' do
       it 'should be true when ally is on the destination square' do
