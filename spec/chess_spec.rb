@@ -31,25 +31,25 @@ describe Board do
       end
     end
 
-    describe '#color_match?' do
-      let(:ally) { instance_double(Bishop, color: 'black') }
-      let(:enemy) { instance_double(Bishop, color: 'white') }
+    # describe '#color_match?' do
+    #   let(:ally) { instance_double(Bishop, color: 'black') }
+    #   let(:enemy) { instance_double(Bishop, color: 'white') }
 
-      before do
-        space_check_board.board_array[0][5] = ally
-        space_check_board.board_array[4][7] = enemy
-      end
+    #   before do
+    #     space_check_board.board_array[0][5] = ally
+    #     space_check_board.board_array[4][7] = enemy
+    #   end
 
-      it 'should be true when the color of the selected piece and piece on space match' do
-        result = space_check_board.color_match?(existing_rook, [0, 5])
-        expect(result).to be true
-      end
+    #   it 'should be true when the color of the selected piece and piece on space match' do
+    #     result = space_check_board.color_match?(existing_rook, [0, 5])
+    #     expect(result).to be true
+    #   end
 
-      it 'should be false when the color of the selected piece and piece on space do not match' do
-        result = space_check_board.color_match?(existing_rook, [4, 7])
-        expect(result).to be false
-      end
-    end
+    #   it 'should be false when the color of the selected piece and piece on space do not match' do
+    #     result = space_check_board.color_match?(existing_rook, [4, 7])
+    #     expect(result).to be false
+    #   end
+    # end
   end
 
   describe '#update_board' do

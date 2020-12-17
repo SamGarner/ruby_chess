@@ -121,9 +121,9 @@ class Board
     board_array[coordinates[0]][coordinates[1]].class != String
   end
 
-  def color_match?(piece, coordinates)
-    board_array[coordinates[0]][coordinates[1]].color == piece.color
-  end
+  # def color_match?(piece, coordinates)
+  #   board_array[coordinates[0]][coordinates[1]].color == piece.color
+  # end
 
   def attacking_opponent?(piece, desired_space)
     piece.color != board_array[desired_space[0]][desired_space[1]].color

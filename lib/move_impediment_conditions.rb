@@ -8,7 +8,7 @@ module MoveImpedimentConditions
 
   def friendly_fire?(piece, desired_space)
     gameboard.piece_exists?(desired_space) &&
-    gameboard.color_match?(piece, desired_space)
+    !gameboard.attacking_opponent?(piece, desired_space)
   end
 
   def horizontal_impediment?(piece, travel_path)
