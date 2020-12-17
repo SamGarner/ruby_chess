@@ -72,6 +72,32 @@ describe Board do
       end
     end
   end
+
+  describe '#destroy_enemy' do
+    subject(:board_for_attack) { described_class.new }
+    let(:rook) { instance_double(Rook, color: 'white') }
+    let(:enemy_pawn) { instance_double(BlackPawn, current_location: [1, 1]) }
+
+    before do
+      board_for_attack.board_array[1][1] = enemy_pawn
+      allow(enemy_pawn).to receive(:current_location=)
+      allow(enemy_pawn).to receive(:current_location)
+    end
+
+    context 'when white rook attacks black pawn at [1][1]' do
+      it 'should set the current location of the attacked pawn to nil' do
+        board_for_attack.destroy_enemy([1, 1])
+        result = enemy_pawn.current_location
+        expect(result).to be nil
+      end
+
+      it "should set board_array[1][1] to be '__'" do
+        board_for_attack.destroy_enemy([1, 1])
+        result = board_for_attack.board_array[1][1]
+        expect(result).to eq('__')
+      end
+    end
+  end
 end
 
 describe Game do
