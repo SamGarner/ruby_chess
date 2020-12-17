@@ -5,7 +5,7 @@ class WhitePawn
   attr_accessor :current_location, :possible_moves, :initial_turn
 
   def initialize(location)
-    @color = 'white'
+    @color = :white
     @symbol = 'Wp' # "#{color[0].upcase}p"
     @current_location = location
     @starting_location = location

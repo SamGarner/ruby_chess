@@ -39,34 +39,34 @@ class Board
   end
 
   def place_starting_kings
-    board_array[0][4] = King.new('black', [0, 4])
-    board_array[7][4] = King.new('white', [7, 4])
+    board_array[0][4] = King.new(:black, [0, 4])
+    board_array[7][4] = King.new(:white, [7, 4])
   end
 
   def place_starting_queens
-    board_array[0][3] = Queen.new('black', [0, 3])
-    board_array[7][3] = Queen.new('white', [7, 3])
+    board_array[0][3] = Queen.new(:black, [0, 3])
+    board_array[7][3] = Queen.new(:white, [7, 3])
   end
 
   def place_starting_bishops
-    board_array[0][2] = Bishop.new('black', [0, 2])
-    board_array[0][5] = Bishop.new('black', [0, 5])
-    board_array[7][2] = Bishop.new('white', [7, 2])
-    board_array[7][5] = Bishop.new('white', [7, 5])
+    board_array[0][2] = Bishop.new(:black, [0, 2])
+    board_array[0][5] = Bishop.new(:black, [0, 5])
+    board_array[7][2] = Bishop.new(:white, [7, 2])
+    board_array[7][5] = Bishop.new(:white, [7, 5])
   end
 
   def place_starting_knights
-    board_array[0][1] = Knight.new('black', [0, 1])
-    board_array[0][6] = Knight.new('black', [0, 6])
-    board_array[7][1] = Knight.new('white', [7, 1])
-    board_array[7][6] = Knight.new('white', [7, 6])
+    board_array[0][1] = Knight.new(:black, [0, 1])
+    board_array[0][6] = Knight.new(:black, [0, 6])
+    board_array[7][1] = Knight.new(:white, [7, 1])
+    board_array[7][6] = Knight.new(:white, [7, 6])
   end
 
   def place_starting_rooks
-    board_array[0][0] = Rook.new('black', [0, 0])
-    board_array[0][7] = Rook.new('black', [0, 7])
-    board_array[7][0] = Rook.new('white', [7, 0])
-    board_array[7][7] = Rook.new('white', [7, 7])
+    board_array[0][0] = Rook.new(:black, [0, 0])
+    board_array[0][7] = Rook.new(:black, [0, 7])
+    board_array[7][0] = Rook.new(:white, [7, 0])
+    board_array[7][7] = Rook.new(:white, [7, 7])
   end
 
   def place_starting_black_pawns

@@ -40,7 +40,7 @@ class Game
 
   def initialize(board)
     @gameboard = board
-    @turn = 'white'
+    @turn = :white
     @total_turn_counter = 0
     @game_over = false
   end
@@ -73,7 +73,7 @@ class Game
   def checkmate?
     puts "\nYou are in check. Do you resign y/n?\n"
     @checkmate = gets.chomp.downcase
-    turn == 'white' ? @winner = 'black' : @winner = 'White'
+    turn == :white ? @winner = 'black' : @winner = 'White'
     return true if checkmate == 'y'
     false
   end
@@ -203,7 +203,7 @@ class Game
   end
 
   def unable_to_escape_check
-    turn == 'white' ? @winner = 'Black' : @winner = 'White'
+    turn == :white ? @winner = 'Black' : @winner = 'White'
     self.checkmate = 'y'
     end_game 
   end
@@ -285,7 +285,7 @@ class Game
   end
 
   def switch_turn_to_opponent
-    turn == 'white' ? self.turn = 'black' : self.turn = 'white'
+    turn == :white ? self.turn = :black : self.turn = :white
   end
 
   def identify_piece(starting_space = start_space)

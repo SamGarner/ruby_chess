@@ -13,7 +13,7 @@ require_relative '../lib/pieces/black_pawn'
 describe Board do
   context 'when checking a space' do
     subject(:space_check_board) { described_class.new }
-    let(:existing_rook) { instance_double(Rook, color: 'black') }
+    let(:existing_rook) { instance_double(Rook, color: :black) }
 
     before do
       space_check_board.board_array[0][7] = existing_rook
@@ -32,8 +32,8 @@ describe Board do
     end
 
     describe '#attacking_opponent?' do
-      let(:ally) { instance_double(Bishop, color: 'black') }
-      let(:enemy) { instance_double(Bishop, color: 'white') }
+      let(:ally) { instance_double(Bishop, color: :black) }
+      let(:enemy) { instance_double(Bishop, color: :white) }
 
       before do
         space_check_board.board_array[0][5] = ally
@@ -75,7 +75,7 @@ describe Board do
 
   describe '#destroy_enemy' do
     subject(:board_for_attack) { described_class.new }
-    let(:rook) { instance_double(Rook, color: 'white') }
+    let(:rook) { instance_double(Rook, color: :white) }
     let(:enemy_pawn) { instance_double(BlackPawn, current_location: [1, 1]) }
 
     before do
@@ -105,7 +105,7 @@ describe Game do
     before(:each) do
       @board = Board.new
       @game = Game.new(@board)
-      @rook_h1 = Rook.new('white', [7, 7])
+      @rook_h1 = Rook.new(:white, [7, 7])
       # @pawn_g1 = BlackPawn.new([7, 6])
       # @pawn_h7 = WhitePawn.new([1, 7])
       @board.board_array[7][7] = @rook_h1
@@ -114,19 +114,19 @@ describe Game do
 
     describe '#valid_target_space?' do
       it 'returns true when target space is empty' do
-        @game.turn = 'white'
+        @game.turn = :white
         @game.finish_input = 'D4'
         expect(@game.valid_target_space?).to be true
       end
     
       it 'returns true when target occupied by opponent' do
-        @game.turn = 'black'
+        @game.turn = :black
         @game.finish_input = 'H1'
         expect(@game.valid_target_space?).to be true
       end
 
       it 'returns false when target occupied by ally' do
-        @game.turn = 'white'
+        @game.turn = :white
         @game.finish_input = 'H1'
         expect(@game.valid_target_space?).to be false
       end
@@ -159,7 +159,7 @@ describe Game do
 
     describe '#valid_piece_to_move?' do
       before(:each) do
-        @game.turn = 'white'
+        @game.turn = :white
         @game.start_input = 'H1'
       end
 
@@ -168,7 +168,7 @@ describe Game do
       end
 
       it "returns false when opposing player's piece" do
-        expect(@game.valid_piece_to_move?('black')).to be false
+        expect(@game.valid_piece_to_move?(:black)).to be false
       end
 
       it 'returns false when empty space' do
@@ -225,7 +225,7 @@ describe Game do
 
     describe '#get_travel_path' do
       context 'when moving piece from [7, 6] to [5, 4]' do
-        let(:bishop) { instance_double(Bishop, color: 'black', current_location: [7, 6]) }
+        let(:bishop) { instance_double(Bishop, color: :black, current_location: [7, 6]) }
         it 'should have travel_path of [-2, 2]' do
           # bishop = Bishop.new('black', [7, 6])
           @board.board_array[7][6] = bishop
@@ -263,7 +263,7 @@ describe Game do
       end
 
       context 'moving a Knight' do
-        let(:knight) { Knight.new('black', [2, 2]) }
+        let(:knight) { Knight.new(:black, [2, 2]) }
 
         before do
           # allow(piece).to receive(:class).and_return(Knight)
@@ -306,7 +306,7 @@ describe Game do
         end
 
         context 'moving a King' do
-          let(:king) { King.new('black', [0, 4]) }
+          let(:king) { King.new(:black, [0, 4]) }
 
           it 'should call #valid_king_move?' do
             expect(valid_move_game).to receive(:valid_king_move?)
@@ -315,7 +315,7 @@ describe Game do
         end
 
         context 'when moving piece is not a pawn, king, or knight' do
-          let(:rook) { Rook.new('white', [7, 0]) }
+          let(:rook) { Rook.new(:white, [7, 0]) }
 
           before do
             allow(valid_move_game).to receive(:possible_move?).and_return(true)
@@ -594,7 +594,7 @@ describe Game do
           end
 
           it 'should be true when ally is in the way - positive check' do
-            rook_a1 = Rook.new('white', [7, 0])
+            rook_a1 = Rook.new(:white, [7, 0])
             expect(@game.horizontal_impediment?(rook_a1, [5, 0])).to be true
           end
         end
@@ -602,7 +602,7 @@ describe Game do
 
       describe '#vertical_impediment?' do
         before(:each) do
-          @white_knight_g = Knight.new('white', [7, 6])
+          @white_knight_g = Knight.new(:white, [7, 6])
           @board.board_array[7][6] = @white_knight_g
           @white_pawn_g = WhitePawn.new([6, 6])
           @board.board_array[6][6] = @white_pawn_g
@@ -624,7 +624,7 @@ describe Game do
           end
 
           it 'should be true when ally is in the way - negative check' do
-            rook = Rook.new('white', [4, 7])
+            rook = Rook.new(:white, [4, 7])
             @board.board_array[4][7] = rook
             expect(@game.vertical_impediment?(rook, [0, -2])).to be true
           end
@@ -633,21 +633,21 @@ describe Game do
 
       describe '#diagonal_impediment?' do
         before(:each) do
-          @white_bishop = Bishop.new('white', [7, 5])
+          @white_bishop = Bishop.new(:white, [7, 5])
           @board.board_array[7][5] = @white_bishop
-          @white_knight_g = Knight.new('white', [7, 6])
+          @white_knight_g = Knight.new(:white, [7, 6])
           @board.board_array[7][6] = @white_knight_g
           @white_pawn_f = WhitePawn.new([6, 5])
           @board.board_array[6][5] = @white_pawn_f
-          @white_king = King.new('white', [7, 4])
+          @white_king = King.new(:white, [7, 4])
           @board.board_array[7][4] = @white_king
-          @black_bishop = Bishop.new('black', [0, 5])
+          @black_bishop = Bishop.new(:black, [0, 5])
           @board.board_array[0][5] = @black_bishop
-          @black_knight_g = Knight.new('black', [0, 6])
+          @black_knight_g = Knight.new(:black, [0, 6])
           @board.board_array[0][6] = @black_knight_g
           @black_pawn_f = BlackPawn.new([1, 5])
           @board.board_array[1][5] = @black_pawn_f
-          @black_king = King.new('black', [0, 4])
+          @black_king = King.new(:black, [0, 4])
           @board.board_array[0][4] = @black_king
         end
 
@@ -692,7 +692,7 @@ describe Game do
     describe '#in_check?' do
       describe '#knight_check?' do
         before(:each) do
-          @black_king = King.new('black', [0, 4])
+          @black_king = King.new(:black, [0, 4])
           @board.board_array[0][4] = @black_king
         end
 
@@ -704,13 +704,13 @@ describe Game do
 
         context 'when knight is one move away' do
           it 'is not check when the knight is an ally' do
-            black_knight = Knight.new('black', [1, 2])
+            black_knight = Knight.new(:black, [1, 2])
             @board.board_array[1][2] = black_knight
             expect(@game.in_check?(@black_king)).to be false
           end
 
           it 'is check when then knight is an enemy' do
-            white_knight = Knight.new('white', [1, 2])
+            white_knight = Knight.new(:white, [1, 2])
             @board.board_array[1][2] = white_knight
             expect(@game.in_check?(@black_king)).to be true
           end
@@ -720,9 +720,9 @@ describe Game do
 
     context "when attempting to castle" do
       before(:each) do
-          @white_king = King.new('white', [7, 4])
+          @white_king = King.new(:white, [7, 4])
           @board.board_array[7][4] = @white_king
-          @white_rook_h = Rook.new('white', [7, 7])
+          @white_rook_h = Rook.new(:white, [7, 7])
           @board.board_array[7][7] = @white_rook_h
           @game.end_space = [7, 6]
           @game.define_castling_mappings
@@ -734,7 +734,7 @@ describe Game do
         end
 
         it 'should be false when piece(s) between the rook and king' do
-          @white_bishop = Bishop.new('white', [7, 5])
+          @white_bishop = Bishop.new(:white, [7, 5])
           @board.board_array[7][5] = @white_bishop
           expect(@game.no_castling_impediments?([7, 6])).to be false
         end
@@ -872,7 +872,7 @@ describe Game do
       end      
 
       xit 'will not happen if the piece cannot move horizontally' do
-        bishop_f1 = Bishop.new('black', [7, 5])
+        bishop_f1 = Bishop.new(:black, [7, 5])
         @board.board_array[7][5] = bishop_f1
         @game.move_piece(bishop_f1, [7, 7])
         expect(@board.board_array[7][5]).to eq(bishop_f1)

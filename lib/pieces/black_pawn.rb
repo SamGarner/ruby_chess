@@ -5,7 +5,7 @@ class BlackPawn
   attr_accessor :current_location, :possible_moves, :initial_turn
 
   def initialize(location)
-    @color = 'black'
+    @color = :black
     @symbol = 'Bp' # "#{color[0].upcase}p"
     @current_location = location
     @starting_location = location

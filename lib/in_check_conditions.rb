@@ -1,6 +1,6 @@
 module InCheckConditions
   def pawn_check?(color, horizontal_coord, vertical_coord)
-    if color == 'white'
+    if color == :white
       black_pawn_check?(horizontal_coord, vertical_coord)
     else
       white_pawn_check?(horizontal_coord, vertical_coord)
