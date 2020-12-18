@@ -23,7 +23,7 @@ describe WhitePawn do
     it 'should not update initital_turn when moving one space' do
       white_pawn.makes_first_move([5, 3], move_number)
       result = white_pawn.initial_turn
-      expect(result).to_not eq (move_number)
+      expect(result).to eq(0)
     end
   end
 end
