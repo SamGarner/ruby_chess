@@ -101,6 +101,39 @@ describe Board do
 end
 
 describe Game do
+  describe '#choose_move' do  
+    subject(:choose_move_game) { described_class.new(choose_move_board) }
+    let(:choose_move_board) { instance_double(Board) }
+
+    before do
+      allow(choose_move_game).to receive(:choose_move_when_in_check)
+      allow(choose_move_game).to receive(:choose_piece_to_move)
+      allow(choose_move_game).to receive(:which_piece_selected)
+      allow(choose_move_game).to receive(:choose_where_to_move)
+    end
+
+    it 'should call #choose_move_when_in_check' do
+      expect(choose_move_game).to receive(:choose_move_when_in_check)
+      choose_move_game.choose_move
+    end
+
+    it 'should call #choose_piece_to_move' do
+      expect(choose_move_game).to receive(:choose_piece_to_move)
+      choose_move_game.choose_move
+    end
+
+    it 'should call #which_piece_selected' do
+      expect(choose_move_game).to receive(:which_piece_selected)
+      choose_move_game.choose_move
+    end
+
+    it 'should call #choose_where_to_move' do
+      expect(choose_move_game).to receive(:choose_where_to_move)
+      choose_move_game.choose_move
+    end
+  end
+
+
     # create game and game board to be shared across tests below
     before(:each) do
       @board = Board.new
