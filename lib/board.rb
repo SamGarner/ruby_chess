@@ -38,57 +38,14 @@ class Board
                        ]
   end
 
-  def place_starting_kings
-    board_array[0][4] = King.new(:black, [0, 4])
-    board_array[7][4] = King.new(:white, [7, 4])
-  end
-
-  def place_starting_queens
-    board_array[0][3] = Queen.new(:black, [0, 3])
-    board_array[7][3] = Queen.new(:white, [7, 3])
-  end
-
-  def place_starting_bishops
-    board_array[0][2] = Bishop.new(:black, [0, 2])
-    board_array[0][5] = Bishop.new(:black, [0, 5])
-    board_array[7][2] = Bishop.new(:white, [7, 2])
-    board_array[7][5] = Bishop.new(:white, [7, 5])
-  end
-
-  def place_starting_knights
-    board_array[0][1] = Knight.new(:black, [0, 1])
-    board_array[0][6] = Knight.new(:black, [0, 6])
-    board_array[7][1] = Knight.new(:white, [7, 1])
-    board_array[7][6] = Knight.new(:white, [7, 6])
-  end
-
-  def place_starting_rooks
-    board_array[0][0] = Rook.new(:black, [0, 0])
-    board_array[0][7] = Rook.new(:black, [0, 7])
-    board_array[7][0] = Rook.new(:white, [7, 0])
-    board_array[7][7] = Rook.new(:white, [7, 7])
-  end
-
-  def place_starting_black_pawns
-    board_array[1][0] = BlackPawn.new([1, 0])
-    board_array[1][1] = BlackPawn.new([1, 1])
-    board_array[1][2] = BlackPawn.new([1, 2])
-    board_array[1][3] = BlackPawn.new([1, 3])
-    board_array[1][4] = BlackPawn.new([1, 4])
-    board_array[1][5] = BlackPawn.new([1, 5])
-    board_array[1][6] = BlackPawn.new([1, 6])
-    board_array[1][7] = BlackPawn.new([1, 7])
-  end
-
-  def place_starting_white_pawns
-    board_array[6][0] = WhitePawn.new([6, 0])
-    board_array[6][1] = WhitePawn.new([6, 1])
-    board_array[6][2] = WhitePawn.new([6, 2])
-    board_array[6][3] = WhitePawn.new([6, 3])
-    board_array[6][4] = WhitePawn.new([6, 4])
-    board_array[6][5] = WhitePawn.new([6, 5])
-    board_array[6][6] = WhitePawn.new([6, 6])
-    board_array[6][7] = WhitePawn.new([6, 7])
+  def place_starting_pieces
+    place_starting_kings
+    place_starting_queens
+    place_starting_bishops
+    place_starting_knights
+    place_starting_rooks
+    place_starting_white_pawns
+    place_starting_black_pawns
   end
 
   def display_board
@@ -146,4 +103,58 @@ class Board
     board_array[desired_space[0]][desired_space[1]] = '__'
   end
 
+  private
+
+  def place_starting_kings
+    board_array[0][4] = King.new(:black, [0, 4])
+    board_array[7][4] = King.new(:white, [7, 4])
+  end
+
+  def place_starting_queens
+    board_array[0][3] = Queen.new(:black, [0, 3])
+    board_array[7][3] = Queen.new(:white, [7, 3])
+  end
+
+  def place_starting_bishops
+    board_array[0][2] = Bishop.new(:black, [0, 2])
+    board_array[0][5] = Bishop.new(:black, [0, 5])
+    board_array[7][2] = Bishop.new(:white, [7, 2])
+    board_array[7][5] = Bishop.new(:white, [7, 5])
+  end
+
+  def place_starting_knights
+    board_array[0][1] = Knight.new(:black, [0, 1])
+    board_array[0][6] = Knight.new(:black, [0, 6])
+    board_array[7][1] = Knight.new(:white, [7, 1])
+    board_array[7][6] = Knight.new(:white, [7, 6])
+  end
+
+  def place_starting_rooks
+    board_array[0][0] = Rook.new(:black, [0, 0])
+    board_array[0][7] = Rook.new(:black, [0, 7])
+    board_array[7][0] = Rook.new(:white, [7, 0])
+    board_array[7][7] = Rook.new(:white, [7, 7])
+  end
+
+  def place_starting_black_pawns
+    board_array[1][0] = BlackPawn.new([1, 0])
+    board_array[1][1] = BlackPawn.new([1, 1])
+    board_array[1][2] = BlackPawn.new([1, 2])
+    board_array[1][3] = BlackPawn.new([1, 3])
+    board_array[1][4] = BlackPawn.new([1, 4])
+    board_array[1][5] = BlackPawn.new([1, 5])
+    board_array[1][6] = BlackPawn.new([1, 6])
+    board_array[1][7] = BlackPawn.new([1, 7])
+  end
+
+  def place_starting_white_pawns
+    board_array[6][0] = WhitePawn.new([6, 0])
+    board_array[6][1] = WhitePawn.new([6, 1])
+    board_array[6][2] = WhitePawn.new([6, 2])
+    board_array[6][3] = WhitePawn.new([6, 3])
+    board_array[6][4] = WhitePawn.new([6, 4])
+    board_array[6][5] = WhitePawn.new([6, 5])
+    board_array[6][6] = WhitePawn.new([6, 6])
+    board_array[6][7] = WhitePawn.new([6, 7])
+  end
 end

@@ -45,15 +45,15 @@ class Game
     @game_over = false
   end
 
-  def place_starting_pieces(board = gameboard)  # module?
-    board.place_starting_kings
-    board.place_starting_queens
-    board.place_starting_bishops
-    board.place_starting_knights
-    board.place_starting_rooks
-    board.place_starting_white_pawns
-    board.place_starting_black_pawns
-  end
+  # def place_starting_pieces(board = gameboard)  # module?
+  #   board.place_starting_kings
+  #   board.place_starting_queens
+  #   board.place_starting_bishops
+  #   board.place_starting_knights
+  #   board.place_starting_rooks
+  #   board.place_starting_white_pawns
+  #   board.place_starting_black_pawns
+  # end
 
   def choose_move
     choose_move_when_in_check
@@ -525,7 +525,7 @@ end
 # board = Board.new
 # game = Game.new(board)
 # # game.initialize_pieces
-# game.place_starting_pieces
+# board.place_starting_pieces
 # game.gameboard.display_board
 # game.define_castling_mappings
 # while game.game_over == false
