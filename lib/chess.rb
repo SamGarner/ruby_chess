@@ -16,16 +16,8 @@ require_relative 'move_impediment_conditions.rb'
 class Game
   include MoveImpedimentConditions
 
-  attr_reader :black_queen, :white_queen, :white_king, :black_king,
-              :black_bishop_c, :black_bishop_f, :white_bishop_c, :white_bishop_f,
-              :black_knight_b, :black_knight_g, :white_knight_b, :white_knight_g,
-              :black_rook_a, :black_rook_h, :white_rook_a, :white_rook_h,
-              :black_pawn_a, :black_pawn_b, :black_pawn_c, :black_pawn_d,
-              :black_pawn_e, :black_pawn_f, :black_pawn_g, :black_pawn_h,
-              :white_pawn_a, :white_pawn_b, :white_pawn_c, :white_pawn_d,
-              :white_pawn_e, :white_pawn_f, :white_pawn_g, :white_pawn_h,
+  attr_reader :valid_input, :piece_type, :start,
               # :start_input, :finish_input,
-              :valid_input, :piece_type, :start,
               :finish, :start_space, :winner,
               :enemy_king, :friendly_king, :rook_start_copy, :rook_end_copy,
               :castle_spaces_crossed_mapping, :castle_king_crossed_mapping, 
