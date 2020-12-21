@@ -133,6 +133,53 @@ describe Game do
     end
   end
 
+  describe '#choose_move_when_in_check' do
+    subject(:choose_move_when_check_game) { described_class.new(choose_move_when_check_board) }
+    let(:choose_move_when_check_board) { instance_double(Board) }
+    let(:friendly_king_double) { instance_double(King) }
+
+    before do
+      allow(choose_move_when_check_game).to receive(:fetch_friendly_king)
+      choose_move_when_check_game.instance_variable_set(:@friendly_king, friendly_king_double)
+      allow(friendly_king_double).to receive(:in_check)
+    end
+
+    it 'should call #fetch_friendly_king' do
+      expect(choose_move_when_check_game).to receive(:fetch_friendly_king)
+      choose_move_when_check_game.choose_move_when_in_check
+    end
+
+    it 'should call friendly_king.in_check' do
+      expect(friendly_king_double).to receive(:in_check)
+      choose_move_when_check_game.choose_move_when_in_check
+    end
+
+    it 'should call #checkmate? if friendly_king.in_check is true' do
+      allow(friendly_king_double).to receive(:in_check).and_return(true)
+      expect(choose_move_when_check_game).to receive(:checkmate?)
+      choose_move_when_check_game.choose_move_when_in_check
+    end
+
+    it 'should not call #checkmate? if friendly_king.in_check is false' do
+      allow(friendly_king_double).to receive(:in_check).and_return(false)
+      expect(choose_move_when_check_game).to_not receive(:checkmate?)
+      choose_move_when_check_game.choose_move_when_in_check
+    end
+
+    it "should call #end_game if local variable 'resign' is true" do
+      allow(friendly_king_double).to receive(:in_check).and_return(true)
+      allow(choose_move_when_check_game).to receive(:checkmate?).and_return(true)
+      expect(choose_move_when_check_game).to receive(:end_game)
+      choose_move_when_check_game.choose_move_when_in_check
+    end
+
+    it "should not call #end_game if local variable 'resign' is false" do
+      allow(friendly_king_double).to receive(:in_check).and_return(true)
+      allow(choose_move_when_check_game).to receive(:checkmate?).and_return(false)
+      expect(choose_move_when_check_game).to_not receive(:end_game)
+      choose_move_when_check_game.choose_move_when_in_check
+    end
+  end
 
     # create game and game board to be shared across tests below
     before(:each) do
