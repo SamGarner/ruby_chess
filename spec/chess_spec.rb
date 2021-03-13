@@ -1,7 +1,7 @@
 # frozen_string_literal: false
 
 require 'pry'
-require_relative '../lib/chess.rb'
+require_relative '../lib/game.rb'
 require_relative '../lib/pieces/king'
 require_relative '../lib/pieces/queen'
 require_relative '../lib/pieces/bishop'
