@@ -513,17 +513,3 @@ class Game
            gameboard.horizontal_check?(color, horizontal_coord, vertical_coord)
   end
 end
-
-# board = Board.new
-# game = Game.new(board)
-# # game.initialize_pieces
-# board.place_starting_pieces
-# game.gameboard.display_board
-# game.define_castling_mappings
-# while game.game_over == false
-#   game.take_turn
-#   game.gameboard.display_board
-# end
-# # binding.pry
-
-# king = King.new
