@@ -68,7 +68,8 @@ describe Board do
         board_to_update.update_board(rook_for_update, desired_space)
         location = rook_for_update.current_location
         old_space = board_to_update.board_array[location[0]][location[1]]
-        expect(old_space).to eq('__')
+        expect(old_space).to eq('_') # comment line to use with WSL
+        # expect(old_space).to eq('__') # uncomment line to use with WSL
       end
     end
   end
@@ -91,10 +92,12 @@ describe Board do
         expect(result).to be nil
       end
 
-      it "should set board_array[1][1] to be '__'" do
+      # it "should set board_array[1][1] to be '__'" do # uncomment line to use with WSL
+      it "should set board_array[1][1] to be '_'" do # comment line to use with WSL
         board_for_attack.destroy_enemy([1, 1])
         result = board_for_attack.board_array[1][1]
-        expect(result).to eq('__')
+        expect(result).to eq('_') # comment line to use with WSL
+        # expect(result).to eq('__') # uncomment line to use with WSL
       end
     end
   end
@@ -934,7 +937,8 @@ describe Game do
 
       it 'will leave a vacant space where it moved from' do
         @game.move_piece(@rook_h1, [7, 5])
-        expect(@board.board_array[7][7]).to eq('__')
+        expect(@board.board_array[7][7]).to eq('_') # comment line to use with WSL
+        # expect(@board.board_array[7][7]).to eq('__') # uncomment line to use with WSL
       end
 
       it 'will take the opponents piece if one is on the target square' do

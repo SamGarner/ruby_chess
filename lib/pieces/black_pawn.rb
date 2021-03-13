@@ -6,7 +6,8 @@ class BlackPawn
 
   def initialize(location)
     @color = :black
-    @symbol = 'Bp' # "#{color[0].upcase}p"
+    # @symbol = 'Bp' # uncomment line to use with WSL # "#{color[0].upcase}p" 
+    @symbol = "\u2659" # comment line to use with WSL
     @current_location = location
     @starting_location = location
     @possible_moves = [0, -1], [0, -2]

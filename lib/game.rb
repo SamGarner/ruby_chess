@@ -98,7 +98,8 @@ class Game
   def valid_piece_to_move?(player_color = turn)
     start_display_to_array_map
     space = gameboard.board_array[start_space[0]][start_space[1]]
-    space != '__' && space.color == player_color
+    space != '_' && space.color == player_color  # comment line to use with WSL
+    # space != '__' && space.color == player_color  # uncomment line to use with WSL
   end
 
   def start_display_to_array_map(start = start_input)
@@ -124,7 +125,8 @@ class Game
   def valid_target_space?(player_color = turn)
     end_display_to_array_map
     space = gameboard.board_array[end_space[0]][end_space[1]]
-    return true if space == '__'
+    return true if space == '_'  # comment line to use with WSL
+    # return true if space == '__'  # uncomment line to use with WSL
 
     space.color != player_color
   end
@@ -434,7 +436,8 @@ class Game
                                       [7, 2] => board[7][1, 3],
                                       [7, 6] => board[7][5, 2] }
     spaces_to_check = castle_spaces_crossed_mapping.fetch(desired_space)
-    spaces_to_check.all? { |space| space == '__' }
+    spaces_to_check.all? { |space| space == '_' }  # comment line to use with WSL
+    # spaces_to_check.all? { |space| space == '__' }  # uncomment line to use with WSL
   end
 
   def castling_thru_check?(desired_space, board = gameboard.board_array)

@@ -7,7 +7,8 @@ class Queen # < ChessPiece
   def initialize(color, location)
     # super(location)
     @color = color
-    @symbol = "#{color[0].upcase}Q"
+    # @symbol = "#{color[0].upcase}Q" # uncomment line to use with WSL
+    @symbol = (color == :black ? "\u2655" : "\u265B") # comment line to use with WSL
     @current_location = location
     @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
                       [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],

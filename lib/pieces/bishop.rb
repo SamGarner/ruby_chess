@@ -6,7 +6,8 @@ class Bishop
 
   def initialize(color, location)
     @color = color
-    @symbol = "#{color[0].upcase}B"
+    # @symbol = "#{color[0].upcase}B" # uncomment line to use with WSL
+    @symbol = (color == :black ? "\u2657" : "\u265D") # comment line to use with WSL
     @current_location = location
     @possible_moves = [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7],
                       [1, -1], [2, -2], [3, -3], [4, -4], [5, -5], [6, -6], [7, -7],

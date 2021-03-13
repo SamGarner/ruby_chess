@@ -6,7 +6,8 @@ class Knight
 
   def initialize(color, location)
     @color = color
-    @symbol = "#{color[0].upcase}k"
+    # @symbol = "#{color[0].upcase}k" # uncomment line to use with WSL
+    @symbol = (color == :black ? "\u2658" : "\u265E") # comment line to use with WSL
     @current_location = location
     @possible_moves = [1, 2], [2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1],
                       [-1, 2], [-2, 1]

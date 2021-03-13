@@ -6,7 +6,8 @@ class WhitePawn
 
   def initialize(location)
     @color = :white
-    @symbol = 'Wp' # "#{color[0].upcase}p"
+    # @symbol = 'Wp' # uncomment line to use with WSL # "#{color[0].upcase}p"
+    @symbol = "\u265F" # comment line to use with WSL
     @current_location = location
     @starting_location = location
     @possible_moves = [0, 1], [0, 2]

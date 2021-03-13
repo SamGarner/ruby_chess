@@ -18,7 +18,8 @@ class Board
   attr_accessor :board_array
 
   def initialize
-    @board_array = Array.new(8) { Array.new(8) { '__' } }
+    # @board_array = Array.new(8) { Array.new(8) { '__' } } # uncomment line to use with WSL
+    @board_array = Array.new(8) { Array.new(8) { '_' } } # comment line to use with WSL
     @mapping_hash = Hash[A1: [7, 0], A2: [6, 0], A3: [5, 0], A4: [4, 0],
                          A5: [3, 0], A6: [2, 0], A7: [1, 0], A8: [0, 0],
                          B1: [7, 1], B2: [6, 1], B3: [5, 1], B4: [4, 1],
@@ -49,9 +50,9 @@ class Board
   end
 
   def display_board
-    puts '   | A  | B  | C  | D  | E  | F  | G  | H  |'
+    puts '   | A | B | C | D | E | F | G | H |'
     puts display_rows
-    puts '   | A  | B  | C  | D  | E  | F  | G  | H  |'
+    puts '   | A | B | C | D | E | F | G | H |'
   end
 
   def display_rows
@@ -67,7 +68,8 @@ class Board
   end
 
   def display_piece(space)
-    if space == '__'
+    # if space == '__' # uncomment line to use with WSL
+    if space == '_' # comment line to use with WSL
       " #{space} |"
     else
       " #{space.symbol} |"
@@ -90,7 +92,8 @@ class Board
     ds = desired_space
     old_space = piece.current_location
     board_array[ds[0]][ds[1]] = piece
-    board_array[old_space[0]][old_space[1]] = '__'
+    board_array[old_space[0]][old_space[1]] = '_' # comment line to use with WSL
+    # board_array[old_space[0]][old_space[1]] = '__' # uncomment line to use with WSL
   end
 
   def add_new_promoted_piece_to_board(end_space, new_promoted_piece)
@@ -100,7 +103,8 @@ class Board
   def destroy_enemy(desired_space)
     attacked_piece = board_array[desired_space[0]][desired_space[1]]
     attacked_piece.current_location = nil
-    board_array[desired_space[0]][desired_space[1]] = '__'
+    board_array[desired_space[0]][desired_space[1]] = '_' # comment line to use with WSL
+    # board_array[desired_space[0]][desired_space[1]] = '__' # uncomment line to use with WSL
   end
 
   private

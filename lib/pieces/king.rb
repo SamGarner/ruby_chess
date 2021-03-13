@@ -7,7 +7,8 @@ class King #s < Piece
 
   def initialize(color, location)
     @color = color
-    @symbol = "#{color[0].upcase}K"
+    # @symbol = "#{color[0].upcase}K" # uncomment line to use with WSL
+    @symbol = (color == :black ? "\u2654" : "\u265A") # comment line to use with WSL
     @current_location = location
     @starting_location = location
     @possible_moves = [[0, 1], [1, 1], [1, 0], [1, -1], [0, -1], [-1, -1],
