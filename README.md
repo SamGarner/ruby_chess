@@ -1,8 +1,11 @@
 # Chess
 
-A command-line version of chess written with Ruby and RSpec.
+A two-player command-line version of chess written with Ruby and tested using RSpec.
 
 The current version enforces international chess rules (see: Rules section below). However, there are a number of items in the pipeline to enhance UX and gameplay options. 
+
+<img src="demo/demo.gif" alt="short chess game" width=auto height="400px"/><br>
+*Demo of the [Fool's Mate](https://en.wikipedia.org/wiki/Fool%27s_mate) - the fastest checkmate in chess!*
 
 ## Play Now
 
@@ -20,7 +23,9 @@ The game enforces regular international chess rules. See [Wikipedia](https://en.
 
 ## How to Play
 
-The game will look different depending on the command line interface used to play and the current version has been optimized for use with repl.it which you use to play online [here](https://replit.com/@SG12/rubychess?v=1). If you are using Windows Subsystem for Linux, you will need to comment/uncomment a number of lines (all marked with a comment including 'line to use with WSL') due to unsupported use of some unicode characters. This WSL correction affects lib/board.rb, lib/game.rb, and spec/chess_spec.rb.
+The game will look different depending on the command line interface used to play and the current version has been optimized for use with repl.it which you use to play online [here](https://replit.com/@SG12/rubychess?v=1).
+
+If you are using Windows Subsystem for Linux, you will need to comment/uncomment a number of lines (all marked with a comment including 'line to use with WSL') due to unsupported use of some unicode characters. This WSL correction affects lib/board.rb, lib/game.rb, and spec/chess_spec.rb.
 
 ### Prerequisites
 * ruby >= 2.6.5
@@ -35,4 +40,6 @@ The game will look different depending on the command line interface used to pla
 ### To Play
 Run ```ruby lib/chess.rb ```
 
-<!-- unicode white/black pieces appear to be flipped. This is intentional due to the display in Repl.it There's also a commented out text version for each piece (e.g. 'Wp' for 'white pawn') in case the unicode pieces do not work with your display (There have been issues with Windows Subsystem for Linux) -->
+## Running the RSpec Tests
+* To run the entire test suite, run ```rspec```
+* To run the test suit with detailed output, run ```rspec --format documentation```
